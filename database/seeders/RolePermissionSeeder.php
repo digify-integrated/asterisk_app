@@ -1,0 +1,212 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class RolePermissionSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $now = now();
+
+        $defaults = [
+            'created_at' => $now,
+            'updated_at' => $now,
+        ];
+
+        $rolePermissions = [
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 1,
+                'navigation_menu_name' => 'Apps',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 2,
+                'navigation_menu_name' => 'Company',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 3,
+                'navigation_menu_name' => 'Role',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 4,
+                'navigation_menu_name' => 'User Account',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 7,
+                'navigation_menu_name' => 'File Type',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 8,
+                'navigation_menu_name' => 'File Extension',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 10,
+                'navigation_menu_name' => 'Country',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 11,
+                'navigation_menu_name' => 'State',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 12,
+                'navigation_menu_name' => 'City',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 13,
+                'navigation_menu_name' => 'Currency',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 14,
+                'navigation_menu_name' => 'Settings',
+                'read_access' => true,
+                'write_access' => false,
+                'create_access' => false,
+                'delete_access' => false,
+                'import_access' => false,
+                'export_access' => false,
+                'logs_access' => false,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 15,
+                'navigation_menu_name' => 'Navigation Menu',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 16,
+                'navigation_menu_name' => 'System Action',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+            [
+                'role_id' => 1,
+                'role_name' => 'Super Admin',
+                'navigation_menu_id' => 17,
+                'navigation_menu_name' => 'Upload Setting',
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'import_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+        ];
+
+        DB::table('role_permission')->insert(
+            array_map(fn ($row) => $row + $defaults, $rolePermissions)
+        );
+    }
+}

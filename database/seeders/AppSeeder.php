@@ -1,0 +1,71 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class AppSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $now = now();
+
+        $defaults = [
+            'created_at' => $now,
+            'updated_at' => $now,
+        ];
+
+        $apps = [
+            [
+                'app_name'              => 'Settings',
+                'app_description'       => 'Centralized management hub for comprehensive organizational oversight and control.',
+                'app_version'           => '1.0.0',
+                'app_logo'              => 'app/1/settings.png',
+                'navigation_menu_id'    => 1,
+                'navigation_menu_name'  => 'App',
+                'order_sequence'        => 100,
+            ],
+            [
+                'app_name'              => 'Employee',
+                'app_description'       => 'Centralize employee information.',
+                'app_version'           => '1.0.0',
+                'app_logo'              => 'app/2/employees.png',
+                'navigation_menu_id'    => 1,
+                'navigation_menu_name'  => 'App',
+                'order_sequence'        => 4,
+            ],
+            [
+                'app_name'              => 'Point of Sale',
+                'app_description'       => 'Handle checkouts and payments for shops and restaurants.',
+                'app_version'           => '1.0.0',
+                'app_logo'              => 'app/3/pos.png',
+                'navigation_menu_id'    => 41,
+                'navigation_menu_name'  => 'Point of Sale',
+                'order_sequence'        => 6,
+            ],
+            [
+                'app_name'              => 'Inventory',
+                'app_description'       => 'Manage your products and stocks.',
+                'app_version'           => '1.0.0',
+                'app_logo'              => 'app/4/inventory.png',
+                'navigation_menu_id'    => 18,
+                'navigation_menu_name'  => 'Dashboard',
+                'order_sequence'        => 5,
+            ],
+            [
+                'app_name'              => 'Kitchen Display',
+                'app_description'       => 'Displays incoming orders from your Point of Sale (POS) system directly to your kitchen staff in real time.',
+                'app_version'           => '1.0.0',
+                'app_logo'              => 'app/5/kitchen-display.png',
+                'navigation_menu_id'    => 54,
+                'navigation_menu_name'  => 'Preparation Display',
+                'order_sequence'        => 7,
+            ],
+        ];
+
+        DB::table('app')->insert(
+            array_map(fn ($row) => $row + $defaults, $apps)
+        );
+    }
+}

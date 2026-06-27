@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('system_action', function (Blueprint $table) {
+        Schema::create('system_actions', function (Blueprint $table) {
             $table->id();
-            $table->string('system_action_name');
-            $table->string('system_action_description');
+            $table->string('name');
+            $table->string('description');
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('system_action');
+        Schema::dropIfExists('system_actions');
     }
 };

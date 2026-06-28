@@ -1,6 +1,6 @@
 <div id="kt_header" style="" class="header align-items-stretch">
     <div class="header-brand">
-        <a href="{{ route('apps.index') }}">
+        <a href="{{ route('apps.main') }}">
             <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-50px d-sm-none" />
             <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-50px d-none d-sm-block" />
         </a>

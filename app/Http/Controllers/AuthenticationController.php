@@ -42,7 +42,7 @@ class AuthenticationController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Authentication successful.',
-                'redirect' => route('apps.index')
+                'redirect' => route('apps.main')
             ], Response::HTTP_OK);
         }
 

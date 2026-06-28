@@ -21,28 +21,20 @@ class SystemActionSeeder extends Seeder
 
         $systemActions = [
             [
-                'system_action_name' => 'Activate User Account',
-                'system_action_description' => 'Access to activate the user account.',
+                'name' => 'Manage Role User Account',
+                'description' => 'Access to manage assiend user accounts to role.',
             ],
             [
-                'system_action_name' => 'Deactivate User Account',
-                'system_action_description' => 'Access to deactivate the user account.',
+                'name' => 'Manage Role Access',
+                'description' => 'Access to manage role access.',
             ],
             [
-                'system_action_name' => 'Update Role User Account',
-                'system_action_description' => 'Access to update assiend user accounts to role.',
-            ],
-            [
-                'system_action_name' => 'Update Role Access',
-                'system_action_description' => 'Access to update role access.',
-            ],
-            [
-                'system_action_name' => 'Update Role System Action Access',
-                'system_action_description' => 'Access to update the role system action access.',
+                'name' => 'Manage Role System Action Access',
+                'description' => 'Access to manage the role system action access.',
             ],
         ];
 
-        DB::table('system_action')->insert(
+        DB::table('system_actions')->insert(
             array_map(fn ($row) => $row + $defaults, $systemActions)
         );
     }

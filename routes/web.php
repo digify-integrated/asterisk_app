@@ -16,7 +16,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::view('/app', 'apps.index', [
         'pageTitle' => 'Apps',
-    ])->name('apps.index');
+    ])->name('apps.main');
 
     Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });

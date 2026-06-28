@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('icon')->nullable();
             $table->foreignId('app_id')->constrained('apps')->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('navigation_menus')->nullOnDelete();
-            $table->enum('page_type', ['folder', 'single_page', 'multi_page'])->default('folder');
+            $table->enum('page_type', ['menu', 'single_page', 'multi_page'])->default('menu');
             $table->integer('order_sequence')->default(0);
             $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

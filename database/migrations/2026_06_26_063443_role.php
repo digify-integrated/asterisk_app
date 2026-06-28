@@ -48,7 +48,7 @@ return new class extends Migration
             $table->index(['role_id', 'system_action_id']);
         });
 
-        Schema::create('role_user', function (Blueprint $table) {
+        Schema::create('role_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();

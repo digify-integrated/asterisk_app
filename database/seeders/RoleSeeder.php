@@ -23,16 +23,16 @@ class RoleSeeder extends Seeder
 
         $roles = [
             [
-                'role_name' => 'Super Admin',
-                'role_description' => 'Has full access to all features and settings of the application.',
+                'name' => 'Super Admin',
+                'description' => 'Has full access to all features and settings of the application.',
             ],
             [
-                'role_name' => 'System Admin',
-                'role_description' => 'Responsible for managing system settings, user accounts, and overall maintenance of the application.',
+                'name' => 'System Admin',
+                'description' => 'Responsible for managing system settings, user accounts, and overall maintenance of the application.',
             ],
         ];
 
-        DB::table('role')->insert(
+        DB::table('roles')->insert(
             array_map(fn ($row) => $row + $defaults, $roles)
         );
     }

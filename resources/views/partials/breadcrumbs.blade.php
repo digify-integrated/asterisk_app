@@ -1,6 +1,6 @@
 <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 pt-1">
     <li class="breadcrumb-item text-muted">
-        <a href="{{ route('apps.index') }}" class="text-muted text-hover-primary">
+        <a href="{{ route('apps.main') }}" class="text-muted text-hover-primary">
             Home {{ $routeName ?? '' }}
         </a>
     </li>

@@ -23,13 +23,11 @@ class RoleUserAccountSeeder extends Seeder
         $roleUserAccounts = [
             [
                 'role_id' => 1,
-                'role_name' => 'Super Admin',
-                'user_account_id' => 1,
-                'user_name' => 'Lawrence Agulto'
+                'user_id' => 1
             ],
         ];
 
-        DB::table('role_user_account')->insert(
+        DB::table('role_users')->insert(
             array_map(fn ($row) => $row + $defaults, $roleUserAccounts)
         );
     }

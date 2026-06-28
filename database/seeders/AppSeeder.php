@@ -21,7 +21,7 @@ class AppSeeder extends Seeder
                 'name'              => 'Settings',
                 'description'       => 'Centralized management hub for comprehensive organizational oversight and control.',
                 'logo'              => 'app/1/settings.png',
-                'landing_route'     => 'App',
+                'landing_route'     => '/app.index',
                 'order_sequence'    => 100,
             ],
             [

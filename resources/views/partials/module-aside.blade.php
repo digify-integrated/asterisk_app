@@ -6,7 +6,7 @@
             </div>
             <div class="aside-user-info flex-row-fluid flex-wrap ms-5">
                 <div class="d-flex">
-                    <div class="flex-grow-1 me-2">
+                    <div class="grow me-2">
                         <h3 class="text-white fs-6 fw-bold">{{ $navName }}</h3>
                         <span class="text-gray-600 fw-semibold d-block fs-8 mb-1">{{ $navEmail }}</span>
                     </div>
@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                             <div class="menu-item px-5 my-1">
-                                <a href="{{ route('account.setting.index', ['userId' => Auth::id()]) }}" class="menu-link px-5">
+                                <a href="" class="menu-link px-5">
                                     Account Settings
                                 </a>
                             </div>

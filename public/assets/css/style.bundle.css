@@ -53722,60 +53722,65 @@ body {
     }
 }
 
+.app-card{
+    border:none;
+    border-radius:22px;
+    box-shadow:
+        0 1px 3px rgba(0,0,0,.04),
+        0 12px 32px rgba(15,23,42,.05);
+
+    transition:all .28s ease;
+    overflow:hidden;
+    position:relative;
+}
+
+.app-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at top right,
+        rgba(64,153,255,.12),
+        transparent 45%);
+    opacity:0;
+    transition:.3s;
+}
+
+.app-card:hover{
+    transform:translateY(-8px);
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.08);
+}
+
+.app-card:hover::before{
+    opacity:1;
+}
+
+.app-icon{
+    width:72px;
+    height:72px;
+    border-radius:20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#f8fafc;
+    border:1px solid #eef2f7;
+}
+
+.app-icon img{
+    width:44px;
+    height:44px;
+    object-fit:contain;
+}
+
+.app-card h3{
+    line-height:1.3;
+}
+
 .footer {
     background-color: var(--bs-footer-bg-color)
-}
-
-.app-card {
-    transition: all 0.25s ease;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.app-card:hover {
-    transform: translateY(-8px);
-    box-shadow: none !important;
-}
-
-.app-icon-wrapper {
-    width: 130px;
-    height: 130px;
-}
-
-.app-icon {
-    width: 100%;
-    height: 100%;
-    border-radius: 32px;
-    transition: all 0.25s ease;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-.app-card:hover .app-icon {
-    transform: scale(1.06);
-    box-shadow: 0 16px 32px rgba(0,0,0,0.14);
-}
-
-.app-title {
-    font-size: 1.05rem;
-    line-height: 1.4;
-    max-width: 180px;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.app-version-badge {
-    position: absolute;
-    bottom: -8px;
-    right: -10px;
-    font-size: 0.72rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 .bootstrap-duallistbox-container select.form-control {
@@ -53835,3 +53840,4 @@ div.dt-container div.dt-paging ul.pagination{
 .z-1 {
     z-index: 1;
 }
+

@@ -1,13 +1,36 @@
-<div class="d-flex align-items-center position-relative my-1">
-    <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
-    <input type="text" class="form-control form-control-sm ps-12" id="datatable-search" placeholder="Search..." autocomplete="off" />
+<div class="position-relative grow mw-500px">
+
+    <i class="ki-outline ki-magnifier fs-4 position-absolute top-50 translate-middle-y ms-5 text-gray-500"></i>
+
+    <input
+        type="text"
+        id="datatable-search"
+        autocomplete="off"
+        class="form-control form-control-solid ps-12 pe-5 rounded-3 border-0"
+
+        placeholder="Search records..." />
+
 </div>
-<select id="datatable-length" class="form-select form-select-sm w-auto">
-    <option value="-1">All</option>
-    <option value="5">5</option>
-    <option value="10" selected>10</option>
-    <option value="20">20</option>
-    <option value="25">25</option>
-    <option value="50">50</option>
-    <option value="100">100</option>
-</select>
+
+
+<div class="d-flex align-items-center gap-2">
+
+    <span class="text-gray-600 fs-7 fw-semibold">
+        Show
+    </span>
+
+    <select
+        id="datatable-length"
+        class="form-select form-select-solid rounded-3 w-90px">
+
+        <option value="-1">All</option>
+        <option value="5">5</option>
+        <option selected value="10">10</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+
+    </select>
+
+</div>

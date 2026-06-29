@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('logo')->nullable();
-            $table->string('landing_route');
             $table->integer('order_sequence')->default(0);
             $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

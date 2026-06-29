@@ -5,14 +5,20 @@
     $defaultIcon = 'ki-duotone ki-abstract-26';
     $iconClass = !empty($item['icon']) ? $item['icon'] : $defaultIcon;
 
-    $href = route('apps.base', [
-        'appId' => $nav_app_id,
-        'navigationMenuId' => $item['id'],
-    ]);
+    // Fetch the active route menu ID to keep track of accordion/link active highlighting states
+    $currentMenuId = request()->route('navigationMenuId');
+    $isActive = ($currentMenuId == $item['id']);
+    
+    // Check if any recursive nested child is the currently active route page
+    $hasActiveChild = false;
+    if ($hasChildren) {
+        $hasActiveChild = collect($item['children'])->pluck('id')->contains($currentMenuId);
+    }
 @endphp
 
 @if($hasChildren)
-    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+    {{-- Dropdown Accordion Wrapper --}}
+    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ $hasActiveChild ? 'here show' : '' }}">
         <span class="menu-link">
             @if($isTopLevel)
                 <span class="menu-icon">
@@ -24,11 +30,12 @@
                 </span>
             @endif
 
-            <span class="menu-title">{{ $item['title'] }}</span>
+            {{-- Swapped 'title' to 'name' --}}
+            <span class="menu-title">{{ $item['name'] }}</span>
             <span class="menu-arrow"></span>
         </span>
 
-        <div class="menu-sub menu-sub-accordion">
+        <div class="menu-sub menu-sub-accordion {{ $hasActiveChild ? 'show' : '' }}">
             @foreach($item['children'] as $child)
                 @include('partials.nav-item', [
                     'item' => $child,
@@ -40,8 +47,10 @@
     </div>
 
 @else
+    {{-- Clickable Executable Link Item --}}
     <div class="menu-item">
-        <a class="menu-link" href="{{ $href }}">
+        {{-- Swapped hardcoded routing helper with the dynamic tree builder link property --}}
+        <a class="menu-link {{ $isActive ? 'active' : '' }}" href="{{ $item['link'] }}">
             @if($isTopLevel)
                 <span class="menu-icon">
                     <i class="{{ $iconClass }} fs-2"></i>
@@ -52,7 +61,8 @@
                 </span>
             @endif
 
-            <span class="menu-title">{{ $item['title'] }}</span>
+            {{-- Swapped 'title' to 'name' --}}
+            <span class="menu-title">{{ $item['name'] }}</span>
         </a>
     </div>
 @endif

@@ -1,8 +1,8 @@
 <div id="kt_header" style="" class="header align-items-stretch">
     <div class="header-brand">
         <a href="{{ route('apps.main') }}">
-            <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-50px d-sm-none" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-50px d-none d-sm-block" />
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-30px d-sm-none" />
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-light.svg') }}" class="h-30px d-none d-sm-block" />
         </a>
         <div id="kt_aside_toggle" class="btn btn-icon w-auto px-0 btn-active-color-primary aside-minimize" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="aside-minimize">
             <i class="ki-duotone ki-entrance-right fs-1 me-n1 minimize-default"></i>
@@ -26,7 +26,7 @@
             </div>
             <div class="d-flex align-items-center py-3 py-md-1">
                 @if(($createPermission ?? 0) > 0 && (request()->routeIs('apps.base') || request()->routeIs('apps.details')))
-                        @if($viewType == 'standalone')
+                        @if($pageType == 'multi_page')
                             <a href="{{ route('apps.new', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-flex btn-sm btn-outline btn-active-color-primary btn-custom px-4">
                                 <i class="ki-outline ki-plus fs-4 me-2"></i> New
                             </a>

@@ -15,7 +15,7 @@ class AppRenderController extends Controller
         $apps = $this->appService->getAccessibleAppsForUser($request->user());
         $pageTitle = 'Apps';
 
-        return view('app.index', compact('apps', 'pageTitle'));
+        return view('apps.index', compact('apps', 'pageTitle'));
     }
 
     public function renderModule(Request $request, $appId, $navigationMenuId, $routeType = 'index', $detailsId = null)

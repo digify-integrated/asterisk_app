@@ -53,7 +53,7 @@
     </div>
 
     <div class="card">
-        <div class="card-body pt-5 pb-5 pe-0 ps-0">
+        <div class="card-body pt-3 pb-3 pe-0 ps-0">
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle cursor-pointer table-row-dashed gy-3" id="app-table">
                     <thead>
@@ -117,10 +117,6 @@
             @endcomponent
         @endif
     </div>
-
-    @if(($exportPermission ?? 0) > 0)
-        @include('partials.export-modal')
-    @endif
 
     @include('partials.log-notes-modal')
 @endsection

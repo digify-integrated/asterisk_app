@@ -1,23 +1,27 @@
 import { DataTableOrchestrator } from '../../util/dataTableOrchestrator.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const userGrid = new DataTableOrchestrator();
+    const appTable = new DataTableOrchestrator();
 
-    userGrid.initialize({
+    appTable.initialize({
         selector: '#app-table',
-        url: '/api/v1/users/fetch',
+        url: '/app/generate-table',
+        serverSide: false, 
+        pageLength: 10,
+        
         columns: [
-            { data: 'checkbox', orderable: false },
-            { data: 'name' },
-            { data: 'email' },
-            { data: 'role' }
+            { data: 'CHECK_BOX' },
+            { data: 'APP' },
+            { data: 'ACTION' },
+        ],
+        columnDefs: [
+            { width: '5%', bSortable: false, targets: 0 },
+            { width: 'auto', targets: 1 },
+            { width: '15%', bSortable: false, targets: 2 },
         ],
         addons: {
-            controls: true,
+            controls: true, // Connects your custom search & length dropdowns
             export: true
-        },
-        onRowClick: (user) => {
-            window.location.assign(`/admin/users/view/${user.id}`);
         }
     });
 });

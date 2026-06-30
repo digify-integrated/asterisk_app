@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\AppRenderController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Middleware\MenuReadMiddleware;
@@ -32,6 +33,18 @@ Route::middleware('auth')->group(function () {
             ->defaults('route_type', 'import')
             ->name('apps.import');
     });
+
+    Route::prefix('app')
+        ->name('app.')
+        ->controller(AppController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::post('/delete', 'delete')->name('delete');
+            Route::post('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch-details', 'fetchDetails')->name('fetch.details');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-options', 'generateOptions')->name('generate.options');
+        });
 
     Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });

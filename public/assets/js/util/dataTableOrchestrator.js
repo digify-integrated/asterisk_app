@@ -47,7 +47,7 @@ export class DataTableOrchestrator {
             order: [[1, 'asc']],
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             onRowClick: null,
-            addons: { controls: false, export: false, subControls: false },
+            addons: { controls: false, subControls: false },
             serverSide: true,
             pageLength: 25,
             searchDelay: 400,
@@ -96,7 +96,7 @@ export class DataTableOrchestrator {
             buttons: enableExport ? this._buildExportConfig() : [],
             ajax: {
                 url: config.url,
-                type: 'POST',
+                type: 'GET',
                 dataType: 'json',
                 data: (d) => {
                     const extra = typeof config.ajaxData === 'function' ? config.ajaxData(d) : config.ajaxData;
@@ -106,11 +106,11 @@ export class DataTableOrchestrator {
                 error: (xhr, status, err) => errorHandler.handle(xhr, status, err)
             },
             language: {
-                emptyTable: 'No records matching evaluation parameters found',
-                info: '_START_ - _END_ of _TOTAL_ entries',
-                loadingRecords: 'Streaming dataset values...',
-                processing: 'Syncing system buffers...',
-                zeroRecords: 'Zero matched values matching filters'
+                emptyTable: 'No records found for the selected evaluation parameters.',
+                info: 'Showing _START_ to _END_ of _TOTAL_ entries',
+                loadingRecords: 'Loading records...',
+                processing: 'Processing data...',
+                zeroRecords: 'No records match the current filters.'
             },
             drawCallback: () => {
                 self.resetSelectionState(config);

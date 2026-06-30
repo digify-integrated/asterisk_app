@@ -46,19 +46,12 @@
             </a>
         </div>
 
-        <div class="menu-item px-3">
+        <div class="separator my-2 border-gray-200"></div>
+
+        <div class="menu-item px-3 pb-2">
             <a href="javascript:void(0);" class="menu-link px-3 export-print text-hover-dark">
                 <i class="ki-outline ki-printer fs-5 me-3 text-gray-500"></i>
                 Print Document
-            </a>
-        </div>
-
-        <div class="separator my-2 border-gray-200"></div>
-        
-        <div class="menu-item px-3 pb-2">
-            <a href="javascript:void(0);" class="menu-link px-3 text-hover-warning" id="export-data" data-bs-toggle="modal" data-bs-target="#export-modal">
-                <i class="ki-outline ki-file-down fs-5 me-3 text-warning"></i>
-                Custom Export
             </a>
         </div>
         

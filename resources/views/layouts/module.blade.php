@@ -47,7 +47,6 @@
 
         <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
         <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
-        <script type="module" src="{{ asset('assets/js/navigation.js') }}"></script>
         
         @stack('scripts')
     </body>

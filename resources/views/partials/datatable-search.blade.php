@@ -24,6 +24,7 @@
         class="form-select form-select-solid rounded-3 w-90px">
 
         <option value="-1">All</option>
+        <option value="1">1</option>
         <option value="5">5</option>
         <option selected value="10">10</option>
         <option value="20">20</option>

@@ -1,14 +1,19 @@
 import { DataTableOrchestrator } from '../../util/dataTableOrchestrator.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const appTable = new DataTableOrchestrator();
+    // You only need one instance of the manager class orchestrator
+    const manager = new DataTableOrchestrator();
 
-    appTable.initialize({
+    // 1. Configure the Main App Table
+    manager.initialize({
         selector: '#app-table',
         url: '/app/generate-table',
         serverSide: false, 
         pageLength: 10,
-        
+        actionDropdown: '.action-dropdown', // scopes relative to your wrapper '.table-container'
+        masterCheckbox: '.datatable-checkbox-master',
+        lengthSelector: '.datatable-length',
+        searchSelector: '.datatable-search',
         columns: [
             { data: 'CHECK_BOX' },
             { data: 'APP' },
@@ -20,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { width: '15%', bSortable: false, targets: 2 },
         ],
         addons: {
-            controls: true, // Connects your custom search & length dropdowns
+            controls: true, 
             export: true
         }
     });

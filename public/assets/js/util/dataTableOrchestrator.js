@@ -7,6 +7,7 @@ import { ComponentRegistry } from './componentRegistry.js';
 
 // Central shared private cache to tracking underlying platform instances across components
 const instanceRegistry = new WeakMap();
+const tableMetadataRegistry = new WeakMap();
 let globalListenersConfigured = false;
 let globalResizeObserver = null;
 
@@ -24,14 +25,19 @@ export class DataTableOrchestrator {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
         if (!node) return null;
 
+        // If we already cached it, verify it's the API instance
         if (instanceRegistry.has(node) && window.jQuery?.fn?.DataTable?.isDataTable(node)) {
-            return instanceRegistry.get(node);
+            const cached = instanceRegistry.get(node);
+            // Ensure it's the API instance, not the jQuery object instance
+            return typeof cached.table === 'function' ? cached : new window.jQuery.fn.dataTable.Api(node);
         }
         
         if (!window.jQuery?.fn?.DataTable?.isDataTable(node)) return null;
-        const dt = window.jQuery(node).DataTable();
-        instanceRegistry.set(node, dt);
-        return dt;
+        
+        // Force native DataTables API Instance conversion directly from the DOM node
+        const dtInstance = new window.jQuery.fn.dataTable.Api(node);
+        instanceRegistry.set(node, dtInstance);
+        return dtInstance;
     }
 
     /**
@@ -192,25 +198,80 @@ export class DataTableOrchestrator {
     }
 
     bindControls(selectorOrNode, config) {
-        const dt = DataTableOrchestrator.getAPI(selectorOrNode);
+        const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
+        // Safely extract the API instance. If it lacks an api hook, try converting it.
+        let dt = DataTableOrchestrator.getAPI(node);
+        if (dt && typeof dt.api === 'function') dt = dt.api(); 
         if (!dt) return;
 
-        const lengthEl = document.getElementById('datatable-length');
-        const searchEl = document.getElementById('datatable-search');
+        const container = node.closest('.table-container') || document;
+        
+        let lengthEl = container.querySelector(config.lengthSelector);
+        let searchEl = container.querySelector(config.searchSelector);
+
+        if (!lengthEl) lengthEl = document.querySelector(config.lengthSelector) || document.getElementById('datatable-length');
+        if (!searchEl) searchEl = document.querySelector(config.searchSelector) || document.getElementById('datatable-search');
 
         if (lengthEl) {
             lengthEl.onchange = () => {
                 const limit = Number.parseInt(lengthEl.value, 10);
-                dt.page.len(Number.isFinite(limit) ? limit : 10).draw(false);
+                if (typeof dt.page?.len === 'function') {
+                    dt.page.len(Number.isFinite(limit) ? limit : 10).draw();
+                } else {
+                    window.jQuery(node).DataTable().page.len(Number.isFinite(limit) ? limit : 10).draw();
+                }
             };
         }
 
         if (searchEl) {
-            const debouncedSearch = this._debounce((val) => dt.search(val).draw(false), 400);
+            const debouncedSearch = this._debounce((val) => {
+                if (typeof dt.search === 'function') {
+                    dt.search(val).draw();
+                } else {
+                    window.jQuery(node).DataTable().search(val).draw();
+                }
+            }, 400);
             searchEl.oninput = () => debouncedSearch(searchEl.value);
         }
 
-        this._bindCheckboxInteractions(dt, config);
+        this._bindCheckboxInteractions(node, dt, config);
+    }
+
+    _bindCheckboxInteractions(node, dt, config) {
+        const wrapper = node.closest('.dataTables_wrapper') || (typeof dt.table === 'function' ? dt.table().container() : null);
+        const container = node.closest('.table-container') || document;
+        const dropdown = container.querySelector(config.actionDropdown);
+        const master = container.querySelector(config.masterCheckbox);
+
+        if (!wrapper || !dropdown) return;
+
+        // Initialize tracking safe fallback if missing
+        if (!tableMetadataRegistry.has(node)) {
+            tableMetadataRegistry.set(node, { checkedCount: 0 });
+        }
+
+        window.jQuery(wrapper).off('click.dtSelector').on('click.dtSelector', '.datatable-checkbox-children', (e) => {
+            const meta = tableMetadataRegistry.get(node);
+            
+            meta.checkedCount += e.target.checked ? 1 : -1;
+            if (meta.checkedCount < 0) meta.checkedCount = 0;
+            
+            // If count > 0, d-none is removed. If count === 0, d-none is added.
+            dropdown.classList.toggle('d-none', meta.checkedCount === 0);
+        });
+
+        if (master) {
+            master.onclick = (e) => {
+                const isChecked = e.target.checked;
+                const matches = wrapper.querySelectorAll('.datatable-checkbox-children');
+                const meta = tableMetadataRegistry.get(node);
+                
+                meta.checkedCount = isChecked ? matches.length : 0;
+                
+                matches.forEach(el => { el.checked = isChecked; });
+                dropdown.classList.toggle('d-none', meta.checkedCount === 0);
+            };
+        }
     }
 
     resetSelectionState(config) {
@@ -226,43 +287,18 @@ export class DataTableOrchestrator {
         });
     }
 
-    _bindCheckboxInteractions(dt, config) {
-        const wrapper = dt.table().container();
-        const dropdown = document.querySelector(config.actionDropdown || '.action-dropdown');
-        const master = document.querySelector(config.masterCheckbox || '#datatable-checkbox');
-
-        if (!wrapper || !dropdown) return;
-
-        // Avoid global window delegation. Target interactions strictly within this specific dataset container.
-        window.jQuery(wrapper).off('click.dtSelector').on('click.dtSelector', '.datatable-checkbox-children', (e) => {
-            this.checkedCountCache += e.target.checked ? 1 : -1;
-            if (this.checkedCountCache < 0) this.checkedCountCache = 0;
-            dropdown.classList.toggle('d-none', this.checkedCountCache === 0);
-        });
-
-        if (master) {
-            master.onclick = (e) => {
-                const isChecked = e.target.checked;
-                const matches = wrapper.querySelectorAll('.datatable-checkbox-children');
-                
-                this.checkedCountCache = isChecked ? matches.length : 0;
-                matches.forEach(el => { el.checked = isChecked; });
-                dropdown.classList.toggle('d-none', this.checkedCountCache === 0);
-            };
-        }
-    }
-
     _bindSubControls(searchSel, lengthSel, tableRef) {
         const dt = DataTableOrchestrator.getAPI(tableRef);
         if (!dt) return;
 
-        const debouncedSearch = this._debounce((val) => dt.search(val).draw(false), 400);
+        // CRITICAL: Dropped 'false' from draw() here as well
+        const debouncedSearch = this._debounce((val) => dt.search(val).draw(), 400);
 
         window.jQuery(document)
             .off('change.dtSubControls', lengthSel)
             .on('change.dtSubControls', lengthSel, function() {
                 const val = Number.parseInt(this.value, 10);
-                dt.page.len(Number.isFinite(val) ? val : 25).draw(false);
+                dt.page.len(Number.isFinite(val) ? val : 25).draw();
             })
             .off('input.dtSubControls', searchSel)
             .on('input.dtSubControls', searchSel, function() {

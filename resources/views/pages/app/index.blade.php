@@ -22,7 +22,7 @@
                 <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
 
                     @if($deletePermission)
-                        <div class="d-flex align-items-center grow-0 action-dropdown">                        
+                        <div class="d-flex align-items-center grow-0 action-dropdown d-none">        
                             <a href="#" class="btn btn-dark btn-sm btn-flex btn-center btn-active-light-primary show menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                 Actions
                                 <i class="ki-outline ki-down fs-7 ms-1"></i>
@@ -60,7 +60,7 @@
                         <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
                             <th>
                                 <div class="form-check form-check-sm ms-5">
-                                    <input class="form-check-input" id="datatable-checkbox" type="checkbox">
+                                    <input class="form-check-input datatable-checkbox-master" type="checkbox">
                                 </div>
                             </th>
                             <th>App</th>

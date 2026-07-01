@@ -245,30 +245,67 @@ export class DataTableOrchestrator {
 
         if (!wrapper || !dropdown) return;
 
-        // Initialize tracking safe fallback if missing
         if (!tableMetadataRegistry.has(node)) {
             tableMetadataRegistry.set(node, { checkedCount: 0 });
         }
 
-        window.jQuery(wrapper).off('click.dtSelector').on('click.dtSelector', '.datatable-checkbox-children', (e) => {
+        // Function to calculate and update master checkbox state
+        const updateMasterCheckboxState = () => {
+            const totalChildren = wrapper.querySelectorAll('.datatable-checkbox-children').length;
+            const checkedChildren = wrapper.querySelectorAll('.datatable-checkbox-children:checked').length;
+            
             const meta = tableMetadataRegistry.get(node);
-            
-            meta.checkedCount += e.target.checked ? 1 : -1;
-            if (meta.checkedCount < 0) meta.checkedCount = 0;
-            
-            // If count > 0, d-none is removed. If count === 0, d-none is added.
-            dropdown.classList.toggle('d-none', meta.checkedCount === 0);
+            meta.checkedCount = checkedChildren;
+
+            if (master) {
+                if (checkedChildren === 0) {
+                    // None checked
+                    master.checked = false;
+                    master.indeterminate = false;
+                } else if (checkedChildren === totalChildren) {
+                    // All checked
+                    master.checked = true;
+                    master.indeterminate = false;
+                } else {
+                    // Some checked (Intermediate / Indeterminate State)
+                    master.checked = false;
+                    master.indeterminate = true;
+                }
+            }
+
+            // Toggle bulk actions dropdown visibility
+            dropdown.classList.toggle('d-none', checkedChildren === 0);
+        };
+
+        // 1. Handle individual row checkbox clicks (using delegation on the wrapper)
+        window.jQuery(wrapper).off('click.dtSelector').on('click.dtSelector', '.datatable-checkbox-children', () => {
+            updateMasterCheckboxState();
         });
 
+        // 2. Handle pagination / search view redraw redraws 
+        // (Crucial: child checkboxes change on next/prev pages, master must recalculate)
+        if (typeof dt.on === 'function') {
+            dt.off('draw.dtSelector').on('draw.dtSelector', () => {
+                updateMasterCheckboxState();
+            });
+        }
+
+        // 3. Handle Master Checkbox click toggle
         if (master) {
             master.onclick = (e) => {
-                const isChecked = e.target.checked;
+                // If it was indeterminate, clicking it should default to checking everything
+                const shouldCheckAll = master.indeterminate ? true : e.target.checked;
+                
                 const matches = wrapper.querySelectorAll('.datatable-checkbox-children');
+                matches.forEach(el => { el.checked = shouldCheckAll; });
+                
+                // Clear indeterminate flag state explicitly on direct click interaction
+                master.indeterminate = false;
+                master.checked = shouldCheckAll;
+
                 const meta = tableMetadataRegistry.get(node);
+                meta.checkedCount = shouldCheckAll ? matches.length : 0;
                 
-                meta.checkedCount = isChecked ? matches.length : 0;
-                
-                matches.forEach(el => { el.checked = isChecked; });
                 dropdown.classList.toggle('d-none', meta.checkedCount === 0);
             };
         }

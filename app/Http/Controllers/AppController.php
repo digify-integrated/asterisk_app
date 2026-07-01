@@ -10,71 +10,22 @@ class AppController extends Controller
 {
     public function generateTable(Request $request)
     {
-        // 1. Base Query Initialization
-        $query = DB::table('apps');
+        $pageNavigationMenuId = (int) $request->input('navigationMenuId');
+        $user = $request->user();
 
-        // ---- IF SERVERSIDE IS TRUE: Handle Pagination & Filtering ----
-        if ($request->has('draw')) {
-            $totalRecords = $query->count();
-
-            // Handle Custom Global Search Input (#datatable-search)
-            if ($searchValue = $request->input('search.value')) {
-                $query->where(function ($q) use ($searchValue) {
-                    $q->where('name', 'like', "%{$searchValue}%")
-                      ->orWhere('description', 'like', "%{$searchValue}%");
-                });
-            }
-
-            $filteredRecords = $query->count();
-
-            // Handle Dynamic Length Control Selectors (#datatable-length)
-            $start = intval($request->input('start', 0));
-            $length = intval($request->input('length', 25));
-
-            // Apply DB chunk slicing
-            // Note: If -1 (All) bypassed our JS protection, handle it via a massive fallback ceiling
-            if ($length === -1) {
-                $apps = $query->orderBy('name')->get();
-            } else {
-                $apps = $query->orderBy('name')
-                              ->skip($start)
-                              ->take($length)
-                              ->get();
-            }
-
-            // Map out HTML payload data structured blocks
-            $data = $this->mapTableRows($apps);
-
-            // Return structural metadata payload wrapper
-            return response()->json([
-                'draw'            => intval($request->input('draw')),
-                'recordsTotal'    => $totalRecords,
-                'recordsFiltered' => $filteredRecords,
-                'data'            => $data
-            ]);
+        if (!$user || $pageNavigationMenuId <= 0) {
+            return response()->json(['error' => 'Unauthorized or missing menu parameter.'], 403);
         }
 
-        // ---- IF SERVERSIDE IS FALSE: Dump Everything Once ----
-        $apps = $query->orderBy('name')->get();
-        return response()->json($this->mapTableRows($apps));
-    }
+        $permissions = $user->getMenuPermissions($pageNavigationMenuId);
 
-    /**
-     * Helper to keep HTML row formatting unified across both processing modes.
-     */
-    private function mapTableRows($collection)
-    {
-        return $collection->map(function ($row) {
-            $appId = $row->id;
-            $name = $row->name;
-            $description = $row->description;
-            
-            $defaultLogo = asset('assets/media/default/app-logo.png');
+        $apps = DB::table('apps')->orderBy('name')->get();
+        $defaultLogo = asset('assets/media/default/app-logo.png');
+
+        $response = $apps->map(function ($row) use ($permissions, $defaultLogo) {
+            $appId = $row->id;            
             $path = trim((string) ($row->logo ?? ''));
-
-            $logoUrl = $path !== '' && Storage::disk('public')->exists($path)
-                ? Storage::url($path)
-                : $defaultLogo;
+            $logoUrl = ($path !== '' && Storage::disk('public')->exists($path)) ? Storage::url($path) : $defaultLogo;
 
             return [
                 'CHECK_BOX' => '
@@ -83,17 +34,23 @@ class AppController extends Controller
                     </div>',
                 'APP' => '
                     <div class="d-flex align-items-center">
-                        <img src="'.$logoUrl.'" alt="app-logo" width="45" />
+                        <img src="'. $logoUrl .'" alt="app-logo" width="45" />
                         <div class="ms-3">
                             <div class="user-meta-info">
-                                <h6 class="mb-0">'.e($name).'</h6>
-                                <small class="text-wrap fs-7 text-gray-500">'.e($description).'</small>
+                                <h6 class="mb-0">'. e($row->name) .'</h6>
+                                <small class="text-wrap fs-7 text-gray-500">'. e($row->description) .'</small>
                             </div>
                         </div>
-                    </div>
-                ',
-                'ACTION' => ''
+                    </div>',
+                'ACTION' => sprintf(
+                    '<div class="d-flex justify-content-end gap-2 me-5">%s %s %s</div>',
+                    $permissions['write'] ? '<button class="btn btn-sm btn-icon btn-light-primary update-details" data-bs-toggle="modal" data-bs-target="#form-modal" data-reference-id="' . $appId . '" title="Update App"><i class="ki-outline ki-eye fs-5 m-0"></i></button>' : '',
+                    $permissions['logs'] ? '<button class="btn btn-sm btn-icon btn-light-warning view-log-notes" data-reference-id="' . $appId . '" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="View System Audit Trail"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>' : '',
+                    $permissions['delete'] ? '<button class="btn btn-sm btn-icon btn-light-danger delete-details" data-reference-id="' . $appId . '" title="Delete App"><i class="ki-outline ki-trash fs-5 m-0"></i></button>' : ''
+                ),
             ];
-        })->values()->all();
+        })->values();
+
+        return response()->json($response);
     }
 }

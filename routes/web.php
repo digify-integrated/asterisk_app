@@ -7,13 +7,18 @@ use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->group(function () {
-    Route::view('/', 'auth.login', [
-        'pageTitle' => config('app.name', 'Laravel'),
-        'title' => 'Welcome back',
-        'description' => 'Log in to your account'
-    ])->name('login');
+Route::get('/', function () {
+    return Auth::check()
+        ? redirect()->route('apps.main')
+        : view('auth.login', [
+            'pageTitle'   => config('app.name'),
+            'title'       => 'Welcome back',
+            'description' => 'Log in to your account',
+        ]);
+})->name('login');
 
+
+Route::middleware('guest')->group(function () {
     Route::post('/auth/authenticate', [AuthenticationController::class, 'authenticate'])->name('authenticate');
 });
 

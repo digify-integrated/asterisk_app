@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
             return response()->json([
                 'message' => 'The given data was invalid.',
                 'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY); // 422
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $credentials = $validator->validated();
@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
             return response()->json([
                 'message' => "Too many login attempts. Please try again in {$seconds} seconds.",
                 'errors' => ['email' => ["Too many login attempts. Please try again in {$seconds} seconds."]]
-            ], Response::HTTP_TOO_MANY_REQUESTS); // 429
+            ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
         if (Auth::attempt($credentials, true)) { 

@@ -22,30 +22,35 @@ class AppSeeder extends Seeder
                 'description'       => 'Centralized management hub for comprehensive organizational oversight and control.',
                 'logo'              => 'app/1/settings.png',
                 'order_sequence'    => 100,
+                'last_log_by'       => 1
             ],
             [
                 'name'              => 'Employee',
                 'description'       => 'Centralize employee information.',
                 'logo'              => 'app/2/employees.png',
                 'order_sequence'    => 4,
+                'last_log_by'       => 1
             ],
             [
                 'name'              => 'Point of Sale',
                 'description'       => 'Handle checkouts and payments for shops and restaurants.',
                 'logo'              => 'app/3/pos.png',
                 'order_sequence'    => 6,
+                'last_log_by'       => 1
             ],
             [
                 'name'              => 'Inventory',
                 'description'       => 'Manage your products and stocks.',
                 'logo'              => 'app/4/inventory.png',
                 'order_sequence'    => 5,
+                'last_log_by'       => 1
             ],
             [
                 'name'              => 'Kitchen Display',
                 'description'       => 'Displays incoming orders from your Point of Sale (POS) system directly to your kitchen staff in real time.',
                 'logo'              => 'app/5/kitchen-display.png',
                 'order_sequence'    => 7,
+                'last_log_by'       => 1
             ],
         ];
 

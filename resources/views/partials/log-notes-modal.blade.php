@@ -1,5 +1,5 @@
 <div id="log-notes-modal" class="modal fade" tabindex="-1" aria-labelledby="log-notes-modal-title" aria-hidden="true">    
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content shadow-sm">
             <div class="modal-header py-4 px-6">
                 <div class="d-flex align-items-center gap-3">

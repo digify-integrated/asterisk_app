@@ -17,14 +17,12 @@ class MenuReadMiddleware
             abort(403, 'Unauthorized action.');
         }
 
-        // Reuse the exact same function here!
         $permissions = $user->getMenuPermissions((int) $navigationMenuId);
 
         if (!$permissions['read']) {
             abort(403, 'You do not have read access to this module.');
         }
 
-        // Pass to request context mapped perfectly for the controller layout arrays
         $request->attributes->set('menu_permissions', [
             'writePermission'  => $permissions['write'],
             'createPermission' => $permissions['create'],

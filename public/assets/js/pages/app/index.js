@@ -1,16 +1,17 @@
 import { DataTableOrchestrator } from '../../util/dataTableOrchestrator.js';
+import { AuditLogManager } from '../../util/auditLogManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // You only need one instance of the manager class orchestrator
     const manager = new DataTableOrchestrator();
 
-    // 1. Configure the Main App Table
+    AuditLogManager.attachLogNotesClassHandler('.view-log-notes', 'apps');
+
     manager.initialize({
         selector: '#app-table',
         url: '/app/generate-table',
         serverSide: false, 
         pageLength: 10,
-        actionDropdown: '.action-dropdown', // scopes relative to your wrapper '.table-container'
+        actionDropdown: '.action-dropdown',
         masterCheckbox: '.datatable-checkbox-master',
         lengthSelector: '.datatable-length',
         searchSelector: '.datatable-search',

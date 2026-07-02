@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AppRenderController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
@@ -23,6 +24,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/app', [AppRenderController::class, 'index'])->name('apps.main');
     Route::get('/app', [AppRenderController::class, 'index'])->name('apps.main');
 
     Route::middleware([MenuReadMiddleware::class, ShareNavigationData::class])->group(function () {
@@ -49,6 +51,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/fetch-details', 'fetchDetails')->name('fetch.details');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-options', 'generateOptions')->name('generate.options');
+        });
+
+    Route::prefix('audit-log')
+        ->name('audit-log.')
+        ->controller(AuditLogController::class)
+        ->group(function () {
+            Route::get('/fetch', 'fetch')->name('fetch');
         });
 
     Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');

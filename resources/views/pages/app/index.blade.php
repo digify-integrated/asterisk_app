@@ -8,17 +8,11 @@
 @section('content')
     <div class="card border-0 shadow-sm mb-7">
         <div class="card-body py-5">
-
             <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-5">
-
-                {{-- LEFT --}}
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 flex-grow-1">
-
                     @include('partials.datatable-search')
-
                 </div>
 
-                {{-- RIGHT --}}
                 <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
 
                     @if($deletePermission)
@@ -38,17 +32,12 @@
                         </div>
                     @endif
 
-
                     @if($exportPermission)
-
                         @include('partials.datatable-buttons')
-
                     @endif
 
                 </div>
-
             </div>
-
         </div>
     </div>
 
@@ -76,7 +65,6 @@
             @component('partials.form-modal')
                 @slot('formTitle', 'App Details')
                 @slot('formId', 'app_form')
-
                 
                 <input type="hidden" id="app_id" name="app_id" />
 

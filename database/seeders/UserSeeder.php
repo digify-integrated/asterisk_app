@@ -22,6 +22,12 @@ class UserSeeder extends Seeder
 
         $users = [
             [
+                'email' => 'asteriskbot@gmail.com',
+                'name' => 'Asterisk Bot',
+                'password' => Hash::make('password123'),
+                'status' => 'Inactive',
+            ],
+            [
                 'email' => 'ldagulto@gmail.com',
                 'name' => 'Lawrence Agulto',
                 'password' => Hash::make('password123'),

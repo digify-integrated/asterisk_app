@@ -21,8 +21,12 @@ class SystemActionSeeder extends Seeder
 
         $systemActions = [
             [
+                'name' => 'Import Data',
+                'description' => 'Access to import data.',
+            ],
+            [
                 'name' => 'Manage Role User Account',
-                'description' => 'Access to manage assiend user accounts to role.',
+                'description' => 'Access to manage assigned user accounts to role.',
             ],
             [
                 'name' => 'Manage Role Access',

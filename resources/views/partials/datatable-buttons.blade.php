@@ -1,5 +1,5 @@
 <div class="d-inline-block">
-    <button type="button" class="btn btn-light-primary btn-sm btn-flex align-items-center table-export" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+    <button type="button" class="btn btn-light-dark btn-sm btn-flex align-items-center table-export" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
         <i class="ki-outline ki-exit-down fs-5"></i>
         Export Data
     </button>
@@ -7,23 +7,17 @@
     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-700 menu-state-bg-light-primary fw-semibold fs-7 w-225px py-3" data-kt-menu="true">        
         <div class="menu-item px-3">
             <div class="px-3 pb-3">
-
                 <div class="fw-bold fs-6">
-
                     Export Data
-
                 </div>
 
                 <div class="text-muted fs-7">
-
                     Choose an export format
-
                 </div>
-
             </div>
-
-            <div class="separator mb-2"></div>
         </div>
+        
+        <div class="separator my-2 border-gray-200"></div>
 
         <div class="menu-item px-3">
             <a href="javascript:void(0);" class="menu-link px-3 export-excel text-hover-success">
@@ -53,7 +47,6 @@
                 <i class="ki-outline ki-printer fs-5 me-3 text-gray-500"></i>
                 Print Document
             </a>
-        </div>
-        
+        </div>        
     </div>    
 </div>

@@ -47,12 +47,7 @@
                             <div class="mt-8">
                                 <h3 class="fw-bold fs-4 text-dark mb-2">{{ $app->name }}</h3>
 
-                                <p class="text-muted fs-7 mb-6">Launch and manage your workspace.</p>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge badge-light-success">Available</span>
-                                    <span class="text-primary fw-semibold">Open</span>
-                                </div>
+                                <p class="text-muted fs-7 mb-0">{{ $app->description }}</p>
                             </div>
                         </div>
                     </div>

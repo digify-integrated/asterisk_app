@@ -11,7 +11,6 @@ class App extends Model
         'name',
         'description',
         'logo',
-        'landing_route',
         'order_sequence',
         'last_log_by'
     ];

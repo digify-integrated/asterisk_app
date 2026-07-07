@@ -2,12 +2,124 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\App;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppController extends Controller
 {
+    public function save(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'app_id'            => ['nullable', 'integer'],
+            'logo'              => ['required', 'file'],
+            'name'              => ['required', 'string', 'max:255'],
+            'description'       => ['required', 'string'],
+            'order_sequence'    => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $validated = $validator->validated();
+
+        $payload = [
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'order_sequence' => $validated['order_sequence'] ?? 0,
+            'last_log_by' => Auth::id(),
+        ];
+
+        $appId = $validated['app_id'] ?? null;
+
+        if ($appId && App::query()->whereKey($appId)->exists()) {
+            $app = App::query()->findOrFail($appId);
+            $app->update($payload);
+        } else {
+            $app = App::query()->create($payload);
+        }
+
+        $uploadSettingId = 1;
+
+        $uploadSetting = UploadSetting::query()->findOrFail($uploadSettingId);
+
+        $maxMb = (float) $uploadSetting->max_file_size;
+        $maxKb = (int) round($maxMb * 1024);
+
+        $allowedExt = $uploadSetting->uploadSettingFileExtensions()
+            ->pluck('file_extension')
+            ->map(fn ($e) => strtolower((string) $e))
+            ->unique()
+            ->values()
+            ->all();
+
+        $file = $request->file('image');
+
+        if (!$file || !$file->isValid()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while uploading the file',
+            ]);
+        }
+
+        $ext = strtolower($file->getClientOriginalExtension());
+
+        if (!in_array($ext, $allowedExt, true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The file uploaded is not supported',
+            ]);
+        }
+
+        $sizeValidator = Validator::make($request->all(), [
+            'image' => ['max:' . $maxKb],
+        ]);
+
+        if ($sizeValidator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The app logo exceeds the maximum allowed size of ' . $maxMb . ' MB',
+            ]);
+        }
+
+        DB::transaction(function () use ($app, $file, $ext) {
+            $existing = (string) ($app->app_logo ?? '');
+            if ($existing !== '') {
+                $path = ltrim($existing, '/');
+                $path = Str::replaceFirst('storage/', '', $path);
+                $path = Str::replaceFirst('app/public/', '', $path);
+                $path = Str::replaceFirst('public/', '', $path);
+
+                if ($path !== '') {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+            $fileName = Str::random(20);
+            $fileNew  = $fileName . '.' . $ext;
+
+            $relativePath = "app/{$app->id}/{$fileNew}";
+            $file->storeAs("app/{$app->id}", $fileNew, 'public');
+
+            $app->update([
+                'app_logo' => $relativePath,
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'The app has been saved successfully',
+        ]);
+    }
+
     public function generateTable(Request $request)
     {
         $pageNavigationMenuId = (int) $request->input('navigationMenuId');

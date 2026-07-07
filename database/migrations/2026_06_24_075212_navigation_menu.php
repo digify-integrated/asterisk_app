@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('navigation_menus')->nullOnDelete();
             $table->enum('page_type', ['menu', 'single_page', 'multi_page'])->default('menu');
             $table->integer('order_sequence')->default(0);
-            $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->index(['app_id']);
         });
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->enum('route_type', ['index', 'manage'])->default('index');            
             $table->string('view_file')->nullable();
             $table->string('js_file')->nullable();
-            $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->unique(['navigation_menu_id', 'route_type']);
         });

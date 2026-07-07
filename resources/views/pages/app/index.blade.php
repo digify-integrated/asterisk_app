@@ -9,7 +9,7 @@
     <div class="card border-0 shadow-sm mb-7">
         <div class="card-body py-5">
             <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-5">
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 flex-grow-1">
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
                     @include('partials.datatable-search')
                 </div>
 
@@ -71,34 +71,27 @@
                 <div class="d-flex flex-column gap-7">
                     <div class="row">
                         <div class="col-12">
-                            <label class="form-label mb-3" for="app_logo">App Logo</label>
-                            <input type="file" class="form-control form-control-sm" id="app_logo" name="app_logo" accept="image/*">
+                            <label class="form-label mb-3" for="logo">Logo</label>
+                            <input type="file" class="form-control form-control-sm" id="logo" name="logo" accept="image/*">
                         </div>
                     </div>
 
-                    <div class="row g-5">
-                        <div class="col-12 col-md-4">
-                            <label class="form-label required mb-3" for="app_name">Display Name</label>
-                            <input type="text" class="form-control form-control-sm" id="app_name" name="app_name" placeholder="Enter app display name" maxlength="100" autocomplete="off">
-                        </div>
-
-                        <div class="col-12 col-md-4">
-                            <label class="form-label required mb-3" for="navigation_menu_id">Landing Page</label>
-                            <select id="navigation_menu_id" name="navigation_menu_id" data-dropdown-parent="#form-modal" class="form-select form-select-sm" data-placeholder="Select a landing page" data-control="select2" data-allow-clear="true">
-                                <option></option>
-                            </select>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-3" for="name">Name</label>
+                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>
                         
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6">
                             <label class="form-label required mb-3" for="order_sequence">Order Sequence</label>
                             <input type="number" class="form-control form-control-sm" id="order_sequence" name="order_sequence" placeholder="0" min="0" max="100">
                         </div>
                     </div>
 
-                    <div class="row g-5">
+                    <div class="row">
                         <div class="col-12">
-                            <label class="form-label required mb-3" for="app_description">Description</label>
-                            <textarea class="form-control form-control-sm" id="app_description" name="app_description" rows="3" placeholder="Briefly describe the application..." maxlength="500"></textarea>
+                            <label class="form-label required mb-3" for="description">Description</label>
+                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the app..." maxlength="500"></textarea>
                         </div>
                     </div>
                 </div>

@@ -51,7 +51,9 @@ class AuditLogController extends Controller
                     'raw_log'         => $auditItem->log,
                     'user_name'       => $userName,
                     'profile_picture' => $profilePic,
-                    'time_relative'   => $auditItem->created_at->diffForHumans(),
+                    'time_relative'   => $auditItem->created_at->greaterThan(now()->subHours(12))
+                                        ? $auditItem->created_at->diffForHumans()
+                                        : $auditItem->created_at->format('M j, Y g:i A'),
                 ];
             });
 

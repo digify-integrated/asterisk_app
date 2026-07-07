@@ -160,182 +160,184 @@ export class AuditLogManager {
     }
 
     static _buildTimelineHtml(logs) {
-    return logs.map((item) => {
+        return logs.map((item) => {
 
-        const { title, changes } = this._parseLogContent(item.raw_log);
+            const { title, changes } = this._parseLogContent(item.raw_log);
 
-        const action = title.toLowerCase();
+            const action = title.toLowerCase();
 
-        let icon = 'ki-pencil';
+            let icon = 'ki-pencil';
 
-        if (action.includes('create') || action.includes('added')) {
-            icon = 'ki-plus';
-        } else if (action.includes('delete')) {
-            icon = 'ki-trash';
-        } else if (action.includes('approve')) {
-            icon = 'ki-check';
-        } else if (action.includes('reject')) {
-            icon = 'ki-cross';
-        } else if (action.includes('archive')) {
-            icon = 'ki-archive';
-        }
+            if (action.includes('create') || action.includes('added')) {
+                icon = 'ki-plus';
+            } else if (action.includes('delete')) {
+                icon = 'ki-trash';
+            } else if (action.includes('approve')) {
+                icon = 'ki-check';
+            } else if (action.includes('reject')) {
+                icon = 'ki-cross';
+            } else if (action.includes('archive')) {
+                icon = 'ki-archive';
+            }
 
-        const visibleLimit = 8;
-        const hasMore = changes.length > visibleLimit;
+            const visibleLimit = 8;
+            const hasMore = changes.length > visibleLimit;
 
-        let changesHtml = '';
+            let changesHtml = '';
 
-        if (changes.length) {
+            if (changes.length) {
 
-            changesHtml = `
-                <div class="border-top mt-6 pt-5">
+                changesHtml = `
+                    <div class="border-top mt-6 pt-5">
 
-                    ${changes.map((change, index) => {
+                        ${changes.map((change, index) => {
 
-                        const hiddenClass =
-                            hasMore && index >= visibleLimit
-                                ? 'audit-hidden-change d-none'
-                                : '';
+                            const hiddenClass =
+                                hasMore && index >= visibleLimit
+                                    ? 'audit-hidden-change d-none'
+                                    : '';
 
-                        if (change.type === 'note') {
+                            if (change.type === 'note') {
+
+                                return `
+                                    <div class="alert alert-light-secondary py-3 px-4 mb-3 ${hiddenClass}">
+                                        ${this._escapeHtml(change.text)}
+                                    </div>
+                                `;
+
+                            }
 
                             return `
-                                <div class="alert alert-light-secondary py-3 px-4 mb-3 ${hiddenClass}">
-                                    ${this._escapeHtml(change.text)}
-                                </div>
-                            `;
+                                <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
 
-                        }
+                                    <div class="col-lg-3">
 
-                        return `
-                            <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
+                                        <div class="text-uppercase text-muted fw-semibold fs-8">
 
-                                <div class="col-lg-3">
-
-                                    <div class="text-uppercase text-muted fw-semibold fs-8">
-
-                                        ${this._escapeHtml(change.field)}
-
-                                    </div>
-
-                                </div>
-
-                                <div class="col-lg-4">
-
-                                    ${
-                                        change.before
-                                            ? `<div class="text-muted text-break">${this._escapeHtml(change.before)}</div>`
-                                            : `<span class="badge badge-light">Empty</span>`
-                                    }
-
-                                </div>
-
-                                <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
-
-                                    <i class="ki-outline ki-arrow-right fs-5 text-gray-400"></i>
-
-                                </div>
-
-                                <div class="col-lg-4">
-
-                                    ${
-                                        change.after
-                                            ? `<div class="fw-semibold text-break">${this._escapeHtml(change.after)}</div>`
-                                            : `<span class="badge badge-light">Empty</span>`
-                                    }
-
-                                </div>
-
-                            </div>
-                        `;
-
-                    }).join('')}
-
-                    ${
-                        hasMore
-                        ?
-                        `
-                        <div class="text-center pt-5">
-
-                            <button
-                                class="btn btn-sm btn-light-primary audit-expand-btn">
-
-                                Show ${changes.length - visibleLimit} more changes
-
-                            </button>
-
-                        </div>
-                        `
-                        :
-                        ''
-                    }
-
-                </div>
-            `;
-        }
-
-        return `
-
-            <div class="card shadow-none border mb-6">
-
-                <div class="card-body p-7">
-
-                    <div class="d-flex align-items-start">
-
-                        <div class="symbol symbol-45px me-5">
-
-                            <div class="symbol-label bg-light">
-
-                                <i class="ki-outline ${icon} fs-3 text-primary"></i>
-
-                            </div>
-
-                        </div>
-
-                        <div class="flex-grow-1">
-
-                            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start">
-
-                                <div>
-
-                                    <div class="fw-bold fs-5 text-gray-900 mb-1">
-
-                                        ${this._escapeHtml(title)}
-
-                                    </div>
-
-                                    <div class="d-flex flex-wrap align-items-center gap-2 fs-7 text-muted">
-
-                                        <div class="symbol symbol-20px">
-
-                                            <img
-                                                src="${this._escapeHtml(item.profile_picture)}"
-                                                class="rounded-circle"
-                                                alt="">
+                                            ${this._escapeHtml(change.field)}
 
                                         </div>
 
-                                        <span class="fw-semibold text-gray-800">
+                                    </div>
 
-                                            ${this._escapeHtml(item.user_name)}
+                                    <div class="col-lg-4">
 
-                                        </span>
-
-                                        <span>•</span>
-
-                                        <span>
-
-                                            ${this._escapeHtml(item.time_relative)}
-
-                                        </span>
+                                        ${
+                                            change.before
+                                                ? `<div class="text-muted text-break">${this._escapeHtml(change.before)}</div>`
+                                                : `<span class="badge badge-light">Empty</span>`
+                                        }
 
                                     </div>
+
+                                    <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
+
+                                        <i class="ki-outline ki-arrow-right fs-5 text-gray-400"></i>
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+
+                                        ${
+                                            change.after
+                                                ? `<div class="fw-semibold text-break">${this._escapeHtml(change.after)}</div>`
+                                                : `<span class="badge badge-light">Empty</span>`
+                                        }
+
+                                    </div>
+
+                                </div>
+                            `;
+
+                        }).join('')}
+
+                        ${
+                            hasMore
+                            ?
+                            `
+                            <div class="text-center pt-5">
+
+                                <button
+                                    class="btn btn-sm btn-light-primary audit-expand-btn">
+
+                                    Show ${changes.length - visibleLimit} more changes
+
+                                </button>
+
+                            </div>
+                            `
+                            :
+                            ''
+                        }
+
+                    </div>
+                `;
+            }
+
+            return `
+
+                <div class="card shadow-none border mb-6">
+
+                    <div class="card-body p-7">
+
+                        <div class="d-flex align-items-start">
+
+                            <div class="symbol symbol-45px me-5">
+
+                                <div class="symbol-label bg-light">
+
+                                    <i class="ki-outline ${icon} fs-3 text-primary"></i>
 
                                 </div>
 
                             </div>
 
-                            ${changesHtml}
+                            <div class="grow">
+
+                                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start">
+
+                                    <div>
+
+                                        <div class="fw-bold fs-5 text-gray-900 mb-1">
+
+                                            ${this._escapeHtml(title)}
+
+                                        </div>
+
+                                        <div class="d-flex flex-wrap align-items-center gap-2 fs-7 text-muted">
+
+                                            <div class="symbol symbol-20px">
+
+                                                <img
+                                                    src="${this._escapeHtml(item.profile_picture)}"
+                                                    class="rounded-circle"
+                                                    alt="">
+
+                                            </div>
+
+                                            <span class="fw-semibold text-gray-800">
+
+                                                ${this._escapeHtml(item.user_name)}
+
+                                            </span>
+
+                                            <span>•</span>
+
+                                            <span>
+
+                                                ${this._escapeHtml(item.time_relative)}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                ${changesHtml}
+
+                            </div>
 
                         </div>
 
@@ -343,12 +345,10 @@ export class AuditLogManager {
 
                 </div>
 
-            </div>
+            `;
 
-        `;
-
-    }).join('');
-}
+        }).join('');
+    }
 
     static _showInlineError(container, message) {
         if (!container) return;

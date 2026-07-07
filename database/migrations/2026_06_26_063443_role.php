@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('description')->nullable();
-            $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
 
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->boolean('delete_access')->default(false);
             $table->boolean('export_access')->default(false);
             $table->boolean('logs_access')->default(false);            
-            $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->unique(['role_id', 'navigation_menu_id']);
@@ -52,7 +52,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             $table->unique(['role_id', 'user_id']);

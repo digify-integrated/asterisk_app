@@ -41,45 +41,103 @@ return new class extends Migration
         /* =============================================================================================
             TRIGGER
         ============================================================================================= */
-
         DB::unprepared('DROP TRIGGER IF EXISTS trg_users_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_users_insert');
 
         DB::unprepared(<<<SQL
-            CREATE TRIGGER trg_app_update
+            CREATE TRIGGER trg_users_update
             AFTER UPDATE ON users
             FOR EACH ROW
             BEGIN
-                DECLARE audit_log TEXT DEFAULT 'User changed.<br/><br/>';
+                DECLARE audit_log TEXT DEFAULT 'User updated.<br/><br/>';
 
-                IF NEW.name <> OLD.name THEN
-                    SET audit_log = CONCAT(audit_log, "Name: ", OLD.name, " -> ", NEW.name, "<br/>");
+                IF NOT (NEW.name <=> OLD.name) THEN
+                    SET audit_log = CONCAT(
+                        audit_log,
+                        'Name: "',
+                        COALESCE(OLD.name, 'Not set'),
+                        '" → "',
+                        COALESCE(NEW.name, 'Not set'),
+                        '"<br/>'
+                    );
                 END IF;
 
-                IF NEW.email <> OLD.email THEN
-                    SET audit_log = CONCAT(audit_log, "Email: ", OLD.email, " -> ", NEW.email, "<br/>");
+                IF NOT (NEW.email <=> OLD.email) THEN
+                    SET audit_log = CONCAT(
+                        audit_log,
+                        'Email: "',
+                        COALESCE(OLD.email, 'Not set'),
+                        '" → "',
+                        COALESCE(NEW.email, 'Not set'),
+                        '"<br/>'
+                    );
                 END IF;
 
-                IF NEW.status <> OLD.status THEN
-                    SET audit_log = CONCAT(audit_log, "Status: ", OLD.status, " -> ", NEW.status, "<br/>");
+                IF NOT (NEW.password <=> OLD.password) THEN
+                    SET audit_log = CONCAT(
+                        audit_log,
+                        'Password: Updated<br/>'
+                    );
                 END IF;
-                
-                IF audit_log <> 'User changed.<br/><br/>' THEN
-                    INSERT INTO audit_log (table_name, reference_id, log, changed_by, created_at) 
-                    VALUES ('users', NEW.id, audit_log, NEW.last_log_by, NOW());
+
+                IF NOT (NEW.status <=> OLD.status) THEN
+                    SET audit_log = CONCAT(
+                        audit_log,
+                        'Status: "',
+                        COALESCE(OLD.status, 'Not set'),
+                        '" → "',
+                        COALESCE(NEW.status, 'Not set'),
+                        '"<br/>'
+                    );
+                END IF;
+
+                IF audit_log <> 'User updated.<br/><br/>' THEN
+                    INSERT INTO audit_log (
+                        table_name,
+                        reference_id,
+                        log,
+                        changed_by,
+                        created_at
+                    )
+                    VALUES (
+                        'users',
+                        NEW.id,
+                        audit_log,
+                        NEW.last_log_by,
+                        NOW()
+                    );
                 END IF;
             END
         SQL);
 
         DB::unprepared(<<<SQL
-            CREATE TRIGGER trg_app_insert
+            CREATE TRIGGER trg_users_insert
             AFTER INSERT ON users
             FOR EACH ROW
             BEGIN
-                DECLARE audit_log TEXT DEFAULT 'User created.';
+                DECLARE audit_log TEXT;
 
-                INSERT INTO audit_log (table_name, reference_id, log, changed_by, created_at) 
-                VALUES ('users', NEW.id, audit_log, NEW.last_log_by, NOW());
+                SET audit_log = CONCAT(
+                    'User created.<br/><br/>',
+                    'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
+                    'Email: "', COALESCE(NEW.email, 'Not set'), '"<br/>',
+                    'Status: "', COALESCE(NEW.status, 'Not set'), '"'
+                );
+
+                INSERT INTO audit_log (
+                    table_name,
+                    reference_id,
+                    log,
+                    changed_by,
+                    created_at
+                )
+                VALUES (
+                    'users',
+                    NEW.id,
+                    audit_log,
+                    NEW.last_log_by,
+                    NOW()
+                );
             END
         SQL);
     }

@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             RoleSystemActionPermissionSeeder::class,
             RoleUserAccountSeeder::class,
+            UploadSettingSeeder::class,
+            UploadSettingExtensionSeeder::class,
         ]);
     }
 }

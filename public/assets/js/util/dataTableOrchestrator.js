@@ -108,7 +108,7 @@ export class DataTableOrchestrator {
                     const extra = typeof config.ajaxData === 'function' ? config.ajaxData(d) : config.ajaxData;
                     return { ...d, ...extra, ...FormEnvironmentManager.getPageContext() };
                 },
-                dataSrc: config.serverSide ? 'data' : '',
+                dataSrc: 'data',
                 error: (xhr, status, err) => errorHandler.handle(xhr, status, err)
             },
             language: {

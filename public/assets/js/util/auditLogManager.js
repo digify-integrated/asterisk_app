@@ -60,7 +60,6 @@ export class AuditLogManager {
         try {
             const ctx = FormEnvironmentManager.getPageContext();
 
-            // Native GET query parameter assembly to fix the payload body breaking bug
             const params = new URLSearchParams({
                 appId: ctx.appId ?? '',
                 navigationMenuId: ctx.navigationMenuId ?? '',
@@ -104,7 +103,6 @@ export class AuditLogManager {
     }
 
     static _parseLogContent(rawLog) {
-
         if (!rawLog) {
             return {
                 title: 'Record updated',
@@ -126,31 +124,36 @@ export class AuditLogManager {
         }
 
         const title = lines.shift();
-
         const changes = [];
 
         for (const line of lines) {
+            // Support standard '->' and stylized '→' update arrow variations
+            const updateMatch = line.match(/^(.+?):\s*(.*?)\s*(?:->|→)\s*(.*)$/);
 
-            const match = line.match(/^(.+?):\s*(.*?)\s*->\s*(.*)$/);
-
-            if (match) {
-
+            if (updateMatch) {
                 changes.push({
-                    type: 'field',
-                    field: match[1].trim(),
-                    before: match[2].trim(),
-                    after: match[3].trim()
+                    type: 'update',
+                    field: updateMatch[1].trim(),
+                    before: this._stripQuotes(updateMatch[2].trim()),
+                    after: this._stripQuotes(updateMatch[3].trim())
                 });
-
             } else {
-
-                changes.push({
-                    type: 'note',
-                    text: line
-                });
-
+                // Support standalone creations or flat key-values (Key: Value)
+                const creationMatch = line.match(/^([^:]+):\s*(.*)$/);
+                
+                if (creationMatch) {
+                    changes.push({
+                        type: 'create',
+                        field: creationMatch[1].trim(),
+                        value: this._stripQuotes(creationMatch[2].trim())
+                    });
+                } else {
+                    changes.push({
+                        type: 'note',
+                        text: line
+                    });
+                }
             }
-
         }
 
         return {
@@ -161,9 +164,7 @@ export class AuditLogManager {
 
     static _buildTimelineHtml(logs) {
         return logs.map((item) => {
-
             const { title, changes } = this._parseLogContent(item.raw_log);
-
             const action = title.toLowerCase();
 
             let icon = 'ki-pencil';
@@ -186,167 +187,123 @@ export class AuditLogManager {
             let changesHtml = '';
 
             if (changes.length) {
-
                 changesHtml = `
                     <div class="border-top mt-6 pt-5">
-
                         ${changes.map((change, index) => {
-
                             const hiddenClass =
                                 hasMore && index >= visibleLimit
                                     ? 'audit-hidden-change d-none'
                                     : '';
 
                             if (change.type === 'note') {
-
                                 return `
                                     <div class="alert alert-light-secondary py-3 px-4 mb-3 ${hiddenClass}">
                                         ${this._escapeHtml(change.text)}
                                     </div>
                                 `;
+                            }
 
+                            if (change.type === 'create') {
+                                return `
+                                    <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
+                                        <div class="col-lg-3">
+                                            <div class="text-uppercase text-muted fw-semibold fs-8">
+                                                ${this._escapeHtml(change.field)}
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <div class="fw-semibold text-break text-gray-800">
+                                                ${this._escapeHtml(change.value)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
                             }
 
                             return `
                                 <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
-
                                     <div class="col-lg-3">
-
                                         <div class="text-uppercase text-muted fw-semibold fs-8">
-
                                             ${this._escapeHtml(change.field)}
-
                                         </div>
-
                                     </div>
 
                                     <div class="col-lg-4">
-
                                         ${
                                             change.before
                                                 ? `<div class="text-muted text-break">${this._escapeHtml(change.before)}</div>`
                                                 : `<span class="badge badge-light">Empty</span>`
                                         }
-
                                     </div>
 
                                     <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
-
                                         <i class="ki-outline ki-arrow-right fs-5 text-gray-400"></i>
-
                                     </div>
 
                                     <div class="col-lg-4">
-
                                         ${
                                             change.after
-                                                ? `<div class="fw-semibold text-break">${this._escapeHtml(change.after)}</div>`
+                                                ? `<div class="fw-semibold text-break text-gray-900">${this._escapeHtml(change.after)}</div>`
                                                 : `<span class="badge badge-light">Empty</span>`
                                         }
-
                                     </div>
-
                                 </div>
                             `;
-
                         }).join('')}
 
                         ${
                             hasMore
-                            ?
-                            `
+                            ? `
                             <div class="text-center pt-5">
-
-                                <button
-                                    class="btn btn-sm btn-light-primary audit-expand-btn">
-
+                                <button class="btn btn-sm btn-light-primary audit-expand-btn">
                                     Show ${changes.length - visibleLimit} more changes
-
                                 </button>
-
                             </div>
                             `
-                            :
-                            ''
+                            : ''
                         }
-
                     </div>
                 `;
             }
 
             return `
-
                 <div class="card shadow-none border mb-6">
-
                     <div class="card-body p-7">
-
                         <div class="d-flex align-items-start">
-
                             <div class="symbol symbol-45px me-5">
-
                                 <div class="symbol-label bg-light">
-
                                     <i class="ki-outline ${icon} fs-3 text-primary"></i>
-
                                 </div>
-
                             </div>
 
-                            <div class="grow">
-
+                            <div class="grow" style="flex: 1; min-width: 0;">
                                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start">
-
                                     <div>
-
                                         <div class="fw-bold fs-5 text-gray-900 mb-1">
-
                                             ${this._escapeHtml(title)}
-
                                         </div>
 
                                         <div class="d-flex flex-wrap align-items-center gap-2 fs-7 text-muted">
-
                                             <div class="symbol symbol-20px">
-
-                                                <img
-                                                    src="${this._escapeHtml(item.profile_picture)}"
-                                                    class="rounded-circle"
-                                                    alt="">
-
+                                                <img src="${this._escapeHtml(item.profile_picture)}" class="rounded-circle" alt="">
                                             </div>
-
                                             <span class="fw-semibold text-gray-800">
-
                                                 ${this._escapeHtml(item.user_name)}
-
                                             </span>
-
                                             <span>•</span>
-
                                             <span>
-
                                                 ${this._escapeHtml(item.time_relative)}
-
                                             </span>
-
                                         </div>
-
                                     </div>
-
                                 </div>
 
                                 ${changesHtml}
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             `;
-
         }).join('');
     }
 
@@ -363,6 +320,14 @@ export class AuditLogManager {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Helper to safely strip surrounding quotation marks from raw logging text chunks.
+     */
+    static _stripQuotes(str) {
+        if (!str) return '';
+        return str.replace(/^"|"$/g, '');
     }
 
     static _escapeHtml(str) {

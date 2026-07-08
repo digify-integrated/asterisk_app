@@ -17,7 +17,7 @@
 
                     @if($deletePermission)
                         <div class="d-flex align-items-center grow-0 action-dropdown d-none">        
-                            <a href="#" class="btn btn-dark btn-sm btn-flex btn-center btn-active-light-primary show menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            <a href="#" class="btn btn-light-dark btn-sm btn-flex btn-center btn-active-light-primary show menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                 Actions
                                 <i class="ki-outline ki-down fs-7 ms-1"></i>
                             </a>
@@ -53,6 +53,7 @@
                                 </div>
                             </th>
                             <th>App</th>
+                            <th>Description</th>
                             <th></th>
                         </tr>
                     </thead>

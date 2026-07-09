@@ -46,9 +46,9 @@ Route::middleware('auth')->group(function () {
         ->controller(AppController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
-            Route::post('/delete', 'delete')->name('delete');
-            Route::post('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
-            Route::get('/fetch-details', 'fetchDetails')->name('fetch.details');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-options', 'generateOptions')->name('generate.options');
         });

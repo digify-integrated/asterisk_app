@@ -1,5 +1,5 @@
 <div id="form-modal" class="modal fade" tabindex="-1" aria-labelledby="modal-title-{{ $formId }}" aria-hidden="true" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-{{ $size }}">
         <div class="modal-content border-0 rounded-4">
             <div class="modal-header border-0 px-8 pt-8 pb-6">
                 <div class="d-flex align-items-start gap-4">

@@ -20,7 +20,7 @@ export class DetailFetcher {
         try {
             const context = FormEnvironmentManager.getPageContext();
             
-            // Build lean payload object mapping directly to JSON (much faster processing)
+            // Build lean payload object
             const payload = {
                 [detailIdKey]: detailIdValue ?? context.detailId ?? '',
                 appId: context.appId ?? '',
@@ -28,27 +28,23 @@ export class DetailFetcher {
                 ...otherData
             };
 
-            const response = await fetch(url, {
-                method: 'POST',
+            // Convert payload object into a query string and append to the URL
+            const queryString = new URLSearchParams(payload).toString();
+            const requestUrl = queryString ? `${url}?${queryString}` : url;
+
+            const response = await fetch(requestUrl, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken()
-                },
-                body: JSON.stringify(payload)
+                }
             });
 
             if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
 
             const data = await response.json();
 
-            // Case 1: Perfect standard response
-            if (data?.success) {
-                await onSuccess(data);
-                return data;
-            }
-
-            // Case 2: Model completely missing on server context
+            // Case 1: Model completely missing on server context
             if (data?.notExist) {
                 if (typeof onNotExist === 'function') {
                     onNotExist(data);
@@ -59,13 +55,18 @@ export class DetailFetcher {
                 return data;
             }
 
-            // Case 3: Processed Validation or business logic failures
-            if (typeof onFailureMessage === 'function') {
-                onFailureMessage(data);
-            } else {
-                Toast.show(data?.message || 'Request failed.', 'error');
+            // Case 2: Validation or explicit business logic failure messages
+            if (data?.errors || data?.message) {
+                if (typeof onFailureMessage === 'function') {
+                    onFailureMessage(data);
+                } else {
+                    Toast.show(data.message || 'Request failed.', 'error');
+                }
+                return data;
             }
 
+            // Case 3: Perfect standard response (Fallback for pure resources/data objects)
+            await onSuccess(data);
             return data;
 
         } catch (error) {

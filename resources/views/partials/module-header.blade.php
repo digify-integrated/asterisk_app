@@ -32,7 +32,7 @@
                             <span>New</span>
                         </a>
                     @else
-                        <button type="button" class="btn btn-light-primary btn-sm d-inline-flex align-items-center form-button"
+                        <button type="button" class="btn btn-light-primary btn-sm d-inline-flex align-items-center new-button"
                             data-bs-toggle="modal" data-bs-target="#form-modal">
                             <i class="ki-outline ki-plus fs-5"></i>
                             <span>New</span>

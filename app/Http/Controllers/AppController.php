@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\AppTableResource;
+use App\Http\Requests\FetchAppDetailsRequest;
+use App\Http\Resources\AppDetailsResource;
 use App\Models\App;
 use App\Http\Requests\SaveAppRequest;
 use App\Services\AppManagementService;
@@ -40,12 +42,21 @@ class AppController extends Controller
         }
     }
 
+    public function fetch(FetchAppDetailsRequest $request): JsonResponse|AppDetailsResource
+    {
+        $validated = $request->validated();
+
+        $app = App::find($validated['app_id']);
+
+        return new AppDetailsResource($app);
+    }
+
     public function generateTable(Request $request): JsonResponse
     {
         $menuId = (int) $request->input('navigationMenuId');
         $user = $request->user();
 
-        if (! $user || $menuId <= 0) {
+        if (!$user || $menuId <= 0) {
             return response()->json([
                 'error' => 'Unauthorized or missing menu parameter.'
             ], Response::HTTP_FORBIDDEN);

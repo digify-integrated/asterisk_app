@@ -20,6 +20,7 @@ class AppTableResource extends JsonResource
             'id'             => $this->id,
             'name'           => $this->name,
             'description'    => $this->description,
+            'order_sequence' => $this->order_sequence,
             'logo_url'       => $logoUrl,
             'permissions'    => [
                 'can_write'  => (bool) ($this->permissions['write'] ?? false),

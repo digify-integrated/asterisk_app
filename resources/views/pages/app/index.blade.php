@@ -54,6 +54,7 @@
                             </th>
                             <th>App</th>
                             <th>Description</th>
+                            <th>Order Sequence</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -66,6 +67,7 @@
             @component('partials.form-modal')
                 @slot('formTitle', 'App Details')
                 @slot('formId', 'app_form')
+                @slot('size', 'md')
                 
                 <input type="hidden" id="app_id" name="app_id" />
 

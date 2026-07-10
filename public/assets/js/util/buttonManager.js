@@ -1,19 +1,30 @@
 'use strict';
 
-const DATA_ORIGINAL = 'btnOriginalHtml';
+const DATA_ORIGINAL_WIDTH = 'btnOriginalWidth';
 const DATA_LOADING = 'btnIsLoading';
 
-const DEFAULT_SPINNER_HTML = `
-    <span class="btn-spinner-wrapper" style="margin-right: 8px;">
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="width: 1rem; height: 1rem; border-width: 0.2em; animation: btn-spin 0.75s linear infinite;"></span>
-    </span>
-`;
-
-// Simple spinner spin keyframe (no positional masking overrides needed anymore)
+// Clean, layout-stable indicator overrides using semantic CSS positioning
 if (typeof document !== 'undefined' && !document.getElementById('btn-manager-styles')) {
     const style = document.createElement('style');
     style.id = 'btn-manager-styles';
-    style.textContent = `@keyframes btn-spin { to { transform: rotate(360deg); } }`;
+    style.textContent = `
+        .btn-loading-state-active {
+            position: relative !important;
+            text-shadow: none !important;
+            color: transparent !important;
+            pointer-events: none !important;
+        }
+        .btn-loading-state-active .btn-spinner-overlay {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        @keyframes btn-spin-kf { to { transform: rotate(360deg); } }
+    `;
     document.head.appendChild(style);
 }
 
@@ -32,20 +43,18 @@ export class ButtonStateManager {
     }
 
     /**
-     * Disables buttons and performs a clean content replacement.
-     * * @param {string|HTMLElement|NodeList|Array} targets - Elements to process
+     * Toggles buttons into a loading state without altering layouts or dropping accessibility properties.
+     * @param {string|HTMLElement|NodeList|Array} targets
      * @param {Object} options
-     * @param {string|null} [options.loadingText=null] - Custom text to display when disabled
-     * @param {boolean} [options.showLoader=true] - Toggle visibility of the spinner icon
-     * @param {string} [options.spinnerHtml] - Custom spinner template override
-     * @param {boolean} [options.setAriaBusy=true] - Toggle ARIA accessibility flag
+     * @param {string|null} [options.loadingText=null] - Optional replacement text overlay
+     * @param {boolean} [options.showLoader=true] - Toggle spinner visibility
+     * @param {boolean} [options.preserveWidth=true] - Lock dimension sizes to completely eliminate page thrashing
      */
     static disable(targets, options = {}) {
         const config = {
             loadingText: null,
             showLoader: true,
-            spinnerHtml: DEFAULT_SPINNER_HTML,
-            setAriaBusy: true,
+            preserveWidth: true,
             ...options
         };
 
@@ -53,57 +62,84 @@ export class ButtonStateManager {
         if (!buttons.length) return;
 
         buttons.forEach(btn => {
-            if (btn.dataset[DATA_LOADING] === 'true') {
-                if (!btn.disabled) btn.disabled = true;
-                if (config.setAriaBusy) btn.setAttribute('aria-busy', 'true');
-                return;
+            if (btn.dataset[DATA_LOADING] === 'true') return;
+            btn.dataset[DATA_LOADING] = 'true';
+
+            // Secure Layout Preservation: Cache bounding metrics to block page layout shunts
+            if (config.preserveWidth) {
+                const rect = btn.getBoundingClientRect();
+                btn.dataset[DATA_ORIGINAL_WIDTH] = btn.style.width;
+                btn.style.width = `${rect.width}px`;
             }
 
-            // Cache original HTML content
-            btn.dataset[DATA_ORIGINAL] = btn.innerHTML;
-            btn.dataset[DATA_LOADING] = 'true';
-            
-            btn.disabled = true;
-            if (config.setAriaBusy) btn.setAttribute('aria-busy', 'true');
+            // Secure Accessibility Management: Use aria-disabled rather than a native 'disabled' property
+            // This prevents screen-readers from resetting focus back to the top of the body element
+            btn.setAttribute('aria-disabled', 'true');
+            btn.setAttribute('aria-busy', 'true');
+            btn.classList.add('btn-loading-state-active');
 
-            // Build out the clean replacement layout content
-            let nextContent = '';
+            // Build structural overlay elements
+            const overlay = document.createElement('span');
+            overlay.className = 'btn-spinner-overlay';
 
             if (config.showLoader) {
-                nextContent += config.spinnerHtml;
+                overlay.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" 
+                          style="width: 1.15rem; height: 1.15rem; border-width: 0.2em; animation: btn-spin-kf 0.75s linear infinite; ${config.loadingText ? 'margin-right: 6px;' : ''}">
+                    </span>
+                `;
             }
 
             if (config.loadingText) {
-                nextContent += `<span>${config.loadingText}</span>`;
-            } else if (!config.showLoader) {
-                // Fallback to original text if loader is off and no custom text is provided
-                nextContent += btn.innerHTML;
+                const textSpan = document.createElement('span');
+                textSpan.className = 'fs-7 fw-semibold';
+                textSpan.innerText = config.loadingText; // Protection against structural XSS text injection vectors
+                overlay.appendChild(textSpan);
             }
 
-            // Hard swap content replacement with NO layout min-width injections
-            btn.innerHTML = nextContent;
+            btn.appendChild(overlay);
+
+            // Safety catch: Block physical form execution triggers
+            const interceptClick = (e) => {
+                if (btn.dataset[DATA_LOADING] === 'true') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                }
+            };
+            btn.addEventListener('click', interceptClick, { capture: true });
+            btn._btnInterceptRef = interceptClick;
         });
     }
 
     /**
-     * Restores buttons back to their natural layout and text.
+     * Restores buttons back to their natural layout and text gracefully.
      */
-    static enable(targets, options = {}) {
-        const config = {
-            setAriaBusy: true,
-            ...options
-        };
-
+    static enable(targets) {
         const buttons = this.resolve(targets);
-        
-        buttons.forEach(btn => {
-            btn.disabled = false;
-            if (config.setAriaBusy) btn.removeAttribute('aria-busy');
+        if (!buttons.length) return;
 
-            const originalHtml = btn.dataset[DATA_ORIGINAL];
-            if (originalHtml != null) {
-                btn.innerHTML = originalHtml;
-                delete btn.dataset[DATA_ORIGINAL];
+        buttons.forEach(btn => {
+            if (btn.dataset[DATA_LOADING] !== 'true') return;
+
+            // Remove lifecycle overlay nodes safely
+            const overlay = btn.querySelector('.btn-spinner-overlay');
+            if (overlay) overlay.remove();
+
+            // Clear intercept click protections safely
+            if (btn._btnInterceptRef) {
+                btn.removeEventListener('click', btn._btnInterceptRef, { capture: true });
+                delete btn._btnInterceptRef;
+            }
+
+            // Revert state configurations
+            btn.removeAttribute('aria-disabled');
+            btn.removeAttribute('aria-busy');
+            btn.classList.remove('btn-loading-state-active');
+
+            // Restore layout geometry settings
+            if (btn.dataset[DATA_ORIGINAL_WIDTH] !== undefined) {
+                btn.style.width = btn.dataset[DATA_ORIGINAL_WIDTH];
+                delete btn.dataset[DATA_ORIGINAL_WIDTH];
             }
 
             delete btn.dataset[DATA_LOADING];

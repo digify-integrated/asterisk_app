@@ -5,7 +5,7 @@ import { Toast } from './notifications.js';
 import { ButtonStateManager } from './buttonManager.js';
 
 export class SystemErrorHandler {
-    constructor(modalId = 'system-error-modal', options = {}) {
+    constructor(modalId = 'system-error-modal') {
         this.modalEl = document.getElementById(modalId);
         if (!this.modalEl) {
             console.warn(`[SystemErrorHandler] Modal target #${modalId} not found in DOM.`);
@@ -17,7 +17,8 @@ export class SystemErrorHandler {
         
         this.modalInstance = window.bootstrap?.Modal?.getOrCreateInstance(this.modalEl) || null;
         
-        this.rawErrorText = '';
+        // Use a clean local instance registry tracking individual modal presentation states
+        this._currentDiagnosticBuffer = '';
         this._bindCopyEvent();
     }
 
@@ -29,35 +30,47 @@ export class SystemErrorHandler {
      * @returns {Promise<boolean>} - Returns true if an error was handled, false otherwise.
      */
     async handleResponse(response, submitBtn = null) {
-        if (response.ok) return false;
+        if (!response || response.ok) return false;
 
         // 1. Automatically restore submission button interaction states
         if (submitBtn) {
             ButtonStateManager.enable(submitBtn);
         }
 
-        // 2. Intercept Client-Facing Soft Failures (Auth, Validation, Throttling)
+        // 2. Safely capture stream clone to prevent structural extraction crashes
+        const softClone = response.clone();
+
+        // 3. Intercept Client-Facing Soft Failures (Auth, Validation, Throttling)
         if ([401, 422, 429].includes(response.status)) {
             try {
-                const data = await response.json();
+                const data = await softClone.json();
                 Toast.show(data.message || 'Request failed processing.', 'error');
             } catch {
-                Toast.show('An unexpected client error occurred.', 'error');
+                try {
+                    const fallbackText = await softClone.text();
+                    Toast.show(fallbackText.slice(0, 200) || 'An unexpected client error occurred.', 'error');
+                } catch {
+                    Toast.show('An unexpected client error occurred.', 'error');
+                }
             }
             return true;
         }
 
-        // 3. Fall back directly to systemic structural breakdown modal (500, etc.)
-        const clonedResponse = response.clone();
-        await this.handle(clonedResponse);
+        // 4. Fall back directly to systemic structural breakdown modal (500, etc.)
+        const modalClone = response.clone();
+        await this.handle(modalClone);
         return true;
     }
 
     _bindCopyEvent() {
         if (!this.copyButton) return;
         this.copyButton.addEventListener('click', async () => {
+            if (!this._currentDiagnosticBuffer) {
+                Toast.show('No diagnostic reports found to copy.', 'warning');
+                return;
+            }
             await ClipboardManager.copy({
-                text: this.rawErrorText,
+                text: this._currentDiagnosticBuffer,
                 messages: { success: 'System diagnostics copied to clipboard!' }
             });
         });
@@ -68,22 +81,32 @@ export class SystemErrorHandler {
      */
     async handle(xhr, status = 'error', error = '') {
         const diagnosticReport = [];
-        this.rawErrorText = ''; 
+        
+        // Transaction Isolation Strategy: Reset buffer for each execution pass
+        let runtimeBuffer = '';
+
+        const appendRow = (label, value) => {
+            const rowNode = this._createRowNode(label, value);
+            diagnosticReport.push(rowNode);
+            runtimeBuffer += `${label}: ${value}\n`;
+        };
+
+        const appendBlock = (title, data) => {
+            const blockNode = this._createBlockNode(title, data);
+            diagnosticReport.push(blockNode);
+            runtimeBuffer += `\n--- ${title} ---\n${data}\n`;
+        };
 
         try {
             if (xhr instanceof Error) {
-                diagnosticReport.push(
-                    this._row('Status', status),
-                    this._row('Error', error || xhr.message || 'Unknown runtime error'),
-                    this._row('Error Name', xhr.name)
-                );
-                if (xhr.stack) diagnosticReport.push(this._preBlock('Stack Trace', xhr.stack));
+                appendRow('Status', status);
+                appendRow('Error', error || xhr.message || 'Unknown runtime error');
+                appendRow('Error Name', xhr.name);
+                if (xhr.stack) appendBlock('Stack Trace', xhr.stack);
             } 
             else if (xhr instanceof Response) {
-                diagnosticReport.push(
-                    this._row('HTTP Status', `${xhr.status} ${xhr.statusText}`),
-                    this._row('URL', xhr.url)
-                );
+                appendRow('HTTP Status', `${xhr.status} ${xhr.statusText}`);
+                appendRow('URL', xhr.url);
 
                 const body = await this._readResponseBody(xhr);
 
@@ -91,41 +114,42 @@ export class SystemErrorHandler {
                     const data = body.data || {};
                     const msg = data.message || error || xhr.statusText || 'Request failed';
 
-                    diagnosticReport.push(this._row('Message', msg));
-                    if (data.errors) diagnosticReport.push(this._formatLaravelErrors(data.errors));
-                    if (data.exception) diagnosticReport.push(this._row('Exception', data.exception));
-                    if (data.file) diagnosticReport.push(this._row('File', `${data.file} : L${data.line || '?'}`));
+                    appendRow('Message', msg);
+                    if (data.errors) {
+                        const { node, text } = this._formatLaravelErrors(data.errors);
+                        diagnosticReport.push(node);
+                        runtimeBuffer += text;
+                    }
+                    if (data.exception) appendRow('Exception', data.exception);
+                    if (data.file) appendRow('File', `${data.file} : L${data.line || '?'}`);
 
-                    diagnosticReport.push(this._preBlock('Response JSON', JSON.stringify(data, null, 2)));
+                    appendBlock('Response JSON', JSON.stringify(data, null, 2));
                 } else {
-                    diagnosticReport.push(
-                        this._row('Message', error || xhr.statusText || 'Server Error'),
-                        this._preBlock('Response Diagnostics / Page Output', body.data || 'No response details available.')
-                    );
+                    appendRow('Message', error || xhr.statusText || 'Server Error');
+                    appendBlock('Response Diagnostics / Page Output', body.data || 'No response details available.');
                 }
             } 
             else {
                 const passedStatus = xhr?.status ?? status;
-                diagnosticReport.push(
-                    this._row('Status', passedStatus),
-                    this._row('Error', error || xhr?.message || 'Unknown context error')
-                );
+                appendRow('Status', passedStatus);
+                appendRow('Error', error || xhr?.message || 'Unknown context error');
 
                 const text = xhr?.responseText ?? (typeof xhr === 'object' ? JSON.stringify(xhr) : String(xhr));
-                if (text) diagnosticReport.push(this._preBlock('Context Payload Data', text));
+                if (text) appendBlock('Context Payload Data', text);
             }
         } catch (criticalMappingError) {
-            diagnosticReport.push(this._row('Parser Failure', criticalMappingError.message));
+            appendRow('Parser Failure', criticalMappingError.message);
         }
 
+        // Apply state safely back to the instance layer
+        this._currentDiagnosticBuffer = runtimeBuffer;
         this._renderAndShow(diagnosticReport);
     }
 
     _renderAndShow(elementsArray) {
         if (!this.bodyContainer) return;
         
-        this.bodyContainer.innerHTML = '';
-        elementsArray.forEach(el => this.bodyContainer.appendChild(el));
+        this.bodyContainer.replaceChildren(...elementsArray);
 
         if (this.modalInstance) {
             this.modalInstance.show();
@@ -134,24 +158,30 @@ export class SystemErrorHandler {
         }
     }
 
-    _row(label, text) {
+    _createRowNode(label, text) {
         const div = document.createElement('div');
         div.className = 'mb-2';
-        div.innerHTML = `<strong class="text-gray-800">${this._escape(label)}:</strong> `;
+        
+        const strong = document.createElement('strong');
+        strong.className = 'text-gray-800';
+        strong.textContent = `${label}: `; // Secure Text Assignment Vector
         
         const span = document.createElement('span');
         span.className = 'text-gray-700';
         span.textContent = text;
+        
+        div.appendChild(strong);
         div.appendChild(span);
-
-        this.rawErrorText += `${label}: ${text}\n`;
         return div;
     }
 
-    _preBlock(title, data) {
+    _createBlockNode(title, data) {
         const wrap = document.createElement('div');
         wrap.className = 'mt-3 mb-2';
-        wrap.innerHTML = `<div class="fw-bold text-muted small text-uppercase mb-1">${this._escape(title)}:</div>`;
+        
+        const header = document.createElement('div');
+        header.className = 'fw-bold text-muted small text-uppercase mb-1';
+        header.textContent = `${title}: `;
         
         const pre = document.createElement('pre');
         pre.className = 'p-4 bg-light-danger text-danger rounded fs-7 m-0 border border-dashed border-danger';
@@ -159,9 +189,8 @@ export class SystemErrorHandler {
         pre.style.whiteSpace = 'pre-wrap';
         pre.textContent = data;
         
+        wrap.appendChild(header);
         wrap.appendChild(pre);
-
-        this.rawErrorText += `\n--- ${title} ---\n${data}\n`;
         return wrap;
     }
 
@@ -172,24 +201,28 @@ export class SystemErrorHandler {
         const ul = document.createElement('ul');
         ul.className = 'm-0 ps-3 fs-7 text-danger';
 
-        this.rawErrorText += `\nValidation Errors:\n`;
+        let textBuffer = '\nValidation Errors:\n';
 
         Object.entries(errors).forEach(([field, messages]) => {
             const list = Array.isArray(messages) ? messages : [messages];
             list.forEach(m => {
                 const li = document.createElement('li');
-                li.innerHTML = `<strong>${this._escape(field)}:</strong> `;
+                
+                const strong = document.createElement('strong');
+                strong.textContent = `${field}: `;
                 
                 const txt = document.createTextNode(m);
+                
+                li.appendChild(strong);
                 li.appendChild(txt);
                 ul.appendChild(li);
 
-                this.rawErrorText += ` - ${field}: ${m}\n`;
+                textBuffer += ` - ${field}: ${m}\n`;
             });
         });
 
         wrap.appendChild(ul);
-        return wrap;
+        return { node: wrap, text: textBuffer };
     }
 
     async _readResponseBody(response) {
@@ -209,12 +242,12 @@ export class SystemErrorHandler {
                 const exceptionMessage = doc.querySelector('.exception-message, #trace-box, .message, title')?.innerText;
                 
                 if (exceptionMessage) {
-                    return { kind: 'text', data: `[Server Exception Elements]: ${exceptionMessage.trim()}` };
+                    return { kind: 'text', data: `[Server Exception]: ${exceptionMessage.trim()}` };
                 }
 
                 const bodyText = doc.body?.innerText?.trim();
                 if (bodyText) {
-                    return { kind: 'text', data: bodyText.slice(0, 1500) + '\n\n...[Truncated for clarity]...' };
+                    return { kind: 'text', data: bodyText.slice(0, 1500) + '\n\n...[Truncated Response Output]...' };
                 }
             }
 
@@ -222,12 +255,6 @@ export class SystemErrorHandler {
         } catch (readError) {
             return { kind: 'opaque', data: `Failed to stream response contents: ${readError.message}` };
         }
-    }
-
-    _escape(str) {
-        return String(str ?? '').replace(/[&<>"']/g, m => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-        })[m]);
     }
 }
 

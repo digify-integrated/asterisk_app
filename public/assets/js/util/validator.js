@@ -34,7 +34,7 @@ export class FormValidator {
         }
 
         this.form = formElement;
-        this.config = { ...FormValidator.DEFAULTS, ...options };
+        this.config = Object.assign({}, FormValidator.DEFAULTS, options);
         this._abortController = new AbortController();
 
         this._init();
@@ -57,7 +57,7 @@ export class FormValidator {
         this.form.addEventListener('submit', (e) => this._handleSubmit(e), { signal });
     }
 
-    /** Gracefully tears down listeners to prevent memory leaks in Single Page Applications */
+    /** Gracefully tears down listeners to prevent memory leaks in SPAs */
     destroy() {
         this._abortController.abort();
         delete this.form.dataset.validationBound;
@@ -82,7 +82,7 @@ export class FormValidator {
     async _handleSubmit(event) {
         if (window.jQuery) {
             window.jQuery(this.form).find('select.select2-hidden-accessible').each((_, el) => {
-                // Force browser value sync
+                // Force browser value synchronization inside jQuery elements
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
@@ -155,7 +155,7 @@ export class FormValidator {
             if (!passed) {
                 const msg = this._resolveMessage({ field, fieldKey, ruleName, ruleValue });
                 errors.push({ field, rule: ruleName, message: msg });
-                break; // One error reported per field at a time
+                break; // Limit error logging to single context alerts sequentially per field
             }
         }
 
@@ -173,7 +173,7 @@ export class FormValidator {
         if (!this.config.runInferredRulesEvenWhenCustomProvided && Object.keys(cust).length) {
             return { ...cust };
         }
-        return { ...inf, ...cust };
+        return Object.assign({}, inf, cust);
     }
 
     _runRule(ruleName, ruleValue, field) {
@@ -331,12 +331,27 @@ export class FormValidator {
         return chosen;
     }
 
+    /**
+     * Sanitizes label extraction by parsing only direct structural text nodes.
+     * Prevents inner HTML elements (like asterisks or icons) from corrupting text.
+     */
     _getFieldLabelText(field) {
+        let labelEl = null;
         if (field.id) {
-            const lbl = this.form.querySelector(`label[for="${this._cssEscape(field.id)}"]`);
-            if (lbl?.textContent.trim()) return lbl.textContent.trim();
+            labelEl = this.form.querySelector(`label[for="${this._cssEscape(field.id)}"]`);
         }
-        return field.closest('label')?.textContent.trim() || '';
+        if (!labelEl) {
+            labelEl = field.closest('label');
+        }
+        if (!labelEl) return '';
+
+        // Safely pull only immediate text nodes, bypassing child spans/elements
+        return Array.from(labelEl.childNodes)
+            .filter(node => node.nodeType === Node.TEXT_NODE)
+            .map(node => node.textContent.trim())
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     _getFieldValue(field) {
@@ -345,10 +360,8 @@ export class FormValidator {
             return this.form.querySelector(`input[type="radio"][name="${this._cssEscape(field.name)}"]:checked`)?.value || '';
         }
         
-        // Select2 & standard select handling fix
         if (field.tagName === 'SELECT') {
             const val = field.value;
-            // If the value is literal placeholder dashes, treat it as empty string
             if (val === '--' || val === null) return '';
             return val;
         }
@@ -369,7 +382,6 @@ export class FormValidator {
         return window.CSS?.escape ? window.CSS.escape(val) : String(val).replace(/["\\#.;?+*~':!^$[\]()=>|/@]/g, '\\$&');
     }
 
-    /* Select2 UI Dynamic Integrations */
     _isSelect2(field) { return field?.tagName === 'SELECT' && field.classList.contains('select2-hidden-accessible'); }
     
     _getSelect2Target(field) {
@@ -411,18 +423,36 @@ export class FormValidator {
 
 /**
  * Enterprise Application Entry Bootstrapper.
- * Accepts an array of configuration schemas matching your preferred architectural layout.
+ * Supports active DOM monitoring loops via event delegation for dynamic frameworks.
  * @param {Object} masterConfig
  */
 export function initValidation(masterConfig = {}) {
     const instances = [];
     const formsArray = masterConfig.forms || [];
 
+    const initializeFormElement = (element, config) => {
+        if (element.dataset.validationBound === 'true') return null;
+        const validator = new FormValidator(element, config.options || config);
+        instances.push(validator);
+        return validator;
+    };
+
+    // Scan the layout rules present immediately on call execution loops
     for (const formSetup of formsArray) {
-        const elements = document.querySelectorAll(formSetup.selector);
-        for (const element of elements) {
-            instances.push(new FormValidator(element, formSetup.options || formSetup));
-        }
+        document.querySelectorAll(formSetup.selector).forEach(element => {
+            initializeFormElement(element, formSetup);
+        });
     }
+
+    // Dynamic Framework Protection: Watch the document root context for new matching form structures
+    if (masterConfig.observeDynamicDOM !== false) {
+        document.addEventListener('shown.bs.modal', (e) => {
+            formsArray.forEach(formSetup => {
+                const innerForm = e.target.querySelector(formSetup.selector);
+                if (innerForm) initializeFormElement(innerForm, formSetup);
+            });
+        });
+    }
+
     return instances;
 }

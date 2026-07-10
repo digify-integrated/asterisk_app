@@ -13,8 +13,8 @@ let globalResizeObserver = null;
 
 export class DataTableOrchestrator {
     constructor() {
-        this.checkedCountCache = 0;
         this._resizeTimeout = null;
+        this._boundHandlers = new Map(); // Tracks event listener references to guarantee cleanup
     }
 
     /**
@@ -25,16 +25,13 @@ export class DataTableOrchestrator {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
         if (!node) return null;
 
-        // If we already cached it, verify it's the API instance
         if (instanceRegistry.has(node) && window.jQuery?.fn?.DataTable?.isDataTable(node)) {
             const cached = instanceRegistry.get(node);
-            // Ensure it's the API instance, not the jQuery object instance
             return typeof cached.table === 'function' ? cached : new window.jQuery.fn.dataTable.Api(node);
         }
         
         if (!window.jQuery?.fn?.DataTable?.isDataTable(node)) return null;
         
-        // Force native DataTables API Instance conversion directly from the DOM node
         const dtInstance = new window.jQuery.fn.dataTable.Api(node);
         instanceRegistry.set(node, dtInstance);
         return dtInstance;
@@ -81,7 +78,6 @@ export class DataTableOrchestrator {
         const enableExport = !!exportWrapper || config.addons?.export;
         const self = this;
 
-        // Initialize jQuery DataTables core
         const dt = window.jQuery(tableNode).DataTable({
             serverSide: config.serverSide,
             processing: config.processing,
@@ -137,7 +133,6 @@ export class DataTableOrchestrator {
                     const exportRef = typeof config.addons.export === 'object' && config.addons.export?.table 
                         ? config.addons.export.table 
                         : config.addons.export;
-                    // Interlocking module connection safely verified
                     if (typeof ComponentRegistry.generateDualListBox === 'function') {
                         ComponentRegistry.generateDualListBox({
                             trigger: '#export-data',
@@ -153,6 +148,12 @@ export class DataTableOrchestrator {
                         self._bindSubControls(searchSelector, lengthSelector, subRef);
                     }
                 }
+
+                // Safely add runtime wrapper nodes to the global ResizeObserver tracking index
+                if (globalResizeObserver) {
+                    const wrapper = tableNode.closest('.dataTables_wrapper');
+                    if (wrapper) globalResizeObserver.observe(wrapper);
+                }
             }
         });
 
@@ -166,16 +167,13 @@ export class DataTableOrchestrator {
         return dt;
     }
 
-    /**
-     * Forces immediate asynchronous layout resets across records.
-     */
     reload(selectorOrNode) {
         const dt = DataTableOrchestrator.getAPI(selectorOrNode);
         if (dt) dt.ajax.reload(null, false);
     }
 
     /**
-     * Purges runtime allocations and event handles safely.
+     * Purges runtime allocations and cleanly untracks event listeners to prevent memory leaks.
      */
     destroy(selectorOrNode) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
@@ -189,49 +187,60 @@ export class DataTableOrchestrator {
             window.jQuery(tbody).off(`.dtRowClick_${node.id || 'orchestrated'}`);
         }
 
-        // Clean custom contextual export selectors out of DOM memory profiles
         window.jQuery(document).off(`.export_${node.id || 'orchestrated'}`);
+
+        // Safely remove tracked event handlers
+        if (this._boundHandlers.has(node)) {
+            const handlers = this._boundHandlers.get(node);
+            handlers.forEach(({ element, event, callback }) => {
+                element?.removeEventListener(event, callback);
+            });
+            this._boundHandlers.delete(node);
+        }
+
+        // Unobserve deleted layouts to save CPU cycles
+        if (globalResizeObserver) {
+            const wrapper = node.closest('.dataTables_wrapper');
+            if (wrapper) globalResizeObserver.unobserve(wrapper);
+        }
 
         dt.clear();
         dt.destroy();
         instanceRegistry.delete(node);
+        tableMetadataRegistry.delete(node);
     }
 
     bindControls(selectorOrNode, config) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
-        // Safely extract the API instance. If it lacks an api hook, try converting it.
         let dt = DataTableOrchestrator.getAPI(node);
         if (dt && typeof dt.api === 'function') dt = dt.api(); 
         if (!dt) return;
 
         const container = node.closest('.table-container') || document;
-        
-        let lengthEl = container.querySelector(config.lengthSelector);
-        let searchEl = container.querySelector(config.searchSelector);
+        const lengthEl = container.querySelector(config.lengthSelector) || document.getElementById('datatable-length');
+        const searchEl = container.querySelector(config.searchSelector) || document.getElementById('datatable-search');
 
-        if (!lengthEl) lengthEl = document.querySelector(config.lengthSelector) || document.getElementById('datatable-length');
-        if (!searchEl) searchEl = document.querySelector(config.searchSelector) || document.getElementById('datatable-search');
+        if (!this._boundHandlers.has(node)) this._boundHandlers.set(node, []);
+        const handlers = this._boundHandlers.get(node);
 
         if (lengthEl) {
-            lengthEl.onchange = () => {
+            const lengthHandler = () => {
                 const limit = Number.parseInt(lengthEl.value, 10);
-                if (typeof dt.page?.len === 'function') {
-                    dt.page.len(Number.isFinite(limit) ? limit : 10).draw();
-                } else {
-                    window.jQuery(node).DataTable().page.len(Number.isFinite(limit) ? limit : 10).draw();
-                }
+                const targetApi = typeof dt.page?.len === 'function' ? dt : window.jQuery(node).DataTable();
+                targetApi.page.len(Number.isFinite(limit) ? limit : 10).draw();
             };
+            lengthEl.addEventListener('change', lengthHandler);
+            handlers.push({ element: lengthEl, event: 'change', callback: lengthHandler });
         }
 
         if (searchEl) {
             const debouncedSearch = this._debounce((val) => {
-                if (typeof dt.search === 'function') {
-                    dt.search(val).draw();
-                } else {
-                    window.jQuery(node).DataTable().search(val).draw();
-                }
+                const targetApi = typeof dt.search === 'function' ? dt : window.jQuery(node).DataTable();
+                targetApi.search(val).draw();
             }, 400);
-            searchEl.oninput = () => debouncedSearch(searchEl.value);
+            const searchHandler = () => debouncedSearch(searchEl.value);
+            searchEl.addEventListener('input', searchHandler);
+            handlers.push({ element: searchEl, event: 'input', callback: searchHandler });
         }
 
         this._bindCheckboxInteractions(node, dt, config);
@@ -249,7 +258,6 @@ export class DataTableOrchestrator {
             tableMetadataRegistry.set(node, { checkedCount: 0 });
         }
 
-        // Function to calculate and update master checkbox state
         const updateMasterCheckboxState = () => {
             const totalChildren = wrapper.querySelectorAll('.datatable-checkbox-children').length;
             const checkedChildren = wrapper.querySelectorAll('.datatable-checkbox-children:checked').length;
@@ -258,48 +266,30 @@ export class DataTableOrchestrator {
             meta.checkedCount = checkedChildren;
 
             if (master) {
-                if (checkedChildren === 0) {
-                    // None checked
-                    master.checked = false;
-                    master.indeterminate = false;
-                } else if (checkedChildren === totalChildren) {
-                    // All checked
-                    master.checked = true;
-                    master.indeterminate = false;
-                } else {
-                    // Some checked (Intermediate / Indeterminate State)
-                    master.checked = false;
-                    master.indeterminate = true;
-                }
+                master.checked = checkedChildren === totalChildren && totalChildren > 0;
+                master.indeterminate = checkedChildren > 0 && checkedChildren < totalChildren;
             }
 
-            // Toggle bulk actions dropdown visibility
             dropdown.classList.toggle('d-none', checkedChildren === 0);
         };
 
-        // 1. Handle individual row checkbox clicks (using delegation on the wrapper)
         window.jQuery(wrapper).off('click.dtSelector').on('click.dtSelector', '.datatable-checkbox-children', () => {
             updateMasterCheckboxState();
         });
 
-        // 2. Handle pagination / search view redraw redraws 
-        // (Crucial: child checkboxes change on next/prev pages, master must recalculate)
         if (typeof dt.on === 'function') {
             dt.off('draw.dtSelector').on('draw.dtSelector', () => {
                 updateMasterCheckboxState();
             });
         }
 
-        // 3. Handle Master Checkbox click toggle
         if (master) {
-            master.onclick = (e) => {
-                // If it was indeterminate, clicking it should default to checking everything
+            const masterHandler = (e) => {
                 const shouldCheckAll = master.indeterminate ? true : e.target.checked;
-                
                 const matches = wrapper.querySelectorAll('.datatable-checkbox-children');
+                
                 matches.forEach(el => { el.checked = shouldCheckAll; });
                 
-                // Clear indeterminate flag state explicitly on direct click interaction
                 master.indeterminate = false;
                 master.checked = shouldCheckAll;
 
@@ -308,16 +298,22 @@ export class DataTableOrchestrator {
                 
                 dropdown.classList.toggle('d-none', meta.checkedCount === 0);
             };
+            master.addEventListener('click', masterHandler);
+            
+            if (!this._boundHandlers.has(node)) this._boundHandlers.set(node, []);
+            this._boundHandlers.get(node).push({ element: master, event: 'click', callback: masterHandler });
         }
     }
 
     resetSelectionState(config) {
-        this.checkedCountCache = 0;
         const dropdown = document.querySelector(config.actionDropdown || '.action-dropdown');
         const master = document.querySelector(config.masterCheckbox || '#datatable-checkbox');
 
         if (dropdown) dropdown.classList.add('d-none');
-        if (master) master.checked = false;
+        if (master) {
+            master.checked = false;
+            master.indeterminate = false;
+        }
 
         document.querySelectorAll('.datatable-checkbox-children').forEach(el => {
             el.checked = false;
@@ -328,7 +324,6 @@ export class DataTableOrchestrator {
         const dt = DataTableOrchestrator.getAPI(tableRef);
         if (!dt) return;
 
-        // CRITICAL: Dropped 'false' from draw() here as well
         const debouncedSearch = this._debounce((val) => dt.search(val).draw(), 400);
 
         window.jQuery(document)
@@ -402,9 +397,6 @@ export class DataTableOrchestrator {
                 clearTimeout(timeoutToken);
                 timeoutToken = setTimeout(triggerAdjustments, 120);
             });
-            
-            // Watch structural grid wrappers dynamically without creating redundant loop instances
-            document.querySelectorAll('.dataTables_wrapper').forEach(el => globalResizeObserver.observe(el));
         }
     }
 

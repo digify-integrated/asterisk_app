@@ -4,6 +4,7 @@ import { ComponentRegistry } from './componentRegistry.js';
 import { ButtonStateManager } from './buttonManager.js';
 import { errorHandler } from './errorHandler.js';
 import { Toast } from './notifications.js';
+import { FormEnvironmentManager } from './formEnvironmentManager.js';
 
 export class TableExportManager {
     /**
@@ -12,17 +13,18 @@ export class TableExportManager {
      */
     constructor(tableName, options = {}) {
         this.tableName = tableName;
-        this.config = {
+        this.config = Object.assign({
             selectSelector: '#table_column',
             triggerSelector: '#export-data',
             submitSelector: '#submit-export',
             checkboxSelector: '.datatable-checkbox-children:checked',
             formatRadioSelector: 'input[name="export_to"]:checked',
-            ...options
-        };
+        }, options);
 
         this.selectedColumnsOrder = [];
         this.dualListInitialized = false;
+        this.isProcessingExport = false; // Concurrency Execution Guard
+
         this._listAbortController = null;
         this._eventAbortController = new AbortController();
 
@@ -35,17 +37,21 @@ export class TableExportManager {
         if (this._listAbortController) this._listAbortController.abort();
     }
 
+    /**
+     * Set up listener attachments
+     * @private
+     */
     _initListeners() {
         const { signal } = this._eventAbortController;
 
         document.addEventListener('click', async (e) => {
-            // Router 1: Load export field schemas
+            // Context Router 1: Load export field schemas
             if (e.target.closest(this.config.triggerSelector)) {
                 e.preventDefault();
                 await this._loadExportColumns();
             }
             
-            // Router 2: Confirm download action execution
+            // Context Router 2: Confirm download action execution
             if (e.target.closest(this.config.submitSelector)) {
                 e.preventDefault();
                 await this._executeExportDownload();
@@ -53,6 +59,10 @@ export class TableExportManager {
         }, { signal });
     }
 
+    /**
+     * Pulls active columns lists via JSON streams
+     * @private
+     */
     async _loadExportColumns() {
         const select = document.querySelector(this.config.selectSelector);
         if (!select) return;
@@ -75,7 +85,7 @@ export class TableExportManager {
             select.appendChild(frag);
 
             this._initializeDualListBoxOnce();
-            this.selectedColumnsOrder = []; // Clean preceding index array
+            this.selectedColumnsOrder = []; // Clean preceding state mapping trackers
             this._refreshDualListBox();
 
         } catch (err) {
@@ -86,17 +96,26 @@ export class TableExportManager {
         }
     }
 
+    /**
+     * Prepares parameters and processes binary payload returns
+     * @private
+     */
     async _executeExportDownload() {
+        // Concurrency Guard Check: Kill parallel clicks before hitting long task execution threads
+        if (this.isProcessingExport) return;
+
         const exportTo = document.querySelector(this.config.formatRadioSelector)?.value;
         const exportIds = Array.from(
             document.querySelectorAll(this.config.checkboxSelector),
             el => el.value
         );
 
-        if (!exportIds.length) return Toast.show('Choose the data rows you want to export.', 'warning');
-        if (!this.selectedColumnsOrder.length) return Toast.show('Choose the explicit target columns you want to export.', 'warning');
-        if (!exportTo) return Toast.show('Choose an export format.', 'warning');
+        if (!exportIds.length) return Toast.warning('Choose the data rows you want to export.');
+        if (!this.selectedColumnsOrder.length) return Toast.warning('Choose the explicit target columns you want to export.');
+        if (!exportTo) return Toast.warning('Choose an export format.');
 
+        // Establish locking threshold state parameters
+        this.isProcessingExport = true;
         ButtonStateManager.disable(this.config.submitSelector);
 
         try {
@@ -115,10 +134,16 @@ export class TableExportManager {
         } catch (err) {
             errorHandler.handle(err, 'export_execution_failed', 'Binary stream generation failed.');
         } finally {
+            // Release locking thresholds 
+            this.isProcessingExport = false;
             ButtonStateManager.enable(this.config.submitSelector);
         }
     }
 
+    /**
+     * Attaches third party bootstrap dual list interface wrappers
+     * @private
+     */
     _initializeDualListBoxOnce() {
         if (this.dualListInitialized || !window.jQuery) return;
 
@@ -134,9 +159,8 @@ export class TableExportManager {
             sortByInputOrder: true,
         });
 
-        const self = this;
-        $el.off('change.export').on('change.export', function () {
-            self.selectedColumnsOrder = window.jQuery(`${self.config.selectSelector} option:selected`)
+        $el.off('change.export').on('change.export', () => {
+            this.selectedColumnsOrder = $el.find('option:selected')
                 .map((_, opt) => opt.value)
                 .get();
         });
@@ -145,6 +169,10 @@ export class TableExportManager {
         this.dualListInitialized = true;
     }
 
+    /**
+     * Synchronization update hook for dual list layouts
+     * @private
+     */
     _refreshDualListBox() {
         if (!window.jQuery) return;
         const $el = window.jQuery(this.config.selectSelector);
@@ -154,11 +182,19 @@ export class TableExportManager {
         ComponentRegistry.initializeDualListBoxIcon();
     }
 
+    /**
+     * Standardized payload AJAX configuration wrappers
+     * @private
+     */
     async _jsonFetch(url, { signal, bodyObj } = {}) {
         const res = await fetch(url, {
             method: 'POST',
             signal,
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken() // Automatically secure request headers
+            },
             body: JSON.stringify(bodyObj),
             credentials: 'same-origin'
         });
@@ -166,10 +202,17 @@ export class TableExportManager {
         return res.json();
     }
 
+    /**
+     * Standardized binary blob data pipeline wrappers
+     * @private
+     */
     async _blobFetch(url, { bodyObj } = {}) {
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken()
+            },
             body: JSON.stringify(bodyObj),
             credentials: 'same-origin'
         });
@@ -182,10 +225,13 @@ export class TableExportManager {
         return { blob, headerFilename };
     }
 
+    /**
+     * Parses filenames from content-disposition header schemas cleanly
+     * @private
+     */
     _parseFilename(contentDisposition) {
         if (!contentDisposition) return '';
 
-        // Standard RFC 5987 check
         const starMatch = contentDisposition.match(/filename\*\s*=\s*([^;]+)/i);
         if (starMatch?.[1]) {
             const parts = starMatch[1].trim().split("''");
@@ -201,6 +247,10 @@ export class TableExportManager {
         return '';
     }
 
+    /**
+     * Injects a temporary download element channel to push binaries down to browser space
+     * @private
+     */
     _triggerBlobDownload(blob, filename) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -211,7 +261,6 @@ export class TableExportManager {
         document.body.appendChild(a);
         a.click();
         
-        // Immediate clean stack deletion
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }

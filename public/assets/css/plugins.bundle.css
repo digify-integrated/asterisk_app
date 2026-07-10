@@ -53207,7 +53207,7 @@ html.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown):not(.sweetalert
 }
 
 .swal2-popup .btn {
-    margin: 15px 5px 0
+    margin: 0 5px 0
 }
 
 .swal2-popup .swal2-styled:focus {

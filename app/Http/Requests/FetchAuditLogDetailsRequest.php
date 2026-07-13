@@ -4,17 +4,18 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FetchAppDetailsRequest extends FormRequest
+class FetchAuditLogDetailsRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
     }
 
-    public function rules(): bool|array
+    public function rules(): array
     {
         return [
-            'app_id' => ['required', 'integer', 'exists:apps,id'],
+            'databaseTable' => ['required', 'string'],
+            'referenceId' => ['required', 'int'],
         ];
     }
 }

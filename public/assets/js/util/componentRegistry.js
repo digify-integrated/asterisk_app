@@ -3,10 +3,6 @@
 import { errorHandler } from './errorHandler.js';
 
 export class ComponentRegistry {
-    /**
-     * Resolves an data object safely into an explicit query string appendable to a GET request URL.
-     * Fixes the critical bug where a body was supplied to a native GET fetch method.
-     */
     static _buildGetUrl(baseUrl, data = {}) {
         const urlObj = new URL(baseUrl, window.location.origin);
         Object.entries(data).forEach(([key, val]) => {
@@ -15,9 +11,6 @@ export class ComponentRegistry {
         return urlObj.toString();
     }
 
-    /**
-     * Generates a dynamic select2 dropdown via dynamic fetch querying
-     */
     static async generateDropdownOptions({ url, dropdownSelector, data = {}, validateOnChange = false }) {
         try {
             const targetUrl = this._buildGetUrl(url, data);
@@ -43,7 +36,6 @@ export class ComponentRegistry {
 
             $dropdown.empty();
 
-            // Locate context anchors cleanly
             const $modalParent = $dropdown.closest('.modal');
             const $offcanvasParent = $dropdown.closest('.offcanvas');
             const $menuParent = $dropdown.closest('[data-kt-menu="true"]');
@@ -67,7 +59,6 @@ export class ComponentRegistry {
                 setTimeout(() => $this.select2('close'), 0);
             });
 
-            // Prevent event bubbles from breaking multi-select UI flow
             window.jQuery(document)
                 .off('mousedown.select2-remove-close')
                 .on('mousedown.select2-remove-close', '.select2-selection__choice__remove', function (e) {
@@ -100,9 +91,6 @@ export class ComponentRegistry {
         }, 100);
     }
 
-    /**
-     * Initializes and formats lookups on standard dynamic Bootstrap Dual Listboxes
-     */
     static async generateDualListBox({ trigger, url, selectSelector, data = {} }) {
         document.addEventListener('click', async (e) => {
             const btn = e.target.closest(trigger);
@@ -164,9 +152,6 @@ export class ComponentRegistry {
             .addClass('btn-primary');
     }
 
-    /**
-     * Context-aware rich text instantiation (TinyMCE)
-     */
     static initializeTinyMCE(tinyMceId, disabled = 0) {
         if (typeof tinymce === 'undefined') return;
 
@@ -182,7 +167,6 @@ export class ComponentRegistry {
             license_key: 'gpl'
         };
 
-        // Integration with your system theme detection scheme
         if (typeof KTThemeMode !== 'undefined' && KTThemeMode.getMode() === "dark") {
             options["skin"] = "oxide-dark";
             options["content_css"] = "dark";
@@ -195,9 +179,6 @@ export class ComponentRegistry {
         });
     }
 
-    /**
-     * Minimal Flatpickr instance initializer
-     */
     static initializeDatePicker({ selector, enableTime = false, dateFormat = "M d, Y" }) {
         const elements = document.querySelectorAll(selector);
         if (!elements.length || typeof flatpickr === 'undefined') return;
@@ -205,9 +186,6 @@ export class ComponentRegistry {
         flatpickr(elements, { enableTime, dateFormat });
     }
 
-    /**
-     * Highly custom native Range Picker wrapper targeting Moment operations safely
-     */
     static initializeDateRangePicker(selector, options = {}) {
         if (typeof window.jQuery === 'undefined' || typeof moment === 'undefined') return;
 

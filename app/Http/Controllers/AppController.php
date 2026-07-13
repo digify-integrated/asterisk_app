@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AppTableResource;
-use App\Http\Requests\FetchAppDetailsRequest;
-use App\Http\Resources\AppDetailsResource;
 use App\Models\App;
+use App\Http\Resources\AppTableResource;
+use App\Http\Resources\AppDetailsResource;
 use App\Http\Requests\SaveAppRequest;
+use App\Http\Requests\FetchAppDetailsRequest;
+use App\Http\Requests\DeleteAppRequest;
+use App\Http\Requests\DeleteMultipleAppsRequest;
 use App\Services\AppManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,79 +46,56 @@ class AppController extends Controller
 
     public function fetch(FetchAppDetailsRequest $request): JsonResponse|AppDetailsResource
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        $app = App::find($validated['app_id']);
+            $app = App::find($validated['app_id']);
 
-        return new AppDetailsResource($app);
-    }
+            return new AppDetailsResource($app);
 
-    public function delete(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'app_id' => ['required', 'integer', 'min:1', Rule::exists('apps', 'id')],
-        ]);
+        } catch (Exception $e) {
+            report($e);
 
-        if ($validator->fails()) {
             return response()->json([
-                'message' => $validator->errors()->first('app_id') ?? 'Validation failed',
-            ]);
+                'message' => 'An unexpected server error occurred while retrieving application details.',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $app_id = (int) $validator->validated()['app_id'];
-
-        DB::transaction(function () use ($app_id) {
-            $app = App::query()->select(['id', 'logo'])->findOrFail($app_id);
-
-            $path = ltrim((string) $app->app_logo, '/');
-            $path = Str::replaceFirst('storage/', '', $path);
-            $path = Str::replaceFirst('app/public/', '', $path);
-            $path = Str::replaceFirst('public/', '', $path);
-
-            if ($path !== '') {
-                Storage::disk('public')->delete($path);
-            }
-
-            $app->delete();
-        });        
-
-        return response()->json([
-            'message' => 'The app has been deleted successfully',
-        ]);
     }
 
-    public function deleteMultiple(Request $request)
+    public function delete(DeleteAppRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'selected_id'   => ['required', 'array', 'min:1'],
-            'selected_id.*' => ['integer', 'distinct', Rule::exists('apps', 'id')],
-        ]);
+        try {
+            $this->appService->deleteApp((int) $request->validated()['app_id']);
 
-        $ids = $validated['selected_id'];
+            return response()->json([
+                'message' => 'The app has been deleted successfully',
+            ], Response::HTTP_OK);
 
-        DB::transaction(function () use ($ids) {
-            $apps = App::query()
-                ->whereIn('id', $ids)
-                ->get(['id', 'logo']);
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => 'Failed to delete the application due to a system error.',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-            foreach ($apps as $app) {
-                $path = ltrim((string) $app->logo, '/');
+    public function deleteMultiple(DeleteMultipleAppsRequest $request): JsonResponse
+    {
+        try {
+            $this->appService->deleteMultipleApps($request->validated()['selected_id']);
 
-                $path = Str::replaceFirst('storage/', '', $path);
-                $path = Str::replaceFirst('app/public/', '', $path);
-                $path = Str::replaceFirst('public/', '', $path);
+            return response()->json([
+                'message' => 'The selected apps have been deleted successfully',
+            ], Response::HTTP_OK);
 
-                if ($path !== '') {
-                    Storage::disk('public')->delete($path);
-                }
-            }
-
-            App::query()->whereIn('id', $ids)->delete();
-        });
-
-        return response()->json([
-            'message' => 'The selected apps have been deleted successfully',
-        ]);
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => 'Failed to delete the selected applications due to a system error.',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function generateTable(Request $request): JsonResponse

@@ -4,19 +4,10 @@ import { FormEnvironmentManager } from './formEnvironmentManager.js';
 import { errorHandler } from './errorHandler.js';
 import { Toast } from './notifications.js';
 
-/**
- * Enterprise Audit Trail Manager
- * Optimized for secure rendering, memory leak prevention, and request throttling.
- */
 export class AuditLogManager {
-    // Tracks registered selectors to enforce exact-once event binding per execution context
     static _registeredSelectors = new Set();
-    // Cache map keeping track of active in-flight network requests to prevent duplicate spamming
     static _activeRequests = new Map();
 
-    /**
-     * Wires up the default primary layout document log listeners safely.
-     */
     static attachLogNotesHandler() {
         const selector = '#log-notes-main';
         if (this._registeredSelectors.has(selector)) return;
@@ -33,14 +24,7 @@ export class AuditLogManager {
         });
     }
 
-    /**
-     * Wires up contextual class action buttons referencing custom element IDs cleanly.
-     * Guarded tightly against dynamic duplicate listener pollution.
-     * @param {string} trigger 
-     * @param {string} databaseTable 
-     */
     static attachLogNotesClassHandler(trigger, databaseTable) {
-        // Idempotency check: Don't stack duplicate event listeners on the document object
         if (this._registeredSelectors.has(trigger)) return;
         this._registeredSelectors.add(trigger);
 
@@ -55,9 +39,6 @@ export class AuditLogManager {
         });
     }
 
-    /**
-     * Fetches and renders audit log histories inside a dynamic Metronic timeline view.
-     */
     static async logNotes(databaseTable, referenceId) {
         const logNotesContainer = document.getElementById('log-notes');
         const emptyStateContainer = document.getElementById('log-notes-empty');
@@ -67,13 +48,11 @@ export class AuditLogManager {
             return;
         }
 
-        // Deduplication: Prevent concurrent network spam for identical table/record targets
         const requestKey = `${databaseTable}_${referenceId}`;
         if (this._activeRequests.has(requestKey)) {
             return this._activeRequests.get(requestKey);
         }
 
-        // Display visual loading skeleton immediately
         logNotesContainer.innerHTML = `
             <div class="d-flex flex-column justify-content-center align-items-center py-10 w-100">
                 <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem; border-width: 0.25rem;"></div>
@@ -83,7 +62,6 @@ export class AuditLogManager {
         logNotesContainer.classList.remove('d-none');
         if (emptyStateContainer) emptyStateContainer.classList.add('d-none');
 
-        // Setup the network execution block request promise loop
         const fetchPromise = (async () => {
             try {
                 const ctx = FormEnvironmentManager.getPageContext() || {};
@@ -102,14 +80,19 @@ export class AuditLogManager {
                     },
                 });
 
+                // 🔑 Catch 4xx/5xx failures securely right here
                 if (!response.ok) {
                     throw new Error(`Failed to fetch log notes. HTTP status: ${response.status}`);
                 }
 
                 const data = await response.json();
 
-                if (data.success) {
-                    if (data.logs && data.logs.length > 0) {
+                // 🔑 REVISION: Route explicitly using data structural availability and specific session flags instead of data.success
+                if (data.invalid_session) {
+                    Toast.show(data.message || 'Session expired.', 'warning');
+                    if (data.redirect_link) window.location.href = data.redirect_link;
+                } else if (data.logs !== undefined) {
+                    if (Array.isArray(data.logs) && data.logs.length > 0) {
                         logNotesContainer.innerHTML = this._buildTimelineHtml(data.logs);
                         this._attachExpandButtonListeners(logNotesContainer);
                     } else {
@@ -117,9 +100,6 @@ export class AuditLogManager {
                         logNotesContainer.classList.add('d-none');
                         if (emptyStateContainer) emptyStateContainer.classList.remove('d-none');
                     }
-                } else if (data.invalid_session) {
-                    Toast.show(data.message, 'warning');
-                    if (data.redirect_link) window.location.href = data.redirect_link;
                 } else {
                     Toast.show(data.message || 'Unable to load audit trail records.', 'error');
                     this._showInlineError(logNotesContainer, 'Unable to display records.');
@@ -128,7 +108,6 @@ export class AuditLogManager {
                 this._showInlineError(logNotesContainer, 'Failed to connect to the log service. Please try again.');
                 errorHandler.handle(error, 'audit_fetch_failed');
             } finally {
-                // Ensure key allocation drops immediately upon process lifecycle finalization
                 this._activeRequests.delete(requestKey);
             }
         })();
@@ -263,7 +242,6 @@ export class AuditLogManager {
                 `;
             }
 
-            // Sanitizing attribute properties tightly using a custom secure escape protocol
             const safeImgUrl = this._escapeAttribute(item.profile_picture || '');
 
             return `
@@ -309,7 +287,7 @@ export class AuditLogManager {
             e.preventDefault();
             const hiddenChanges = container.querySelectorAll('.audit-hidden-change');
             hiddenChanges.forEach(el => el.classList.remove('d-none'));
-            expandBtn.parentElement.remove(); // Drop trigger wrapper cleanly out of view tree
+            expandBtn.parentElement.remove(); 
         });
     }
 
@@ -344,7 +322,6 @@ export class AuditLogManager {
 
     static _escapeAttribute(str) {
         if (!str) return '';
-        // Strict attribute validation to completely neutralize JavaScript URI scheme injection vector vulnerabilities
         if (/^(javascript:|data:|vbscript:)/i.test(str.trim())) {
             return '#';
         }

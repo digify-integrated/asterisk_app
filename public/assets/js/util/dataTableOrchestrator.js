@@ -5,7 +5,6 @@ import { errorHandler } from './errorHandler.js';
 import { Toast } from './notifications.js';
 import { ComponentRegistry } from './componentRegistry.js';
 
-// Central shared private cache to tracking underlying platform instances across components
 const instanceRegistry = new WeakMap();
 const tableMetadataRegistry = new WeakMap();
 let globalListenersConfigured = false;
@@ -14,13 +13,9 @@ let globalResizeObserver = null;
 export class DataTableOrchestrator {
     constructor() {
         this._resizeTimeout = null;
-        this._boundHandlers = new Map(); // Tracks event listener references to guarantee cleanup
+        this._boundHandlers = new Map();
     }
 
-    /**
-     * Resolves and extracts an underlying DataTables API target.
-     * @param {string|HTMLElement} selectorOrNode 
-     */
     static getAPI(selectorOrNode) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
         if (!node) return null;
@@ -37,9 +32,6 @@ export class DataTableOrchestrator {
         return dtInstance;
     }
 
-    /**
-     * Entry Initializer: Configures data streams and wires ecosystem plug-ins.
-     */
     initialize(options = {}) {
         const config = {
             selector: null,
@@ -65,7 +57,6 @@ export class DataTableOrchestrator {
         const tableNode = typeof config.selector === 'string' ? document.querySelector(config.selector) : config.selector;
         if (!tableNode) return null;
 
-        // Ensure proper lifecycle resets before running new operations
         this.destroy(tableNode);
         this.resetSelectionState(config);
 
@@ -172,9 +163,6 @@ export class DataTableOrchestrator {
         if (dt) dt.ajax.reload(null, false);
     }
 
-    /**
-     * Purges runtime allocations and cleanly untracks event listeners to prevent memory leaks.
-     */
     destroy(selectorOrNode) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
         if (!node) return;
@@ -189,7 +177,6 @@ export class DataTableOrchestrator {
 
         window.jQuery(document).off(`.export_${node.id || 'orchestrated'}`);
 
-        // Safely remove tracked event handlers
         if (this._boundHandlers.has(node)) {
             const handlers = this._boundHandlers.get(node);
             handlers.forEach(({ element, event, callback }) => {
@@ -198,7 +185,6 @@ export class DataTableOrchestrator {
             this._boundHandlers.delete(node);
         }
 
-        // Unobserve deleted layouts to save CPU cycles
         if (globalResizeObserver) {
             const wrapper = node.closest('.dataTables_wrapper');
             if (wrapper) globalResizeObserver.unobserve(wrapper);

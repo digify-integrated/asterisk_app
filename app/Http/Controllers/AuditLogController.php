@@ -2,71 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FetchAuditLogDetailsRequest;
+use App\Http\Resources\AuditLogCollectionResource;
 use App\Models\AuditLog;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 class AuditLogController extends Controller
 {
-    public function fetch(Request $request): JsonResponse
+    public function fetch(FetchAuditLogDetailsRequest $request): JsonResponse|AuditLogCollectionResource
     {
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'invalid_session' => true,
-                'message' => 'Your session has expired. Please log in again.',
-                'redirect_link' => route('login'), 
-            ]);
-        }
-
-        $tableName = $request->query('databaseTable');
-        $referenceId = $request->query('referenceId');
-
-        if (empty($tableName) || empty($referenceId)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Missing database table or context reference identifier lookup arguments.',
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
+            $validated = $request->validated();
+
             $logs = AuditLog::with('user')
-                ->where('table_name', $tableName)
-                ->where('reference_id', $referenceId)
+                ->where('table_name', $validated['databaseTable'])
+                ->where('reference_id', $validated['referenceId'])
                 ->latest()
                 ->get();
 
-            $formattedLogs = $logs->map(function ($auditItem) {
-                $user = $auditItem->user;
+            return new AuditLogCollectionResource($logs);
 
-                $userName = $user ? $user->name : 'System/Unknown';
-                $profilePic = $user && $user->profile_picture 
-                    ? asset($user->profile_picture) 
-                    : asset('assets/media/default/default-avatar.jpg');
-
-                return [
-                    'id'              => $auditItem->id,
-                    'raw_log'         => $auditItem->log,
-                    'user_name'       => $userName,
-                    'profile_picture' => $profilePic,
-                    'time_relative'   => $auditItem->created_at->greaterThan(now()->subHours(12))
-                                        ? $auditItem->created_at->diffForHumans()
-                                        : $auditItem->created_at->format('M j, Y g:i A'),
-                ];
-            });
-
-            return response()->json([
-                'success' => true,
-                'logs'    => $formattedLogs,
-            ]);
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             report($e);
 
             return response()->json([
-                'success' => false,
                 'message' => 'An internal database parsing error occurred while attempting to assemble logs.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

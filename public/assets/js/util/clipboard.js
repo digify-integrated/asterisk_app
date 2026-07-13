@@ -2,10 +2,6 @@
 
 import { Toast } from './notifications.js';
 
-/**
- * Enterprise Clipboard Operations Manager
- * Hardened for silent layout focus protection, trimming normalization, and cross-browser handling.
- */
 export class ClipboardManager {
     static DEFAULT_MESSAGES = {
         success: 'Copied successfully to your clipboard.',
@@ -13,14 +9,6 @@ export class ClipboardManager {
         failure: 'Copy operation rejected or unsupported by the browser.',
     };
 
-    /**
-     * Executes copy procedures safely from parameters or specific DOM references.
-     * @param {Object} params
-     * @param {string} [params.text] - Literal string content to write
-     * @param {string|HTMLElement} [params.target] - Target selector or input node to read from
-     * @param {boolean} [params.notify=true] - Direct toast delivery flag
-     * @param {Object} [params.messages] - Overriding message mappings
-     */
     static async copy({ text, target, notify = true, messages = {} } = {}) {
         const msg = { ...this.DEFAULT_MESSAGES, ...messages };
         const value = this._resolveValue(text, target);
@@ -30,7 +18,6 @@ export class ClipboardManager {
             return { ok: false, value: '', error: new Error('Empty payload') };
         }
 
-        // Check modern Clipboard API availability and Secure Context invariant constraints
         const useAsync = !!(navigator.clipboard && window.isSecureContext);
         
         try {
@@ -49,9 +36,6 @@ export class ClipboardManager {
         }
     }
 
-    /**
-     * Resolves raw context strings or DOM input pointers safely into standardized text payloads.
-     */
     static _resolveValue(text, target) {
         if (typeof text === 'string' && text) return text.trim();
         if (!target) return '';
@@ -66,21 +50,15 @@ export class ClipboardManager {
             resolved = el.textContent || '';
         }
 
-        // Enterprise Normalization: Drop trailing whitespaces or carriage breaks caused by layout indentations
         return this._sanitizePayload(resolved);
     }
 
-    /**
-     * Executes legacy document command triggers while strictly preserving user focus layouts.
-     */
     static _executeLegacyCopy(text) {
-        // Cache active focus descriptor element before running mutations to protect user context
         const originalActiveElement = document.activeElement;
 
         const textArea = document.createElement('textarea');
         textArea.value = text;
         
-        // Lock dimensions completely down to eliminate visible viewport hopping
         textArea.setAttribute('readonly', '');
         textArea.style.position = 'fixed';
         textArea.style.top = '0';
@@ -95,14 +73,12 @@ export class ClipboardManager {
         
         document.body.appendChild(textArea);
         
-        // Run clean programmatic text selection ranges
         textArea.select();
         textArea.setSelectionRange(0, text.length);
 
         const success = document.execCommand('copy');
         document.body.removeChild(textArea);
 
-        // A11y Focus Restoration: Return active state context to original interacting target element cleanly
         if (originalActiveElement && typeof originalActiveElement.focus === 'function') {
             originalActiveElement.focus({ preventScroll: true });
         }
@@ -112,17 +88,11 @@ export class ClipboardManager {
         }
     }
 
-    /**
-     * Normalizes white space structures and mitigates command-injection payload tricks.
-     */
     static _sanitizePayload(str) {
         if (!str) return '';
         
-        // 1. Strip structural spacing formatting anomalies entirely
         let sanitized = str.trim();
 
-        // 2. Mitigate Clipboard-based command injection exploits (RTLO characters, hidden terminal characters)
-        // This blocks malicious strings often used to hide commands behind a fake benign string path
         sanitized = sanitized.replace(/[\u202E\u200B\uFEFF]/g, '');
 
         return sanitized;

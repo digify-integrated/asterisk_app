@@ -33,11 +33,49 @@ class AppManagementService
         });
     }
 
+    public function deleteApp(int $appId): void
+    {
+        DB::transaction(function () use ($appId) {
+            $app = App::query()->select(['id', 'logo'])->findOrFail($appId);
+
+            if ($app->logo) {
+                $this->deletePhysicalLogo($app->logo);
+            }
+
+            $app->delete();
+        });
+    }
+
+    public function deleteMultipleApps(array $appIds): void
+    {
+        DB::transaction(function () use ($appIds) {
+            $apps = App::query()
+                ->whereIn('id', $appIds)
+                ->get(['id', 'logo']);
+
+            foreach ($apps as $app) {
+                if ($app->logo) {
+                    $this->deletePhysicalLogo($app->logo);
+                }
+            }
+
+            App::query()->whereIn('id', $appIds)->delete();
+        });
+    }
+
+    protected function deletePhysicalLogo(string $logoPath): void
+    {
+        $cleanPath = str_replace(['storage/', 'app/public/', 'public/'], '', ltrim($logoPath, '/'));
+        
+        if ($cleanPath !== '') {
+            Storage::disk('public')->delete($cleanPath);
+        }
+    }
+
     protected function handleLogoUpload(App $app, UploadedFile $file): void
     {
         if ($app->logo) {
-            $cleanPath = str_replace(['storage/', 'app/public/', 'public/'], '', ltrim($app->logo, '/'));
-            Storage::disk('public')->delete($cleanPath);
+            $this->deletePhysicalLogo($app->logo);
         }
 
         $fileName = Str::random(20) . '.' . strtolower($file->getClientOriginalExtension());

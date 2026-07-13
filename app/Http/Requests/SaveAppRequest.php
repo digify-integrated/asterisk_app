@@ -7,8 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
 class SaveAppRequest extends FormRequest
-{
-    
+{    
     protected ?UploadSetting $uploadSetting = null;
     
     public function authorize(): bool

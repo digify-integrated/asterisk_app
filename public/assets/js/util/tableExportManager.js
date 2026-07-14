@@ -7,10 +7,6 @@ import { Toast } from './notifications.js';
 import { FormEnvironmentManager } from './formEnvironmentManager.js';
 
 export class TableExportManager {
-    /**
-     * @param {string} tableName - Target data scheme mapping identifier
-     * @param {Object} [options={}] - Custom configuration mapping selectors
-     */
     constructor(tableName, options = {}) {
         this.tableName = tableName;
         this.config = Object.assign({
@@ -23,7 +19,7 @@ export class TableExportManager {
 
         this.selectedColumnsOrder = [];
         this.dualListInitialized = false;
-        this.isProcessingExport = false; // Concurrency Execution Guard
+        this.isProcessingExport = false;
 
         this._listAbortController = null;
         this._eventAbortController = new AbortController();
@@ -31,27 +27,20 @@ export class TableExportManager {
         this._initListeners();
     }
 
-    /** Unbinds structural document events to clean up memory footprints */
     destroy() {
         this._eventAbortController.abort();
         if (this._listAbortController) this._listAbortController.abort();
     }
 
-    /**
-     * Set up listener attachments
-     * @private
-     */
     _initListeners() {
         const { signal } = this._eventAbortController;
 
         document.addEventListener('click', async (e) => {
-            // Context Router 1: Load export field schemas
             if (e.target.closest(this.config.triggerSelector)) {
                 e.preventDefault();
                 await this._loadExportColumns();
             }
             
-            // Context Router 2: Confirm download action execution
             if (e.target.closest(this.config.submitSelector)) {
                 e.preventDefault();
                 await this._executeExportDownload();
@@ -59,10 +48,6 @@ export class TableExportManager {
         }, { signal });
     }
 
-    /**
-     * Pulls active columns lists via JSON streams
-     * @private
-     */
     async _loadExportColumns() {
         const select = document.querySelector(this.config.selectSelector);
         if (!select) return;
@@ -76,7 +61,6 @@ export class TableExportManager {
                 bodyObj: { table_name: this.tableName }
             });
 
-            // Rebuild selection DOM options efficiently via standard DocumentFragments
             select.options.length = 0;
             const frag = document.createDocumentFragment();
             data.forEach(opt => {
@@ -85,7 +69,7 @@ export class TableExportManager {
             select.appendChild(frag);
 
             this._initializeDualListBoxOnce();
-            this.selectedColumnsOrder = []; // Clean preceding state mapping trackers
+            this.selectedColumnsOrder = [];
             this._refreshDualListBox();
 
         } catch (err) {
@@ -96,12 +80,7 @@ export class TableExportManager {
         }
     }
 
-    /**
-     * Prepares parameters and processes binary payload returns
-     * @private
-     */
     async _executeExportDownload() {
-        // Concurrency Guard Check: Kill parallel clicks before hitting long task execution threads
         if (this.isProcessingExport) return;
 
         const exportTo = document.querySelector(this.config.formatRadioSelector)?.value;
@@ -114,7 +93,6 @@ export class TableExportManager {
         if (!this.selectedColumnsOrder.length) return Toast.warning('Choose the explicit target columns you want to export.');
         if (!exportTo) return Toast.warning('Choose an export format.');
 
-        // Establish locking threshold state parameters
         this.isProcessingExport = true;
         ButtonStateManager.disable(this.config.submitSelector);
 
@@ -134,16 +112,11 @@ export class TableExportManager {
         } catch (err) {
             errorHandler.handle(err, 'export_execution_failed', 'Binary stream generation failed.');
         } finally {
-            // Release locking thresholds 
             this.isProcessingExport = false;
             ButtonStateManager.enable(this.config.submitSelector);
         }
     }
 
-    /**
-     * Attaches third party bootstrap dual list interface wrappers
-     * @private
-     */
     _initializeDualListBoxOnce() {
         if (this.dualListInitialized || !window.jQuery) return;
 
@@ -169,10 +142,6 @@ export class TableExportManager {
         this.dualListInitialized = true;
     }
 
-    /**
-     * Synchronization update hook for dual list layouts
-     * @private
-     */
     _refreshDualListBox() {
         if (!window.jQuery) return;
         const $el = window.jQuery(this.config.selectSelector);
@@ -182,10 +151,6 @@ export class TableExportManager {
         ComponentRegistry.initializeDualListBoxIcon();
     }
 
-    /**
-     * Standardized payload AJAX configuration wrappers
-     * @private
-     */
     async _jsonFetch(url, { signal, bodyObj } = {}) {
         const res = await fetch(url, {
             method: 'POST',
@@ -202,10 +167,6 @@ export class TableExportManager {
         return res.json();
     }
 
-    /**
-     * Standardized binary blob data pipeline wrappers
-     * @private
-     */
     async _blobFetch(url, { bodyObj } = {}) {
         const res = await fetch(url, {
             method: 'POST',
@@ -225,10 +186,6 @@ export class TableExportManager {
         return { blob, headerFilename };
     }
 
-    /**
-     * Parses filenames from content-disposition header schemas cleanly
-     * @private
-     */
     _parseFilename(contentDisposition) {
         if (!contentDisposition) return '';
 
@@ -247,10 +204,6 @@ export class TableExportManager {
         return '';
     }
 
-    /**
-     * Injects a temporary download element channel to push binaries down to browser space
-     * @private
-     */
     _triggerBlobDownload(blob, filename) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');

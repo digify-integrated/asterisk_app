@@ -188,7 +188,7 @@ export class AuditLogManager {
 
             if (changes.length) {
                 changesHtml = `
-                    <div class="border-top mt-6 pt-5">
+                    <div class="border-top mt-6">
                         ${changes.map((change, index) => {
                             const hiddenClass = hasMore && index >= visibleLimit ? 'audit-hidden-change d-none' : '';
 

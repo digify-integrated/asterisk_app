@@ -9,33 +9,47 @@ import { ButtonStateManager } from '../../util/buttonManager.js';
 import { DetailFetcher } from '../../util/detailFetcher.js';
 import { initConfirmAction } from '../../util/confirmationAction.js';
 
+const CONFIG = {
+    selectors: {
+        table: '#app-table',
+        form: '#app_form',
+        submitButton: '#submit-data',
+        modal: '#form-modal',
+        logNotesTrigger: '.view-log-notes',
+        deleteTrigger: '.delete-details',
+        updateTrigger: '.update-details',
+        createTrigger: '.new-button'
+    },
+    endpoints: {
+        tableData: '/app/generate-table',
+        save: '/app/save',
+        delete: '/app/delete',
+        fetch: '/app/fetch'
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    const initializedTables = new Map();
-    const abortController = new AbortController();
-
-    // HTML Escaper helper
-    const escapeHtml = typeof window.e === 'function' ? window.e : (str) => 
-        str == null ? '' : String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-
-    // 1. Initialize Audit Logs
-    AuditLogManager.attachLogNotesClassHandler('.view-log-notes', 'apps');
-
-    // 2. Initialize Data Tables
     const orchestrator = new DataTableOrchestrator();
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    const escapeHtml = typeof window.e === 'function' 
+        ? window.e 
+        : (str) => str == null ? '' : String(str).replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+          }[m]));
+
+    AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+   
     orchestrator.initialize({
-        selector: '#app-table',
-        url: '/app/generate-table',
-        serverSide: false, 
-        pageLength: 10,
-        actionDropdown: '.action-dropdown',
-        masterCheckbox: '.datatable-checkbox-master',
-        lengthSelector: '.datatable-length',
-        searchSelector: '.datatable-search',
+        selector: CONFIG.selectors.table,
+        url: CONFIG.endpoints.tableData,
+        serverSide: false,
         columnDefs: [
             { width: '5%', bSortable: false, targets: 0 },
             { width: '10%', bSortable: false, targets: 4 },
         ],
-        addons: { controls: true, export: true },
+        addons: { controls: true },
         columns: [
             { 
                 data: 'id',
@@ -68,51 +82,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     return `
                     <div class="d-flex justify-content-end gap-2 me-5">
-                        ${perms.write || perms.can_write ? `<button class="btn btn-sm btn-icon btn-light-primary update-details" data-bs-toggle="modal" data-bs-target="#form-modal" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                        ${perms.logs || perms.can_logs ? `<button class="btn btn-sm btn-icon btn-light-warning view-log-notes" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                        ${perms.delete || perms.can_delete ? `<button class="btn btn-sm btn-icon btn-light-danger delete-details" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                        ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                        ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                        ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                     </div>`;
                 }
             }
         ]
     });
 
-    initializedTables.set('#app-table', orchestrator);
-
-    // 3. Initialize Form Validation & Form Submission Pipelines
     initValidation({
         forms: [
             {
-                selector: '#app_form',
+                selector: CONFIG.selectors.form,
                 rules: {
                     name: { required: true },
                     description: { required: true },
                     order_sequence: { required: true }
                 },
                 submitHandler: async (formElement) => {
-                    const btn = '#submit-data';
+                    const btn = CONFIG.selectors.submitButton;
                     ButtonStateManager.disable(btn, { loadingText: 'Saving...', showLoader: true });
 
                     try {
-                        const response = await fetch('/app/save', {
+                        const response = await fetch(CONFIG.endpoints.save, {
                             method: 'POST',
-                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                            body: new FormData(formElement)
+                            headers: { 
+                                'X-Requested-With': 'XMLHttpRequest', 
+                                'Accept': 'application/json' 
+                            },
+                            body: new FormData(formElement),
+                            signal
                         });
 
                         if (await errorHandler.handleResponse(response, btn)) return;
 
-                        ButtonStateManager.enable(btn);
                         FormEnvironmentManager.resetForm(formElement);
                         
-                        if (window.jQuery) {
-                            window.jQuery('#form-modal').modal('hide');
-                        }
-
-                        initializedTables.forEach((orchestratorInstance, selectorKey) => {
-                            orchestratorInstance.reload(selectorKey);
-                        });
+                        $(CONFIG.selectors.modal).modal('hide');
+                        
+                        orchestrator.reload(CONFIG.selectors.table);
                     } catch (error) {
+                        if (error.name === 'AbortError') return; 
                         ButtonStateManager.enable(btn);
                         await errorHandler.handle(error, 'network_failure', 'Transactional pipeline error.');
                     }
@@ -121,10 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     });
 
-    // 4. Initialize Confirmation Triggers (e.g., Deletes)
     initConfirmAction({
-        trigger: '.delete-details',
-        url: '/app/delete',
+        trigger: CONFIG.selectors.deleteTrigger,
+        url: CONFIG.endpoints.delete,
         method: 'DELETE',
         payload: { app_id: (el) => el.dataset.referenceId },
         swalTitle: 'Are you sure?',
@@ -132,25 +142,28 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmButtonText: 'Yes, delete it',
         confirmButtonClass: 'danger',
         onSuccess: () => {
-            initializedTables.get('#app-table')?.reload('#app-table');
+            orchestrator.reload(CONFIG.selectors.table);
         }
     });
 
-    // 5. Global Event Delegations (Edit Hydration / Create Reset)
     document.addEventListener('click', async (event) => {
         const target = event.target;
-        const updateTrigger = target.closest('.update-details');
-        const createTrigger = target.closest('.new-button');
+        const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
+        const createTrigger = target.closest(CONFIG.selectors.createTrigger);
         
         if (updateTrigger) {
+            const refId = updateTrigger.dataset.referenceId;
+            
             await DetailFetcher.fetch({
-                url: '/app/fetch',
+                url: CONFIG.endpoints.fetch,
                 detailIdKey: 'app_id',
-                detailIdValue: updateTrigger.dataset.referenceId,
+                detailIdValue: refId,
+                signal,
                 onSuccess: (response) => {
                     const data = response?.data || response;
+                    
                     const fields = {
-                        'app_id': updateTrigger.dataset.referenceId,
+                        'app_id': refId,
                         'name': data.name,
                         'order_sequence': data.order_sequence,
                         'description': data.description
@@ -159,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Object.entries(fields).forEach(([id, val]) => {
                         const el = document.getElementById(id);
                         if (el) {
-                            el.value = val;
+                            el.value = val ?? '';
                             el.dispatchEvent(new Event('change', { bubbles: true }));
                         }
                     });
@@ -168,8 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (createTrigger) {
-            FormEnvironmentManager.resetForm('app_form');
+            FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
         }
 
-    }, { signal: abortController.signal });
+    }, { signal });
+
+    window.addEventListener('unload', () => abortController.abort(), { once: true });
 });

@@ -2,10 +2,6 @@
 
 import { Toast } from './notifications.js';
 
-/**
- * Core validation engine supporting declarative data attributes, 
- * custom validation schemas, and automated library interactions (Select2).
- */
 export class FormValidator {
     static DEFAULTS = {
         toastType: 'error',
@@ -40,7 +36,6 @@ export class FormValidator {
         this._init();
     }
 
-    /** Initialize bindings */
     _init() {
         if (this.form.dataset.validationBound === 'true') return;
         this.form.dataset.validationBound = 'true';
@@ -57,7 +52,6 @@ export class FormValidator {
         this.form.addEventListener('submit', (e) => this._handleSubmit(e), { signal });
     }
 
-    /** Gracefully tears down listeners to prevent memory leaks in SPAs */
     destroy() {
         this._abortController.abort();
         delete this.form.dataset.validationBound;
@@ -82,7 +76,6 @@ export class FormValidator {
     async _handleSubmit(event) {
         if (window.jQuery) {
             window.jQuery(this.form).find('select.select2-hidden-accessible').each((_, el) => {
-                // Force browser value synchronization inside jQuery elements
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
@@ -155,7 +148,7 @@ export class FormValidator {
             if (!passed) {
                 const msg = this._resolveMessage({ field, fieldKey, ruleName, ruleValue });
                 errors.push({ field, rule: ruleName, message: msg });
-                break; // Limit error logging to single context alerts sequentially per field
+                break;
             }
         }
 
@@ -331,10 +324,6 @@ export class FormValidator {
         return chosen;
     }
 
-    /**
-     * Sanitizes label extraction by parsing only direct structural text nodes.
-     * Prevents inner HTML elements (like asterisks or icons) from corrupting text.
-     */
     _getFieldLabelText(field) {
         let labelEl = null;
         if (field.id) {
@@ -345,7 +334,6 @@ export class FormValidator {
         }
         if (!labelEl) return '';
 
-        // Safely pull only immediate text nodes, bypassing child spans/elements
         return Array.from(labelEl.childNodes)
             .filter(node => node.nodeType === Node.TEXT_NODE)
             .map(node => node.textContent.trim())
@@ -421,11 +409,6 @@ export class FormValidator {
     }
 }
 
-/**
- * Enterprise Application Entry Bootstrapper.
- * Supports active DOM monitoring loops via event delegation for dynamic frameworks.
- * @param {Object} masterConfig
- */
 export function initValidation(masterConfig = {}) {
     const instances = [];
     const formsArray = masterConfig.forms || [];
@@ -437,14 +420,12 @@ export function initValidation(masterConfig = {}) {
         return validator;
     };
 
-    // Scan the layout rules present immediately on call execution loops
     for (const formSetup of formsArray) {
         document.querySelectorAll(formSetup.selector).forEach(element => {
             initializeFormElement(element, formSetup);
         });
     }
 
-    // Dynamic Framework Protection: Watch the document root context for new matching form structures
     if (masterConfig.observeDynamicDOM !== false) {
         document.addEventListener('shown.bs.modal', (e) => {
             formsArray.forEach(formSetup => {

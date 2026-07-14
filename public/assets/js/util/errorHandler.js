@@ -17,31 +17,38 @@ export class SystemErrorHandler {
         
         this.modalInstance = window.bootstrap?.Modal?.getOrCreateInstance(this.modalEl) || null;
         
-        // Use a clean local instance registry tracking individual modal presentation states
         this._currentDiagnosticBuffer = '';
         this._bindCopyEvent();
     }
 
-    /**
-     * Unified response handler interceptor.
-     * Evaluates response status, releases button UI states, and routes to either Toast or Modal.
-     * @param {Response} response - Fetch response stream.
-     * @param {string|HTMLElement|null} [submitBtn=null] - Optional button selector to auto-enable.
-     * @returns {Promise<boolean>} - Returns true if an error was handled, false otherwise.
-     */
     async handleResponse(response, submitBtn = null) {
-        if (!response || response.ok) return false;
+        if (!response) return true;
 
-        // 1. Automatically restore submission button interaction states
+        if (response.ok) {
+            if (submitBtn) {
+                ButtonStateManager.enable(submitBtn);
+            }
+
+            try {
+                const successClone = response.clone();
+                const data = await successClone.json();
+                if (data?.message) {
+                    Toast.show(data.message, 'success');
+                }
+            } catch {
+                
+            }
+            return false; 
+        }
+
         if (submitBtn) {
             ButtonStateManager.enable(submitBtn);
         }
 
-        // 2. Safely capture stream clone to prevent structural extraction crashes
-        const softClone = response.clone();
+        const isSoftError = response.status >= 400 && response.status < 500 && response.status !== 404;
 
-        // 3. Intercept Client-Facing Soft Failures (Auth, Validation, Throttling)
-        if ([401, 422, 429].includes(response.status)) {
+        if (isSoftError) {
+            const softClone = response.clone();
             try {
                 const data = await softClone.json();
                 Toast.show(data.message || 'Request failed processing.', 'error');
@@ -56,7 +63,6 @@ export class SystemErrorHandler {
             return true;
         }
 
-        // 4. Fall back directly to systemic structural breakdown modal (500, etc.)
         const modalClone = response.clone();
         await this.handle(modalClone);
         return true;
@@ -76,13 +82,8 @@ export class SystemErrorHandler {
         });
     }
 
-    /**
-     * Internal Core Engine: Parses dynamic error variants into the debug layout modal.
-     */
     async handle(xhr, status = 'error', error = '') {
         const diagnosticReport = [];
-        
-        // Transaction Isolation Strategy: Reset buffer for each execution pass
         let runtimeBuffer = '';
 
         const appendRow = (label, value) => {
@@ -141,7 +142,6 @@ export class SystemErrorHandler {
             appendRow('Parser Failure', criticalMappingError.message);
         }
 
-        // Apply state safely back to the instance layer
         this._currentDiagnosticBuffer = runtimeBuffer;
         this._renderAndShow(diagnosticReport);
     }
@@ -164,7 +164,7 @@ export class SystemErrorHandler {
         
         const strong = document.createElement('strong');
         strong.className = 'text-gray-800';
-        strong.textContent = `${label}: `; // Secure Text Assignment Vector
+        strong.textContent = `${label}: `;
         
         const span = document.createElement('span');
         span.className = 'text-gray-700';

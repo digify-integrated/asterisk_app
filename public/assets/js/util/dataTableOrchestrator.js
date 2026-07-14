@@ -44,13 +44,13 @@ export class DataTableOrchestrator {
             onRowClick: null,
             addons: { controls: false, subControls: false },
             serverSide: true,
-            pageLength: 25,
-            searchDelay: 400,
+            pageLength: 10,
+            searchDelay: 300,
             scrollX: true,
             responsive: false,
             processing: false,
             actionDropdown: '.action-dropdown',
-            masterCheckbox: '#datatable-checkbox',
+            masterCheckbox: '.datatable-checkbox-master',
             ...options
         };
 

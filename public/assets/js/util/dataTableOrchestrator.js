@@ -43,7 +43,7 @@ export class DataTableOrchestrator {
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             onRowClick: null,
             addons: { controls: false, subControls: false },
-            serverSide: true,
+            serverSide: false,
             pageLength: 10,
             searchDelay: 300,
             scrollX: true,
@@ -51,6 +51,8 @@ export class DataTableOrchestrator {
             processing: false,
             actionDropdown: '.action-dropdown',
             masterCheckbox: '.datatable-checkbox-master',
+            lengthSelector: '.datatable-length',
+            searchSelector: '.datatable-search',
             ...options
         };
 

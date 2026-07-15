@@ -19,7 +19,7 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-icon btn-light btn-sm rounded-circle" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-icon bg-transparent btn-sm rounded-circle" data-bs-dismiss="modal">
                     <i class="ki-outline ki-cross fs-4"></i>
                 </button>
             </div>

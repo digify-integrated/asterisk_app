@@ -44,12 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     orchestrator.initialize({
         selector: CONFIG.selectors.table,
         url: CONFIG.endpoints.tableData,
-        serverSide: false,
         columnDefs: [
             { width: '5%', bSortable: false, targets: 0 },
             { width: '10%', bSortable: false, targets: 4 },
         ],
-        addons: { controls: true },
+        addons: { controls: true, export: true },
         columns: [
             { 
                 data: 'id',
@@ -137,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
         url: CONFIG.endpoints.delete,
         method: 'DELETE',
         payload: { app_id: (el) => el.dataset.referenceId },
-        swalTitle: 'Are you sure?',
-        swalText: 'This will permanently delete this record!',
-        confirmButtonText: 'Yes, delete it',
+        swalTitle: 'Delete Record?',
+        swalText: 'This action will permanently delete this record and cannot be undone.',
+        confirmButtonText: 'Delete Record',
         confirmButtonClass: 'danger',
         onSuccess: () => {
             orchestrator.reload(CONFIG.selectors.table);

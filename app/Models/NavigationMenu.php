@@ -3,15 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class NavigationMenu extends Model
 {
-    public function app(): BelongsTo
+    protected $table = 'navigation_menus';
+
+    protected $fillable = [
+        'name',
+        'icon',
+        'parent_id',
+        'page_type',
+        'order_sequence',
+        'last_log_by'
+    ];
+
+    public function apps(): BelongsToMany
     {
-        return $this->belongsTo(App::class);
+        return $this->belongsToMany(App::class, 'navigation_menu_apps', 'navigation_menu_id', 'app_id')
+            ->using(NavigationMenuApp::class)
+            ->withPivot('last_log_by')
+            ->withTimestamps();
     }
 
     public function children(): HasMany

@@ -15,14 +15,23 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('icon')->nullable();
-            $table->foreignId('app_id')->constrained('apps')->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('navigation_menus')->nullOnDelete();
             $table->enum('page_type', ['menu', 'single_page', 'multi_page'])->default('menu');
             $table->integer('order_sequence')->default(0);
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            $table->index(['app_id']);
+            $table->index(['parent_id', 'page_type']);
+        });
+
+        Schema::create('navigation_menu_apps', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('navigation_menu_id')->constrained('navigation_menus')->cascadeOnDelete();
+            $table->foreignId('app_id')->constrained('apps')->cascadeOnDelete();
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
+            $table->timestamps();
+
+            $table->index(['navigation_menu_id', 'app_id']);
         });
 
         Schema::create('navigation_menu_routes', function (Blueprint $table) {
@@ -76,29 +85,6 @@ return new class extends Migration
                     );
                 END IF;
 
-                IF NEW.app_id <> OLD.app_id THEN
-
-                    SELECT name
-                    INTO old_app_name
-                    FROM apps
-                    WHERE id = OLD.app_id;
-
-                    SELECT name
-                    INTO new_app_name
-                    FROM apps
-                    WHERE id = NEW.app_id;
-
-                    SET audit_log = CONCAT(
-                        audit_log,
-                        'App: "',
-                        COALESCE(old_app_name, 'Not set'),
-                        '" → "',
-                        COALESCE(new_app_name, 'Not set'),
-                        '"<br/>'
-                    );
-
-                END IF;
-
                 IF NOT (NEW.page_type <=> OLD.page_type) THEN
                     SET audit_log = CONCAT(
                         audit_log,
@@ -147,18 +133,11 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT;
-                DECLARE app_name VARCHAR(255);
-
-                SELECT name
-                INTO app_name
-                FROM apps
-                WHERE id = NEW.app_id;
 
                 SET audit_log = CONCAT(
                     'Navigation menu created.<br/><br/>',
                     'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
                     'Icon: "', COALESCE(NEW.icon, 'Not set'), '"<br/>',
-                    'App: "', COALESCE(app_name, 'Not set'), '"<br/>',
                     'Page Type: "', NEW.page_type, '"<br/>',
                     'Order Sequence: ', NEW.order_sequence
                 );
@@ -172,6 +151,50 @@ return new class extends Migration
                 )
                 VALUES (
                     'navigation_menus',
+                    NEW.id,
+                    audit_log,
+                    NEW.last_log_by,
+                    NOW()
+                );
+            END
+        SQL);
+
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_navigation_menu_app_insert');
+
+        DB::unprepared(<<<SQL
+            CREATE TRIGGER trg_navigation_menu_app_insert
+            AFTER INSERT ON navigation_menu_apps
+            FOR EACH ROW
+            BEGIN
+                DECLARE audit_log TEXT;
+                DECLARE app_name VARCHAR(255);
+                DECLARE navigation_menu_name VARCHAR(255);
+
+                SELECT name
+                INTO app_name
+                FROM apps
+                WHERE id = NEW.app_id;
+
+                SELECT name
+                INTO navigation_menu_name
+                FROM navigation_menus
+                WHERE id = NEW.navigation_menu_id;
+
+                SET audit_log = CONCAT(
+                    'Navigation menu app created.<br/><br/>',
+                    'Navigation Menu: "', COALESCE(navigation_menu_name, 'Not set'), '"<br/>',
+                    'App: "', COALESCE(app_name, 'Not set'), '"<br/>',
+                );
+
+                INSERT INTO audit_log (
+                    table_name,
+                    reference_id,
+                    log,
+                    changed_by,
+                    created_at
+                )
+                VALUES (
+                    'navigation_menu_apps',
                     NEW.id,
                     audit_log,
                     NEW.last_log_by,

@@ -142,7 +142,6 @@ export class DataTableOrchestrator {
                     }
                 }
 
-                // Safely add runtime wrapper nodes to the global ResizeObserver tracking index
                 if (globalResizeObserver) {
                     const wrapper = tableNode.closest('.dataTables_wrapper');
                     if (wrapper) globalResizeObserver.observe(wrapper);
@@ -182,7 +181,11 @@ export class DataTableOrchestrator {
         if (this._boundHandlers.has(node)) {
             const handlers = this._boundHandlers.get(node);
             handlers.forEach(({ element, event, callback }) => {
-                element?.removeEventListener(event, callback);
+                if (event === 'change.select2') {
+                    callback();
+                } else {
+                    element?.removeEventListener(event, callback);
+                }
             });
             this._boundHandlers.delete(node);
         }
@@ -217,8 +220,21 @@ export class DataTableOrchestrator {
                 const targetApi = typeof dt.page?.len === 'function' ? dt : window.jQuery(node).DataTable();
                 targetApi.page.len(Number.isFinite(limit) ? limit : 10).draw();
             };
-            lengthEl.addEventListener('change', lengthHandler);
-            handlers.push({ element: lengthEl, event: 'change', callback: lengthHandler });
+
+            const isSelect2 = window.jQuery && (window.jQuery(lengthEl).hasClass("select2-hidden-accessible") || lengthEl.dataset.control === "select2");
+
+            if (isSelect2 && window.jQuery) {
+                window.jQuery(lengthEl).on('change.select2', lengthHandler);
+                
+                handlers.push({ 
+                    element: lengthEl, 
+                    event: 'change.select2', 
+                    callback: () => window.jQuery(lengthEl).off('change.select2', lengthHandler) 
+                });
+            } else {
+                lengthEl.addEventListener('change', lengthHandler);
+                handlers.push({ element: lengthEl, event: 'change', callback: lengthHandler });
+            }
         }
 
         if (searchEl) {
@@ -315,8 +331,8 @@ export class DataTableOrchestrator {
         const debouncedSearch = this._debounce((val) => dt.search(val).draw(), 400);
 
         window.jQuery(document)
-            .off('change.dtSubControls', lengthSel)
-            .on('change.dtSubControls', lengthSel, function() {
+            .off('change.dtSubControls change.select2', lengthSel)
+            .on('change.dtSubControls change.select2', lengthSel, function() {
                 const val = Number.parseInt(this.value, 10);
                 dt.page.len(Number.isFinite(val) ? val : 25).draw();
             })

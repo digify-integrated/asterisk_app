@@ -26,7 +26,7 @@
 
             <div class="border-top"></div>
 
-            <div class="modal-body px-9 py-8">
+            <div class="modal-body px-5 py-5">
                 <div class="timeline timeline-border-dashed" id="log-notes"></div>
 
                 <div id="log-notes-empty" class="d-none">

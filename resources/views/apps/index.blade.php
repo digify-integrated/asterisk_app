@@ -15,7 +15,9 @@
     <div class="row g-7">
         @forelse($apps as $app)
             @php
-                $firstMenu = $app->navigationMenus->first();
+                $firstMenu = $app->navigationMenus->first(function ($menu) {
+                    return $menu->page_type !== 'menu';
+                });
 
                 $defaultLink = $firstMenu
                     ? route('apps.base', [

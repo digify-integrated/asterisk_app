@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         url: CONFIG.endpoints.tableData,
         columnDefs: [
             { width: '5%', bSortable: false, targets: 0 },
+            { width: '20%', targets: 1 },
+            { width: '15%', targets: 3 },
             { width: '10%', bSortable: false, targets: 4 },
         ],
         addons: { controls: true, export: true },
@@ -184,6 +186,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     }, { signal });
-
-    window.addEventListener('unload', () => abortController.abort(), { once: true });
 });

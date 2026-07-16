@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class App extends Model
 {
@@ -17,8 +17,12 @@ class App extends Model
         'last_log_by'
     ];
 
-    public function navigationMenus(): HasMany
+    public function navigationMenus(): BelongsToMany
     {
-        return $this->hasMany(NavigationMenu::class)->orderBy('order_sequence');
+        return $this->belongsToMany(NavigationMenu::class, 'navigation_menu_apps', 'app_id', 'navigation_menu_id')
+            ->using(NavigationMenuApp::class)
+            ->withPivot('last_log_by')
+            ->withTimestamps()
+            ->orderBy('order_sequence');
     }
 }

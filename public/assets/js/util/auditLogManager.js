@@ -54,9 +54,9 @@ export class AuditLogManager {
         }
 
         logNotesContainer.innerHTML = `
-            <div class="d-flex flex-column justify-content-center align-items-center py-10 w-100">
-                <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem; border-width: 0.25rem;"></div>
-                <span class="text-gray-500 fw-semibold fs-7">Loading log history...</span>
+            <div class="d-flex flex-column justify-content-center align-items-center py-12 w-100">
+                <div class="spinner-border text-primary-active mb-4" role="status" style="width: 2.25rem; height: 2.25rem; border-width: 0.2rem; --bs-spinner-border-width: 3px;"></div>
+                <span class="text-gray-500 fw-medium fs-7 tracking-wide">Retrieving history trail...</span>
             </div>
         `;
         logNotesContainer.classList.remove('d-none');
@@ -80,14 +80,12 @@ export class AuditLogManager {
                     },
                 });
 
-                // 🔑 Catch 4xx/5xx failures securely right here
                 if (!response.ok) {
                     throw new Error(`Failed to fetch log notes. HTTP status: ${response.status}`);
                 }
 
                 const data = await response.json();
 
-                // 🔑 REVISION: Route explicitly using data structural availability and specific session flags instead of data.success
                 if (data.invalid_session) {
                     Toast.show(data.message || 'Session expired.', 'warning');
                     if (data.redirect_link) window.location.href = data.redirect_link;
@@ -116,9 +114,6 @@ export class AuditLogManager {
         return fetchPromise;
     }
 
-    /**
-     * Safely breaks down text-based change instructions into functional data tokens
-     */
     static _parseLogContent(rawLog) {
         if (!rawLog) {
             return { title: 'Record updated', changes: [] };
@@ -167,34 +162,54 @@ export class AuditLogManager {
         return { title, changes };
     }
 
-    /**
-     * Translates dataset records into secure XSS-proof safe markup environments
-     */
     static _buildTimelineHtml(logs) {
-        return logs.map((item) => {
+        const timelineItems = logs.map((item, logIndex) => {
             const { title, changes } = this._parseLogContent(item.raw_log);
             const action = title.toLowerCase();
 
             let icon = 'ki-pencil';
-            if (action.includes('create') || action.includes('added')) icon = 'ki-plus';
-            else if (action.includes('delete')) icon = 'ki-trash';
-            else if (action.includes('approve')) icon = 'ki-check';
-            else if (action.includes('reject')) icon = 'ki-cross';
-            else if (action.includes('archive')) icon = 'ki-archive';
+            let badgeBg = 'bg-light-primary';
+            let iconColor = 'text-primary';
 
-            const visibleLimit = 8;
+            if (action.includes('create') || action.includes('added')) {
+                icon = 'ki-plus';
+                badgeBg = 'bg-light-success';
+                iconColor = 'text-success';
+            } else if (action.includes('delete') || action.includes('remove')) {
+                icon = 'ki-trash';
+                badgeBg = 'bg-light-danger';
+                iconColor = 'text-danger';
+            } else if (action.includes('approve') || action.includes('confirm')) {
+                icon = 'ki-check';
+                badgeBg = 'bg-light-success';
+                iconColor = 'text-success';
+            } else if (action.includes('reject') || action.includes('decline')) {
+                icon = 'ki-cross';
+                badgeBg = 'bg-light-danger';
+                iconColor = 'text-danger';
+            } else if (action.includes('archive')) {
+                icon = 'ki-archive';
+                badgeBg = 'bg-light-warning';
+                iconColor = 'text-warning';
+            }
+
+            const visibleLimit = 5;
             const hasMore = changes.length > visibleLimit;
             let changesHtml = '';
 
             if (changes.length) {
                 changesHtml = `
-                    <div class="border-top mt-6">
+                    <div class="mt-4 p-5 rounded-3 bg-light-soft border border-gray-200">
                         ${changes.map((change, index) => {
                             const hiddenClass = hasMore && index >= visibleLimit ? 'audit-hidden-change d-none' : '';
+                            
+                            // Dynamically remove border-bottom for the last item in the changes list
+                            const isLastChange = index === changes.length - 1;
+                            const borderClass = isLastChange ? '' : 'border-bottom border-gray-100';
 
                             if (change.type === 'note') {
                                 return `
-                                    <div class="alert alert-light-secondary py-3 px-4 mb-3 ${hiddenClass}">
+                                    <div class="alert alert-custom py-3 px-4 mb-2 bg-white border shadow-xs text-gray-700 fs-7 rounded-2 ${hiddenClass}">
                                         ${this._escapeHtml(change.text)}
                                     </div>
                                 `;
@@ -202,39 +217,39 @@ export class AuditLogManager {
 
                             if (change.type === 'create') {
                                 return `
-                                    <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
+                                    <div class="row g-2 py-2 align-items-center ${borderClass} ${hiddenClass}">
                                         <div class="col-lg-3">
-                                            <div class="text-uppercase text-muted fw-semibold fs-8">${this._escapeHtml(change.field)}</div>
+                                            <span class="text-uppercase text-muted fw-bold fs-9 tracking-wider">${this._escapeHtml(change.field)}</span>
                                         </div>
                                         <div class="col-lg-9">
-                                            <div class="fw-semibold text-break text-gray-800">${this._escapeHtml(change.value)}</div>
+                                            <span class="fw-semibold text-break text-gray-800 fs-7">${this._escapeHtml(change.value)}</span>
                                         </div>
                                     </div>
                                 `;
                             }
 
                             return `
-                                <div class="row g-3 py-3 align-items-start border-bottom ${hiddenClass}">
+                                <div class="row g-2 py-2 align-items-center ${borderClass} ${hiddenClass}">
                                     <div class="col-lg-3">
-                                        <div class="text-uppercase text-muted fw-semibold fs-8">${this._escapeHtml(change.field)}</div>
+                                        <span class="text-uppercase text-muted fw-bold fs-9 tracking-wider">${this._escapeHtml(change.field)}</span>
                                     </div>
                                     <div class="col-lg-4">
-                                        ${change.before ? `<div class="text-muted text-break">${this._escapeHtml(change.before)}</div>` : `<span class="badge badge-light">Empty</span>`}
+                                        ${change.before ? `<span class="text-muted text-break fs-7 text-decoration-line-through">${this._escapeHtml(change.before)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
                                     </div>
                                     <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
-                                        <i class="ki-outline ki-arrow-right fs-5 text-gray-400"></i>
+                                        <i class="ki-outline ki-arrow-right fs-6 text-gray-400"></i>
                                     </div>
                                     <div class="col-lg-4">
-                                        ${change.after ? `<div class="fw-semibold text-break text-gray-900">${this._escapeHtml(change.after)}</div>` : `<span class="badge badge-light">Empty</span>`}
+                                        ${change.after ? `<span class="fw-semibold text-break text-gray-900 fs-7">${this._escapeHtml(change.after)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
                                     </div>
                                 </div>
                             `;
                         }).join('')}
 
                         ${hasMore ? `
-                            <div class="text-center pt-5">
-                                <button class="btn btn-sm btn-light-primary audit-expand-btn">
-                                    Show ${changes.length - visibleLimit} more changes
+                            <div class="text-center pt-3">
+                                <button class="btn btn-sm btn-link text-primary fw-bold text-decoration-none py-1 fs-7 audit-expand-btn">
+                                    Show ${changes.length - visibleLimit} more changes...
                                 </button>
                             </div>
                         ` : ''}
@@ -243,42 +258,59 @@ export class AuditLogManager {
             }
 
             const safeImgUrl = this._escapeAttribute(item.profile_picture || '');
+            const userName = this._escapeHtml(item.user_name || 'System User');
+            
+            const initials = userName
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .substring(0, 2)
+                .toUpperCase();
+
+            const avatarHtml = safeImgUrl && safeImgUrl !== '#' 
+                ? `<img src="${safeImgUrl}" class="rounded-circle w-100 h-100 object-fit-cover" alt="Profile" onerror="this.parentElement.innerHTML='<span class=\'fw-bold text-primary\' style=\'font-size: 7px; line-height: 1;\'>${initials}</span>';">`
+                : `<span class="fw-bold text-primary" style="font-size: 7px; line-height: 1;">${initials}</span>`;
 
             return `
-                <div class="card shadow-none border mb-6">
-                    <div class="card-body p-7">
-                        <div class="d-flex align-items-start">
-                            <div class="symbol symbol-45px me-5">
-                                <div class="symbol-label bg-light">
-                                    <i class="ki-outline ${icon} fs-3 text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="grow" style="flex: 1; min-width: 0;">
-                                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start">
-                                    <div>
-                                        <div class="fw-bold fs-5 text-gray-900 mb-1">${this._escapeHtml(title)}</div>
-                                        <div class="d-flex flex-wrap align-items-center gap-2 fs-7 text-muted">
-                                            <div class="symbol symbol-20px">
-                                                <img src="${safeImgUrl}" class="rounded-circle" alt="User Profile" onerror="this.src='assets/media/avatars/blank.png';">
-                                            </div>
-                                            <span class="fw-semibold text-gray-800">${this._escapeHtml(item.user_name)}</span>
-                                            <span>•</span>
-                                            <span>${this._escapeHtml(item.time_relative)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                ${changesHtml}
+                <div class="timeline-item d-flex align-items-start position-relative pb-8">
+                    ${logIndex !== logs.length - 1 ? '<div class="timeline-line position-absolute start-20px top-40px bottom-0 border-start border-2 border-gray-200"></div>' : ''}
+                    
+                    <div class="timeline-icon me-4 position-relative z-index-1">
+                        <div class="symbol symbol-40px">
+                            <div class="symbol-label ${badgeBg} rounded-circle border border-white border-2 shadow-sm">
+                                <i class="ki-outline ${icon} fs-5 ${iconColor}"></i>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="flex-grow-1" style="min-width: 0;">
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-1">
+                            <h5 class="fw-bold text-gray-900 m-0 fs-6">${this._escapeHtml(title)}</h5>
+                            <span class="fs-8 text-muted pt-1 pt-sm-0">${this._escapeHtml(item.time_relative)}</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="symbol position-relative" style="width: 18px; height: 18px;">
+                                <div class="symbol-label bg-light-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden border border-gray-300" style="width: 18px; height: 18px;">
+                                    ${avatarHtml}
+                                </div>
+                            </div>
+                            <span class="fs-8 fw-bold text-gray-700 hover-primary cursor-pointer">${userName}</span>
+                        </div>
+
+                        ${changesHtml}
                     </div>
                 </div>
             `;
         }).join('');
+
+        return `
+            <div class="timeline-container px-2 py-2">
+                ${timelineItems}
+            </div>
+        `;
     }
 
-    /**
-     * Binds a local interaction handler directly to the newly injected timeline show-more triggers
-     */
     static _attachExpandButtonListeners(container) {
         const expandBtn = container.querySelector('.audit-expand-btn');
         if (!expandBtn) return;
@@ -294,12 +326,12 @@ export class AuditLogManager {
     static _showInlineError(container, message) {
         if (!container) return;
         container.innerHTML = `
-            <div class="notice d-flex bg-light-danger rounded border-danger border border-dashed p-6 w-100">
-                <i class="ki-outline ki-information-5 fs-2tx text-danger me-4"></i>
-                <div class="d-flex flex-stack flex-grow-2">
+            <div class="notice d-flex bg-light-danger rounded-3 border-danger border border-dashed p-5 w-100">
+                <i class="ki-outline ki-information-5 fs-1 text-danger me-4"></i>
+                <div class="d-flex flex-stack flex-grow-1">
                     <div class="fw-semibold">
-                        <h4 class="text-gray-900 fw-bold fs-6 mb-1">System Error</h4>
-                        <div class="fs-7 text-gray-700">${this._escapeHtml(message)}</div>
+                        <h4 class="text-gray-900 fw-bold fs-7 mb-1">Retrieval Error</h4>
+                        <div class="fs-8 text-gray-600">${this._escapeHtml(message)}</div>
                     </div>
                 </div>
             </div>

@@ -18,7 +18,6 @@ class AuthenticationController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'message'  => 'Authentication successful.',
             'redirect' => route('apps.main')
         ], Response::HTTP_OK);
     }

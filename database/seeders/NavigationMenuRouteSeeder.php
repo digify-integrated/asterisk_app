@@ -24,7 +24,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 1,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.general.setting.index',
+                'view_file'             => 'pages.account-setting.index',
                 'js_file'               => 'general-setting/index',
             ],
             
@@ -40,7 +40,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 6,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.navigation.menu.index',
+                'view_file'             => 'pages.navigation-menu.index',
                 'js_file'               => 'navigation-menu/index',
             ],
             
@@ -48,7 +48,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 7,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.system.action.index',
+                'view_file'             => 'pages.system-action.index',
                 'js_file'               => 'system-action/index',
             ],
             
@@ -56,7 +56,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 8,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.system.parameter.index',
+                'view_file'             => 'pages.system-parameter.index',
                 'js_file'               => 'system-parameter/index',
             ],
             
@@ -64,7 +64,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 9,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.upload.setting.index',
+                'view_file'             => 'pages.upload-setting.index',
                 'js_file'               => 'upload-setting/index',
             ],
             
@@ -104,7 +104,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 15,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.user.account.index',
+                'view_file'             => 'pages.user-account.index',
                 'js_file'               => 'user-account/index',
             ],
 
@@ -112,7 +112,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 16,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.user.account.index',
+                'view_file'             => 'pages.user-account.index',
                 'js_file'               => 'user-account/index',
             ],
 
@@ -120,7 +120,7 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 16,
                 'route_type'            => 'manage',
-                'view_file'             => 'pages.user.account.manage',
+                'view_file'             => 'pages.user-account.manage',
                 'js_file'               => 'user-account/manage',
             ],
 
@@ -130,14 +130,6 @@ class NavigationMenuRouteSeeder extends Seeder
                 'route_type'            => 'index',
                 'view_file'             => 'pages.permission.index',
                 'js_file'               => 'permission/index',
-            ],
-
-            // Permission
-            [
-                'navigation_menu_id'    => 17,
-                'route_type'            => 'manage',
-                'view_file'             => 'pages.permission.manage',
-                'js_file'               => 'permission/manage',
             ],
         ];
 

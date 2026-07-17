@@ -14,8 +14,8 @@ class DeleteMultipleAppsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'selected_id'   => ['required', 'array', 'min:1'],
-            'selected_id.*' => ['integer', 'distinct', 'exists:apps,id'],
+            'app_id'   => ['required', 'array', 'min:1'],
+            'app_id.*' => ['integer', 'distinct', 'exists:apps,id'],
         ];
     }
 }

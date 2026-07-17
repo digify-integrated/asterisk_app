@@ -22,10 +22,10 @@ class NavigationMenuSeeder extends Seeder
         $navigationMenus = [
             // Settings App
             
-            // General Setting ID: 1
+            // Account Setting ID: 1
             [
-                'name'              => 'General Setting',
-                'icon'              => 'ki-outline ki-setting-2',
+                'name'              => 'Account Setting',
+                'icon'              => 'ki-outline ki-user',
                 'parent_id'         => null,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
@@ -37,16 +37,16 @@ class NavigationMenuSeeder extends Seeder
                 'icon'              => 'ki-outline ki-wrench',
                 'parent_id'         => null,
                 'page_type'         => 'menu',
-                'order_sequence'    => 1,
+                'order_sequence'    => 3,
             ],
             
             // Security ID: 3
             [
                 'name'              => 'Security',
-                'icon'              => 'ki-outline ki-lock-3',
+                'icon'              => 'ki-outline ki-lock-2',
                 'parent_id'         => null,
                 'page_type'         => 'menu',
-                'order_sequence'    => 1,
+                'order_sequence'    => 100,
             ],
 
             // Technical ID: 4
@@ -171,7 +171,7 @@ class NavigationMenuSeeder extends Seeder
                 'name'              => 'Permission',
                 'icon'              => null,
                 'parent_id'         => 3,
-                'page_type'         => 'multi_page',
+                'page_type'         => 'single_page',
                 'order_sequence'    => 18,
             ],
         ];

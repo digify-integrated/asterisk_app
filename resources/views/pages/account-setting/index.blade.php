@@ -74,26 +74,26 @@
                 <div class="d-flex flex-column gap-7">
                     <div class="row">
                         <div class="col-12">
-                            <label class="form-label mb-2" for="logo">Logo</label>
+                            <label class="form-label mb-3" for="logo">Logo</label>
                             <input type="file" class="form-control form-control-sm" id="logo" name="logo" accept="image/*">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="name">Name</label>
+                            <label class="form-label required mb-3" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>
                         
                         <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="order_sequence">Order Sequence</label>
+                            <label class="form-label required mb-3" for="order_sequence">Order Sequence</label>
                             <input type="number" class="form-control form-control-sm" id="order_sequence" name="order_sequence" placeholder="0" min="0" max="100">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12">
-                            <label class="form-label required mb-2" for="description">Description</label>
+                            <label class="form-label required mb-3" for="description">Description</label>
                             <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the app..." maxlength="500"></textarea>
                         </div>
                     </div>

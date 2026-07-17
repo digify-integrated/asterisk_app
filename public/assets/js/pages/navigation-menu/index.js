@@ -8,6 +8,7 @@ import { errorHandler } from '../../util/errorHandler.js';
 import { ButtonStateManager } from '../../util/buttonManager.js';
 import { DetailFetcher } from '../../util/detailFetcher.js';
 import { initConfirmAction } from '../../util/confirmationAction.js';
+import { ComponentRegistry } from '../../util/componentRegistry.js';
 
 const CONFIG = {
     selectors: {
@@ -16,7 +17,6 @@ const CONFIG = {
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
-        deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button'
@@ -25,7 +25,6 @@ const CONFIG = {
         tableData: '/app/generate-table',
         save: '/app/save',
         delete: '/app/delete',
-        deleteMultiple: '/app/delete-multiple',
         fetch: '/app/fetch'
     }
 };
@@ -33,6 +32,7 @@ const CONFIG = {
 document.addEventListener('DOMContentLoaded', () => {
     const orchestrator = new DataTableOrchestrator();
     const abortController = new AbortController();
+    const componentRegistry = new ComponentRegistry();
     const { signal } = abortController;
 
     const escapeHtml = typeof window.e === 'function' 
@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
           }[m]));
 
     AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+
+    componentRegistry.generateDropdownOptions({
+        url: '/navigation-menu/generate-options',
+        dropdownSelector: '#parent_id',
+    });
    
     orchestrator.initialize({
         selector: CONFIG.selectors.table,
@@ -149,25 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    initConfirmAction({
-        trigger: CONFIG.selectors.deleteMultipleTrigger,
-        url: CONFIG.endpoints.deleteMultiple,
-        method: 'DELETE',
-        payload: { 
-            'app_id[]': (el) => {
-                const checkedBoxes = document.querySelectorAll('.datatable-checkbox-children:checked');
-                return Array.from(checkedBoxes).map(cb => Number(cb.value));
-            }
-        },
-        swalTitle: 'Delete Multiple Records?',
-        swalText: 'This action will permanently delete the selected records and cannot be undone.',
-        confirmButtonText: 'Delete Records',
-        confirmButtonClass: 'danger',
-        onSuccess: () => {
-            orchestrator.reload(CONFIG.selectors.table);
-        }
-    });
-    
     document.addEventListener('click', async (event) => {
         const target = event.target;
         const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);

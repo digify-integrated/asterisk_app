@@ -159,50 +159,6 @@ return new class extends Migration
             END
         SQL);
 
-        DB::unprepared('DROP TRIGGER IF EXISTS trg_navigation_menu_app_insert');
-
-        DB::unprepared(<<<SQL
-            CREATE TRIGGER trg_navigation_menu_app_insert
-            AFTER INSERT ON navigation_menu_apps
-            FOR EACH ROW
-            BEGIN
-                DECLARE audit_log TEXT;
-                DECLARE app_name VARCHAR(255);
-                DECLARE navigation_menu_name VARCHAR(255);
-
-                SELECT name
-                INTO app_name
-                FROM apps
-                WHERE id = NEW.app_id;
-
-                SELECT name
-                INTO navigation_menu_name
-                FROM navigation_menus
-                WHERE id = NEW.navigation_menu_id;
-
-                SET audit_log = CONCAT(
-                    'Navigation menu app created.<br/><br/>',
-                    'Navigation Menu: "', COALESCE(navigation_menu_name, 'Not set'), '"<br/>',
-                    'App: "', COALESCE(app_name, 'Not set'), '"<br/>',
-                );
-
-                INSERT INTO audit_log (
-                    table_name,
-                    reference_id,
-                    log,
-                    changed_by,
-                    created_at
-                )
-                VALUES (
-                    'navigation_menu_apps',
-                    NEW.id,
-                    audit_log,
-                    NEW.last_log_by,
-                    NOW()
-                );
-            END
-        SQL);
-
         DB::unprepared('DROP TRIGGER IF EXISTS trg_navigation_menu_route_update');
         DB::unprepared('DROP TRIGGER IF EXISTS trg_navigation_menu_route_insert');
 

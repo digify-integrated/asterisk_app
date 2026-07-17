@@ -83,7 +83,7 @@ class AppController extends Controller
     public function deleteMultiple(DeleteMultipleAppsRequest $request): JsonResponse
     {
         try {
-            $this->appService->deleteMultipleApps($request->validated()['selected_id']);
+            $this->appService->deleteMultipleApps($request->validated()['app_id']);
 
             return response()->json([
                 'message' => 'The selected apps have been deleted successfully',

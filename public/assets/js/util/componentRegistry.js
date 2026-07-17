@@ -11,7 +11,7 @@ export class ComponentRegistry {
         return urlObj.toString();
     }
 
-    static async generateDropdownOptions({ url, dropdownSelector, data = {}, validateOnChange = false }) {
+    static async generateDropdownOptions({ url, dropdownSelector, data = {}, validateOnChange = true }) {
         try {
             const targetUrl = this._buildGetUrl(url, data);
             const response = await fetch(targetUrl, {

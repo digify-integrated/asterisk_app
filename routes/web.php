@@ -53,6 +53,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/generate-options', 'generateOptions')->name('generate.options');
         });
 
+    Route::prefix('navigation')
+        ->name('app.')
+        ->controller(AppController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-options', 'generateOptions')->name('generate.options');
+        });
+
     Route::prefix('audit-log')
         ->name('audit-log.')
         ->controller(AuditLogController::class)

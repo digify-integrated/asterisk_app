@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AppSeeder::class,
             NavigationMenuSeeder::class,
+            NavigationMenuAppSeeder::class,
             NavigationMenuRouteSeeder::class,
             SystemActionSeeder::class,
             RoleSeeder::class,

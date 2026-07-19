@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('reference_id');
             $table->string('table_name');
             $table->text('log');
-            $table->foreignId('changed_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('changed_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
 
             $table->index(['reference_id', 'table_name']);

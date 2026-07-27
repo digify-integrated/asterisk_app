@@ -234,7 +234,7 @@ export class AuditLogManager {
                                         <span class="text-uppercase text-muted fw-bold fs-9 tracking-wider">${this._escapeHtml(change.field)}</span>
                                     </div>
                                     <div class="col-lg-4">
-                                        ${change.before ? `<span class="text-muted text-break fs-7 text-decoration-line-through">${this._escapeHtml(change.before)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
+                                        ${change.before ? `<span class="text-muted text-break fs-7">${this._escapeHtml(change.before)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
                                     </div>
                                     <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
                                         <i class="ki-outline ki-arrow-right fs-6 text-gray-400"></i>

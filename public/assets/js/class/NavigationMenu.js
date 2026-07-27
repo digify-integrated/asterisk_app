@@ -1,24 +1,18 @@
-/**
- * @fileoverview Orchestrates data grid workflows, validation schemas, 
- * and transactional record mutations for the Application Management Module.
- * @version 2.0.0
- */
-
 'use strict';
 
-import { DataTableOrchestrator } from '../../util/dataTableOrchestrator.js';
-import { AuditLogManager } from '../../util/auditLogManager.js';
-import { initValidation } from '../../util/validator.js';
-import { FormEnvironmentManager } from '../../util/formEnvironmentManager.js';
-import { errorHandler } from '../../util/errorHandler.js';
-import { ButtonStateManager } from '../../util/buttonManager.js';
-import { DetailFetcher } from '../../util/detailFetcher.js';
-import { initConfirmAction } from '../../util/confirmationAction.js';
+import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
+import { AuditLogManager } from '../util/auditLogManager.js';
+import { initValidation } from '../util/validator.js';
+import { FormEnvironmentManager } from '../util/formEnvironmentManager.js';
+import { errorHandler } from '../util/errorHandler.js';
+import { ButtonStateManager } from '../util/buttonManager.js';
+import { DetailFetcher } from '../util/detailFetcher.js';
+import { initConfirmAction } from '../util/confirmationAction.js';
 
-/** @constant {Object} */
 const CONFIG = {
     selectors: {
-        table: '#navigation-menutable',
+        table: '#navigation-menu-table',
+        tableColumn: '#navigation-menu-table-column-dropdown',
         form: '#navigation_menu_form',
         submitButton: '#submit-data',
         modal: '#form-modal',
@@ -38,40 +32,26 @@ const CONFIG = {
     }
 };
 
-// Compile string mutations once at standard module initialization scale
 const ESCAPE_REGEX = /[&<>"']/g;
 const ESCAPE_MAP = Object.freeze({ 
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' 
 });
 
-/**
- * Escapes unsafe string values to prevent Cross-Site Scripting (XSS) vectors.
- * @param {string|null|undefined} str 
- * @returns {string}
- */
 const escapeHtml = typeof window.e === 'function' 
     ? window.e 
     : (str) => str == null ? '' : String(str).replace(ESCAPE_REGEX, m => ESCAPE_MAP[m]);
-
-/**
- * Encapsulated Core Module controller managing feature context lifecycle.
- */
-class AppModuleManager {
+export class NavigationMenu {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
         
-        // Caching key nodes globally across feature lifecycles
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal) // Cached jQuery context if required by bootstrap bridge
+            modal: $(CONFIG.selectors.modal)
         };
     }
 
-    /**
-     * Initializes core subsystems and sets context listeners.
-     */
     init() {
         this.initTable();
         this.initForm();
@@ -81,20 +61,25 @@ class AppModuleManager {
         AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
     }
 
-    /**  
-     * Deploys the presentation layer data grid orchestrator instance.
-     */
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
+            colVisContainer: CONFIG.selectors.tableColumn,
+            stableSort: true,
+            stableSortColumn: 1,
+            exportColumns: [1, 2, 3],
+            addons: { 
+                controls: true, 
+                export: true,
+                columnVisibility: true
+            },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '20%', targets: 1 },
                 { width: '15%', targets: 3 },
                 { width: '10%', bSortable: false, targets: 4 },
             ],
-            addons: { controls: true, export: true },
             columns: [
                 { 
                     data: 'id',
@@ -104,8 +89,9 @@ class AppModuleManager {
                         </div>`
                 },
                 { 
-                    data: null,
-                    render: (row) => `
+                    data: 'name',
+                    title: 'App',
+                    render: (data, type, row) => `
                         <div class="d-flex align-items-center">
                             <img src="${escapeHtml(row.logo_url)}" alt="logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />
                             <div class="ms-3"><h6 class="mb-0">${escapeHtml(row.name)}</h6></div>
@@ -113,14 +99,17 @@ class AppModuleManager {
                 },
                 { 
                     data: 'description',
+                    title: 'Description',
                     render: (desc) => `<div class="text-gray-800 text-wrap">${escapeHtml(desc)}</div>`
                 },
                 { 
                     data: 'order_sequence',
+                    title: 'Sequence',
                     render: (seq) => escapeHtml(seq)
                 },
                 { 
                     data: null, 
+                    title: '&nbsp;',
                     render: (data, type, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
@@ -137,9 +126,6 @@ class AppModuleManager {
         });
     }
 
-    /**
-     * Builds declarative schema validation hooks mapping form inputs to request pipes.
-     */
     initForm() {
         initValidation({
             forms: [
@@ -156,10 +142,6 @@ class AppModuleManager {
         });
     }
 
-    /**
-     * Processing pipeline handling secure mutations for record saving.
-     * @param {HTMLFormElement} formElement 
-     */
     async handleFormSubmission(formElement) {
         const btn = CONFIG.selectors.submitButton;
         ButtonStateManager.disable(btn, { loadingText: 'Saving...', showLoader: true });
@@ -187,9 +169,6 @@ class AppModuleManager {
         }
     }
 
-    /**
-     * Binds downstream configuration interceptors for safe structural removals.
-     */
     initDelete() {
         initConfirmAction({
             trigger: CONFIG.selectors.deleteTrigger,
@@ -221,36 +200,29 @@ class AppModuleManager {
         });
     }
 
-    /**
-     * Maps user click tracking schemas cleanly using explicit single element tracking vectors.
-     */
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
             
-            // Branch Path 1: Element Fetch Update Vector
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
-
-            // Branch Path 2: Reset / Fresh Entity State Call
+            
             if (target.closest(CONFIG.selectors.createTrigger)) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
             }
         }, { signal: this.abortController.signal });
     }
 
-    /**
-     * Executes asynchronous fetch updates to populate current targets across fields.
-     * @param {string} referenceId 
-     */
     async handleFetchWorkflow(referenceId) {
         await DetailFetcher.fetch({
             url: CONFIG.endpoints.fetch,
             detailIdKey: 'navigation_menu_id',
             detailIdValue: referenceId,
+            formSelector: CONFIG.selectors.form,
+            submitBtnSelector: CONFIG.selectors.submitButton,
             signal: this.abortController.signal,
             onSuccess: (response) => {
                 const data = response?.data || response;

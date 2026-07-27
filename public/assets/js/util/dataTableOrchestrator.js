@@ -40,9 +40,11 @@ export class DataTableOrchestrator {
             columns: [],
             columnDefs: [],
             order: [[1, 'asc']],
+            stableSort: true,          // Enable/disable stable sorting
+            stableSortColumn: 0,       // Fallback index (usually unique ID column)
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             onRowClick: null,
-            addons: { controls: false, subControls: false },
+            addons: { controls: false, subControls: false, columnVisibility: false },
             serverSide: false,
             pageLength: 10,
             searchDelay: 300,
@@ -53,6 +55,7 @@ export class DataTableOrchestrator {
             masterCheckbox: '.datatable-checkbox-master',
             lengthSelector: '.datatable-length',
             searchSelector: '.datatable-search',
+            colVisContainer: '.column-visibility-dropdown',
             ...options
         };
 
@@ -67,6 +70,9 @@ export class DataTableOrchestrator {
             return null;
         }
 
+        // Apply Stable Sorting by enforcing multi-column sorting rules
+        const configuredOrder = this._applyStableSortConfig(config.order, config);
+
         const exportWrapper = document.querySelector('.table-export');
         const enableExport = !!exportWrapper || config.addons?.export;
         const self = this;
@@ -77,6 +83,7 @@ export class DataTableOrchestrator {
             deferRender: true,
             autoWidth: false,
             orderClasses: false,
+            orderMulti: true,               // Allow Shift+Click multi-column stable sort
             searchDelay: config.searchDelay,
             responsive: config.responsive,
             scrollX: config.scrollX,
@@ -84,7 +91,7 @@ export class DataTableOrchestrator {
             paging: true,
             pageLength: config.pageLength,
             lengthChange: false,
-            order: config.order,
+            order: configuredOrder,
             columns: config.columns,
             columnDefs: config.columnDefs,
             lengthMenu: config.lengthMenu,
@@ -122,6 +129,13 @@ export class DataTableOrchestrator {
                     self.bindControls(reference, config);
                 }
 
+                if (config.addons?.columnVisibility) {
+                    const containerSel = typeof config.addons.columnVisibility === 'string' 
+                        ? config.addons.columnVisibility 
+                        : config.colVisContainer;
+                    self.renderColumnVisibilityControl(tableNode, containerSel);
+                }
+
                 if (config.addons?.export) {
                     const exportRef = typeof config.addons.export === 'object' && config.addons.export?.table 
                         ? config.addons.export.table 
@@ -157,6 +171,115 @@ export class DataTableOrchestrator {
         }
 
         return dt;
+    }
+
+    /**
+     * Toggles column visibility by index or name
+     */
+    toggleColumnVisibility(selectorOrNode, colIdx, forceState = null) {
+        let dt = DataTableOrchestrator.getAPI(selectorOrNode);
+        if (dt && typeof dt.api === 'function') dt = dt.api();
+        if (!dt) return;
+
+        const column = dt.column(colIdx);
+        if (!column) return;
+
+        const newState = forceState !== null ? forceState : !column.visible();
+        column.visible(newState);
+        dt.columns.adjust();
+    }
+
+    /**
+     * Renders a interactive dynamic column show/hide UI menu
+     */
+    renderColumnVisibilityControl(selectorOrNode, containerSelector) {
+        const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
+        const container = document.querySelector(containerSelector);
+        let dt = DataTableOrchestrator.getAPI(node);
+        if (dt && typeof dt.api === 'function') dt = dt.api();
+
+        if (!container || !dt) return;
+
+        const tableUid = node.id || `dt_${Math.random().toString(36).substr(2, 6)}`;
+        const columns = dt.settings()[0].aoColumns;
+
+        // Inject ONLY the inner items (no outer menu wrapper)
+        let html = `
+            <div class="menu-item px-3">
+                <div class="px-3 pb-1">
+                    <div class="fw-bold fs-6">Toggle Columns</div>
+                    <div class="text-muted fs-7">Show or hide table columns</div>
+                </div>
+            </div>
+
+            <div class="separator my-2 border-gray-200"></div>
+
+            <div class="menu-item-list px-3" style="max-height: 260px; overflow-y: auto;">
+        `;
+
+        let visibleCount = 0;
+
+        columns.forEach((col, idx) => {
+            const rawTitle = col.sTitle || '';
+            const colTitle = rawTitle.replace(/&nbsp;/g, '').trim();
+
+            // Exclude only if colVis is explicitly false or title is blank
+            if (col.colVis === false || !colTitle) {
+                return;
+            }
+
+            visibleCount++;
+
+            const isColumnVisible = dt.column(idx).visible();
+            const isChecked = isColumnVisible !== false ? 'checked' : '';
+            const inputId = `colVis_${tableUid}_${idx}`;
+
+            html += `
+                <div class="menu-item my-1">
+                    <div class="d-flex align-items-center justify-content-between px-3 py-2 rounded hover-bg-light">
+                        <label class="form-check-label text-gray-800 fw-medium fs-7 cursor-pointer mb-0 me-3 select-none" for="${inputId}">
+                            ${colTitle}
+                        </label>
+                        <div class="form-check form-switch form-check-custom form-check-solid form-check-sm mb-0">
+                            <input class="form-check-input h-20px w-30px col-vis-toggle cursor-pointer" type="checkbox" role="switch" data-column="${idx}" id="${inputId}" ${isChecked}>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`; // Close .menu-item-list
+
+        if (visibleCount > 0) {
+            container.innerHTML = html;
+
+            // Re-initialize Metronic KTMenu so events bind cleanly
+            if (typeof KTMenu !== 'undefined' && KTMenu.createInstances) {
+                KTMenu.createInstances();
+            }
+
+            // Bind switch change events
+            window.jQuery(container).off('change.colVis').on('change.colVis', '.col-vis-toggle', (e) => {
+                const idx = Number.parseInt(e.target.dataset.column, 10);
+                this.toggleColumnVisibility(node, idx, e.target.checked);
+            });
+        } else {
+            container.innerHTML = '';
+        }
+    }
+
+    _applyStableSortConfig(initialOrder, config) {
+        if (!config.stableSort) return initialOrder;
+
+        const fallbackIdx = config.stableSortColumn;
+        const orderArr = Array.isArray(initialOrder) ? [...initialOrder] : [[1, 'asc']];
+
+        const hasFallback = orderArr.some(pair => pair[0] === fallbackIdx);
+        if (!hasFallback) {
+            orderArr.push([fallbackIdx, 'asc']);
+        }
+
+        return orderArr;
     }
 
     reload(selectorOrNode) {

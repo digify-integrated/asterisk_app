@@ -4,7 +4,7 @@
         Export Data
     </button>
     
-    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-700 menu-state-bg-light-primary fw-semibold fs-7 w-225px py-3" data-kt-menu="true">        
+    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-700 menu-state-bg-light-primary fw-semibold fs-7 w-225px py-3" data-kt-menu="true">
         <div class="menu-item px-3">
             <div class="px-3 pb-3">
                 <div class="fw-bold fs-6">
@@ -47,6 +47,6 @@
                 <i class="ki-outline ki-printer fs-5 me-3 text-gray-500"></i>
                 Print Document
             </a>
-        </div>        
-    </div>    
+        </div>
+    </div>
 </div>

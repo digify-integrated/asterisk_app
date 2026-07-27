@@ -36,6 +36,10 @@
                         @include('partials.datatable-buttons')
                     @endif
 
+                    @component('partials.column-dropdown')
+                        @slot('dropdownId', 'app-table-column-dropdown')
+                        @slot('dropdownButtonId', 'app-table-button-column-dropdown')
+                    @endcomponent
                 </div>
             </div>
         </div>
@@ -52,10 +56,6 @@
                                     <input class="form-check-input datatable-checkbox-master" type="checkbox">
                                 </div>
                             </th>
-                            <th>App</th>
-                            <th>Description</th>
-                            <th>Order Sequence</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-800"></tbody>

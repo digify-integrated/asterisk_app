@@ -36,6 +36,33 @@
                         @include('partials.datatable-buttons')
                     @endif
 
+                    @component('partials.filter-modal')
+                        @slot('modalId', 'navigation_menu_table_filter_modal')
+                        @slot('size', 'md')
+
+                        <div class="d-flex flex-column gap-7">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label required mb-2" for="filter_parent_id">Parent</label>
+                                    <select id="filter_parent_id" name="filter_parent_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label required mb-2" for="filter_app_id">App</label>
+                                    <select id="filter_app_id" name="filter_app_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
+                                    
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    @endcomponent
+
+                    @component('partials.column-dropdown')
+                        @slot('dropdownId', 'navigation-menu-table-column-dropdown')
+                        @slot('dropdownButtonId', 'navigation-menu-table-button-column-dropdown')
+                    @endcomponent
                 </div>
             </div>
         </div>
@@ -44,7 +71,7 @@
     <div class="card">
         <div class="card-body pt-3 pb-3 pe-0 ps-0">
             <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle cursor-pointer table-row-dashed gy-3" id="app-table">
+                <table class="table table-sm table-hover align-middle cursor-pointer table-row-dashed gy-3" id="navigation-menu-table">
                     <thead>
                         <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
                             <th>
@@ -52,12 +79,6 @@
                                     <input class="form-check-input datatable-checkbox-master" type="checkbox">
                                 </div>
                             </th>
-                            <th>Name</th>
-                            <th>Icon</th>
-                            <th>Parent</th>
-                            <th>Page Type</th>
-                            <th>Order Sequence</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-800"></tbody>
@@ -71,13 +92,19 @@
                 @slot('formId', 'navigation_menu_form')
                 @slot('size', 'md')
                 
-                <input type="hidden" id="app_id" name="app_id" />
+                <input type="hidden" id="navigation_menu_id" name="navigation_menu_id" />
 
                 <div class="d-flex flex-column gap-7">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-2" for="app_id">App</label>
+                            <select id="app_id" name="app_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
+                            
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -99,7 +126,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-md-6">
-                            <label class="form-label mb-2" for="parent_id">Icon</label>
+                            <label class="form-label mb-2" for="parent_id">Parent</label>
                             <select id="parent_id" name="parent_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
                                 <option value="">--</option>
                             </select>
@@ -107,6 +134,43 @@
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="order_sequence">Order Sequence</label>
                             <input type="number" class="form-control form-control-sm" id="order_sequence" name="order_sequence" placeholder="0" min="0" max="100">
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed"></div>
+
+                    <div class="row">
+                        <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                            <i class="ki-duotone ki-element-plus fs-4 me-2 text-primary">
+                                <span class="path1"></span><span class="path2"></span>
+                            </i>
+                            Index Page Configuration
+                        </h6>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-2" for="index_view_file">View File</label>
+                            <input type="text" class="form-control form-control-sm" id="index_view_file" name="index_view_file" placeholder="Enter view file" maxlength="100" autocomplete="off">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-2" for="index_js_file">JS File</label>
+                            <input type="text" class="form-control form-control-sm" id="index_js_file" name="index_js_file" placeholder="Enter JS file" maxlength="100" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                            <i class="ki-duotone ki-setting-2 fs-4 me-2 text-primary">
+                                <span class="path1"></span><span class="path2"></span>
+                            </i>
+                            Manage Page Configuration
+                        </h6>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label mb-2" for="manage_view_file">View File</label>
+                            <input type="text" class="form-control form-control-sm" id="manage_view_file" name="manage_view_file" placeholder="Enter view file" maxlength="100" autocomplete="off">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label mb-2" for="manage_js_file">JS File</label>
+                            <input type="text" class="form-control form-control-sm" id="manage_js_file" name="manage_js_file" placeholder="Enter JS file" maxlength="100" autocomplete="off">
                         </div>
                     </div>
                 </div>

@@ -8,6 +8,8 @@ import { errorHandler } from '../util/errorHandler.js';
 import { ButtonStateManager } from '../util/buttonManager.js';
 import { DetailFetcher } from '../util/detailFetcher.js';
 import { initConfirmAction } from '../util/confirmationAction.js';
+import { ComponentRegistry } from '../util/componentRegistry.js';
+import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
     selectors: {
@@ -21,25 +23,23 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
-        checkboxes: '.datatable-checkbox-children:checked'
+        checkboxes: '.datatable-checkbox-children:checked',
+        appDropdown: '#app_id',
+        parentDropdown: '#parent_id',
+        filterAppDropdown: '#filter_app_id',
+        filterParentDropdown: '#filter_parent_id',
     },
     endpoints: {
         tableData: '/navigation-menu/generate-table',
         save: '/navigation-menu/save',
         delete: '/navigation-menu/delete',
         deleteMultiple: '/navigation-menu/delete-multiple',
-        fetch: '/navigation-menu/fetch'
+        fetch: '/navigation-menu/fetch',
+        appOption: '/app/generate-option',
+        parentOption: '/navigation/generate-option',
     }
 };
-
-const ESCAPE_REGEX = /[&<>"']/g;
-const ESCAPE_MAP = Object.freeze({ 
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' 
-});
-
-const escapeHtml = typeof window.e === 'function' 
-    ? window.e 
-    : (str) => str == null ? '' : String(str).replace(ESCAPE_REGEX, m => ESCAPE_MAP[m]);
+    
 export class NavigationMenu {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
@@ -53,12 +53,13 @@ export class NavigationMenu {
     }
 
     init() {
-        this.initTable();
-        this.initForm();
-        this.initDelete();
-        this.registerGlobalListeners();
+        //this.initTable();
+        //this.initForm();
+        //this.initDelete();
+        this.initDropdownOption();
+        //this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+        //AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
     }
 
     initTable() {
@@ -66,9 +67,8 @@ export class NavigationMenu {
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
             colVisContainer: CONFIG.selectors.tableColumn,
-            stableSort: true,
-            stableSortColumn: 1,
-            exportColumns: [1, 2, 3],
+            order: [[2, 'asc']],
+            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -76,9 +76,10 @@ export class NavigationMenu {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '20%', targets: 1 },
-                { width: '15%', targets: 3 },
-                { width: '10%', bSortable: false, targets: 4 },
+                { width: '5%', bSortable: false, targets: 1 },
+                { width: '15%', targets: 2 },
+                { width: '15%', targets: 4 },
+                { width: '10%', bSortable: false, targets: 5 },
             ],
             columns: [
                 { 
@@ -89,13 +90,13 @@ export class NavigationMenu {
                         </div>`
                 },
                 { 
+                    data: 'logo',
+                    render: (data, type, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
+                },
+                { 
                     data: 'name',
                     title: 'App',
-                    render: (data, type, row) => `
-                        <div class="d-flex align-items-center">
-                            <img src="${escapeHtml(row.logo_url)}" alt="logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />
-                            <div class="ms-3"><h6 class="mb-0">${escapeHtml(row.name)}</h6></div>
-                        </div>`
+                    render: (data, type, row) => `<h6 class="mb-0">${escapeHtml(row.name)}</h6>`
                 },
                 { 
                     data: 'description',
@@ -144,7 +145,7 @@ export class NavigationMenu {
 
     async handleFormSubmission(formElement) {
         const btn = CONFIG.selectors.submitButton;
-        ButtonStateManager.disable(btn, { loadingText: 'Saving...', showLoader: true });
+        ButtonStateManager.disable(btn, { loadingText: 'Saving...' });
 
         try {
             const response = await fetch(CONFIG.endpoints.save, {
@@ -200,18 +201,28 @@ export class NavigationMenu {
         });
     }
 
+    initDropdownOption() {
+        ComponentRegistry.generateDropdownOptions({
+                url: CONFIG.endpoints.appOption,
+                dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
+            });
+    }
+
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
-            if (target.closest(CONFIG.selectors.createTrigger)) {
+            const createTrigger = target.closest(CONFIG.selectors.createTrigger);
+            if (createTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                this.initDropdownOption();
             }
         }, { signal: this.abortController.signal });
     }
@@ -224,21 +235,27 @@ export class NavigationMenu {
             formSelector: CONFIG.selectors.form,
             submitBtnSelector: CONFIG.selectors.submitButton,
             signal: this.abortController.signal,
-            onSuccess: (response) => {
+            onSuccess: async (response) => {
                 const data = response?.data || response;
                 if (!this.dom.form) return;
+
+                // Ensure options exist before binding values
+                await this.initDropdownOption();
 
                 const targetFields = {
                     'navigation_menu_id': referenceId,
                     'name': data.name,
                     'order_sequence': data.order_sequence,
-                    'description': data.description
+                    'description': data.description,
+                    'app_id': data.app_id,
+                    'parent_id': data.parent_id
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
                     const field = this.dom.form.elements[name];
                     if (field) {
                         field.value = val ?? '';
+                        // Triggers Select2 UI update via change event
                         field.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 });

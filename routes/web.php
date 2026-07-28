@@ -50,11 +50,11 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
-            Route::get('/generate-options', 'generateOptions')->name('generate.options');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 
     Route::prefix('navigation')
-        ->name('app.')
+        ->name('navigation.')
         ->controller(AppController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
-            Route::get('/generate-options', 'generateOptions')->name('generate.options');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 
     Route::prefix('audit-log')

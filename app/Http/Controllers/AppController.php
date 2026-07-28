@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AppOptionResource;
 use App\Models\App;
 use App\Http\Resources\AppTableResource;
 use App\Http\Resources\AppDetailsResource;
@@ -118,6 +119,22 @@ class AppController extends Controller
                 'permissions'  => $permissions,
                 'default_logo' => $defaultLogo,
             ])
+            ->response();
+    }
+
+    public function generateOption(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized or missing menu parameter.'
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $apps = App::query()->orderBy('name')->get();
+
+        return AppOptionResource::collection($apps)
             ->response();
     }
 }

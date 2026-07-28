@@ -26,37 +26,66 @@ export class ComponentRegistry {
                 throw new Error(`Failed to fetch dropdown data. HTTP status: ${response.status}`);
             }
 
-            const result = await response.json();
-            const $dropdown = window.jQuery(dropdownSelector);
-            if (!$dropdown.length) return;
+            const rawResult = await response.json();
 
-            if ($dropdown.hasClass('select2-hidden-accessible')) {
-                $dropdown.select2('destroy');
-            }
+            // 1. Convert numeric IDs to Strings for Select2 compatibility
+            const formattedData = Array.isArray(rawResult) 
+                ? rawResult.map(item => ({ ...item, id: String(item.id) })) 
+                : rawResult;
+            
+            const selectorString = Array.isArray(dropdownSelector) 
+                ? dropdownSelector.join(',') 
+                : dropdownSelector;
 
-            $dropdown.empty();
+            const $dropdowns = window.jQuery(selectorString);
+            if (!$dropdowns.length) return;
 
-            const $modalParent = $dropdown.closest('.modal');
-            const $offcanvasParent = $dropdown.closest('.offcanvas');
-            const $menuParent = $dropdown.closest('[data-kt-menu="true"]');
+            $dropdowns.each((_, el) => {
+                const $dropdown = window.jQuery(el);
 
-            let dropdownParent = window.jQuery(document.body);
-            if ($modalParent.length) dropdownParent = $modalParent;
-            else if ($offcanvasParent.length) dropdownParent = $offcanvasParent;
-            else if ($menuParent.length) dropdownParent = $menuParent;
+                if ($dropdown.hasClass('select2-hidden-accessible')) {
+                    $dropdown.select2('destroy');
+                }
 
-            $dropdown.select2({
-                data: result,
-                dropdownParent,
-                width: '100%',
-                escapeMarkup: markup => markup,
-                templateResult: data => data.text,
-                templateSelection: data => data.text
-            })
-            .on('select2:open', () => this._focusSelect2Search())
-            .on('select2:unselect select2:clear', function () {
-                const $this = window.jQuery(this);
-                setTimeout(() => $this.select2('close'), 0);
+                // 2. Clear element & prepend a blank default option
+                $dropdown.empty().append('<option value="">Select an option</option>');
+
+                const modalParent = el.closest('.modal');
+                const offcanvasParent = el.closest('.offcanvas');
+                const menuParent = el.closest('[data-kt-menu="true"]');
+
+                let dropdownParent = document.body;
+                if (modalParent) dropdownParent = modalParent;
+                else if (offcanvasParent) dropdownParent = offcanvasParent;
+                else if (menuParent) dropdownParent = menuParent;
+
+                // 3. Initialize Select2 with formatted options
+                $dropdown.select2({
+                    data: formattedData,
+                    dropdownParent: window.jQuery(dropdownParent),
+                    width: '100%',
+                    placeholder: 'Select an option',
+                    allowClear: true,
+                    escapeMarkup: markup => markup,
+                    templateResult: item => item.text,
+                    templateSelection: item => item.text
+                })
+                .on('select2:open', () => this._focusSelect2Search())
+                .on('select2:unselect select2:clear', function () {
+                    const $this = window.jQuery(this);
+                    setTimeout(() => $this.select2('close'), 0);
+                });
+
+                // 4. Force value reset to empty default state
+                $dropdown.val('').trigger('change');
+
+                if (validateOnChange) {
+                    $dropdown.off('change.validate').on('change.validate', function () {
+                        if (typeof window.jQuery(this).valid === 'function') {
+                            window.jQuery(this).valid();
+                        }
+                    });
+                }
             });
 
             window.jQuery(document)
@@ -70,14 +99,6 @@ export class ComponentRegistry {
                         setTimeout(() => $select.select2('close'), 0);
                     }
                 });
-
-            if (validateOnChange) {
-                $dropdown.on('change', function () {
-                    if (typeof window.jQuery(this).valid === 'function') {
-                        window.jQuery(this).valid();
-                    }
-                });
-            }
 
         } catch (error) {
             errorHandler.handle(error, 'dropdown_fetch_failed');

@@ -40,8 +40,6 @@ export class DataTableOrchestrator {
             columns: [],
             columnDefs: [],
             order: [[1, 'asc']],
-            stableSort: true,          // Enable/disable stable sorting
-            stableSortColumn: 0,       // Fallback index (usually unique ID column)
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             onRowClick: null,
             addons: { controls: false, subControls: false, columnVisibility: false },
@@ -70,9 +68,6 @@ export class DataTableOrchestrator {
             return null;
         }
 
-        // Apply Stable Sorting by enforcing multi-column sorting rules
-        const configuredOrder = this._applyStableSortConfig(config.order, config);
-
         const exportWrapper = document.querySelector('.table-export');
         const enableExport = !!exportWrapper || config.addons?.export;
         const self = this;
@@ -83,7 +78,7 @@ export class DataTableOrchestrator {
             deferRender: true,
             autoWidth: false,
             orderClasses: false,
-            orderMulti: true,               // Allow Shift+Click multi-column stable sort
+            orderMulti: true,               // Allow Shift+Click multi-column sort
             searchDelay: config.searchDelay,
             responsive: config.responsive,
             scrollX: config.scrollX,
@@ -91,7 +86,7 @@ export class DataTableOrchestrator {
             paging: true,
             pageLength: config.pageLength,
             lengthChange: false,
-            order: configuredOrder,
+            order: config.order,
             columns: config.columns,
             columnDefs: config.columnDefs,
             lengthMenu: config.lengthMenu,
@@ -190,7 +185,7 @@ export class DataTableOrchestrator {
     }
 
     /**
-     * Renders a interactive dynamic column show/hide UI menu
+     * Renders an interactive dynamic column show/hide UI menu
      */
     renderColumnVisibilityControl(selectorOrNode, containerSelector) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
@@ -266,20 +261,6 @@ export class DataTableOrchestrator {
         } else {
             container.innerHTML = '';
         }
-    }
-
-    _applyStableSortConfig(initialOrder, config) {
-        if (!config.stableSort) return initialOrder;
-
-        const fallbackIdx = config.stableSortColumn;
-        const orderArr = Array.isArray(initialOrder) ? [...initialOrder] : [[1, 'asc']];
-
-        const hasFallback = orderArr.some(pair => pair[0] === fallbackIdx);
-        if (!hasFallback) {
-            orderArr.push([fallbackIdx, 'asc']);
-        }
-
-        return orderArr;
     }
 
     reload(selectorOrNode) {

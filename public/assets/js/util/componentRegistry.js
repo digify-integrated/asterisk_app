@@ -11,94 +11,135 @@ export class ComponentRegistry {
         return urlObj.toString();
     }
 
-    static async generateDropdownOptions({ url, dropdownSelector, data = {}, validateOnChange = true }) {
+    static async generateDropdownOptions({
+        url,
+        dropdownSelector,
+        data = {},
+        validateOnChange = true
+    }) {
         try {
             const targetUrl = this._buildGetUrl(url, data);
+
             const response = await fetch(targetUrl, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
-                },
+                }
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch dropdown data. HTTP status: ${response.status}`);
+                throw new Error(`Failed to fetch dropdown data. HTTP Status: ${response.status}`);
             }
 
-            const rawResult = await response.json();
+            const responseData = await response.json();
 
-            // 1. Convert numeric IDs to Strings for Select2 compatibility
-            const formattedData = Array.isArray(rawResult) 
-                ? rawResult.map(item => ({ ...item, id: String(item.id) })) 
-                : rawResult;
-            
-            const selectorString = Array.isArray(dropdownSelector) 
-                ? dropdownSelector.join(',') 
+            const options = Array.isArray(responseData)
+                ? responseData
+                : Array.isArray(responseData.data)
+                    ? responseData.data
+                    : [];
+
+            const selectorString = Array.isArray(dropdownSelector)
+                ? dropdownSelector.filter(Boolean).join(',')
                 : dropdownSelector;
 
             const $dropdowns = window.jQuery(selectorString);
-            if (!$dropdowns.length) return;
 
-            $dropdowns.each((_, el) => {
-                const $dropdown = window.jQuery(el);
+            if (!$dropdowns.length) {
+                console.warn(`No dropdowns found for selector: ${selectorString}`);
+                return;
+            }
+
+            $dropdowns.each((_, element) => {
+                const $dropdown = window.jQuery(element);
+
+                const currentValue = $dropdown.val();
 
                 if ($dropdown.hasClass('select2-hidden-accessible')) {
                     $dropdown.select2('destroy');
                 }
 
-                // 2. Clear element & prepend a blank default option
-                $dropdown.empty().append('<option value="">Select an option</option>');
+                $dropdown.empty();
 
-                const modalParent = el.closest('.modal');
-                const offcanvasParent = el.closest('.offcanvas');
-                const menuParent = el.closest('[data-kt-menu="true"]');
+                if (!$dropdown.prop('multiple')) {
+                    $dropdown.append(
+                        new Option('--', '', false, false)
+                    );
+                }
 
-                let dropdownParent = document.body;
-                if (modalParent) dropdownParent = modalParent;
-                else if (offcanvasParent) dropdownParent = offcanvasParent;
-                else if (menuParent) dropdownParent = menuParent;
-
-                // 3. Initialize Select2 with formatted options
-                $dropdown.select2({
-                    data: formattedData,
-                    dropdownParent: window.jQuery(dropdownParent),
-                    width: '100%',
-                    placeholder: 'Select an option',
-                    allowClear: true,
-                    escapeMarkup: markup => markup,
-                    templateResult: item => item.text,
-                    templateSelection: item => item.text
-                })
-                .on('select2:open', () => this._focusSelect2Search())
-                .on('select2:unselect select2:clear', function () {
-                    const $this = window.jQuery(this);
-                    setTimeout(() => $this.select2('close'), 0);
+                options.forEach(item => {
+                    $dropdown.append(
+                        new Option(
+                            item.text,
+                            String(item.id),
+                            false,
+                            false
+                        )
+                    );
                 });
 
-                // 4. Force value reset to empty default state
-                $dropdown.val('').trigger('change');
+                const modalParent = element.closest('.modal');
+                const offcanvasParent = element.closest('.offcanvas');
+                const menuParent = element.closest('[data-kt-menu="true"]');
+
+                let dropdownParent = document.body;
+
+                if (modalParent) {
+                    dropdownParent = modalParent;
+                } else if (offcanvasParent) {
+                    dropdownParent = offcanvasParent;
+                } else if (menuParent) {
+                    dropdownParent = menuParent;
+                }
+
+                $dropdown
+                    .select2({
+                        dropdownParent: window.jQuery(dropdownParent),
+                        width: '100%',
+                        allowClear: true
+                    })
+                    .on('select2:open', () => this._focusSelect2Search())
+                    .on('select2:unselect select2:clear', function () {
+                        const $this = window.jQuery(this);
+                        setTimeout(() => $this.select2('close'), 0);
+                    });
+
+                if (
+                    currentValue &&
+                    $dropdown.find(`option[value="${currentValue}"]`).length
+                ) {
+                    $dropdown.val(currentValue).trigger('change');
+                } else {
+                    $dropdown.val('').trigger('change');
+                }
 
                 if (validateOnChange) {
-                    $dropdown.off('change.validate').on('change.validate', function () {
-                        if (typeof window.jQuery(this).valid === 'function') {
-                            window.jQuery(this).valid();
-                        }
-                    });
+                    $dropdown
+                        .off('change.validate')
+                        .on('change.validate', function () {
+                            if (typeof window.jQuery(this).valid === 'function') {
+                                window.jQuery(this).valid();
+                            }
+                        });
                 }
             });
 
             window.jQuery(document)
                 .off('mousedown.select2-remove-close')
-                .on('mousedown.select2-remove-close', '.select2-selection__choice__remove', function (e) {
-                    const $container = window.jQuery(this).closest('.select2');
-                    const $select = $container.prevAll('select').first();
+                .on(
+                    'mousedown.select2-remove-close',
+                    '.select2-selection__choice__remove',
+                    function (e) {
+                        const $container = window.jQuery(this).closest('.select2');
+                        const $select = $container.prevAll('select').first();
 
-                    if ($select.length && $select.data('select2')) {
-                        e.stopPropagation();
-                        setTimeout(() => $select.select2('close'), 0);
+                        if ($select.length && $select.data('select2')) {
+                            e.stopPropagation();
+                            setTimeout(() => $select.select2('close'), 0);
+                        }
                     }
-                });
+                );
 
         } catch (error) {
             errorHandler.handle(error, 'dropdown_fetch_failed');

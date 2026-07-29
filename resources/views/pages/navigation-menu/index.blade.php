@@ -44,14 +44,14 @@
                             <div class="row">
                                 <div class="col-12">
                                     <label class="form-label required mb-2" for="filter_parent_id">Parent</label>
-                                    <select id="filter_parent_id" name="filter_parent_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
+                                    <select id="filter_parent_id" name="filter_parent_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
                                     <label class="form-label required mb-2" for="filter_app_id">App</label>
-                                    <select id="filter_app_id" name="filter_app_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
+                                    <select id="filter_app_id" name="filter_app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
                                     
                                     </select>
                                 </div>
@@ -90,7 +90,7 @@
             @component('partials.form-modal')
                 @slot('formTitle', 'Navigation Menu Details')
                 @slot('formId', 'navigation_menu_form')
-                @slot('size', 'md')
+                @slot('size', 'lg')
                 
                 <input type="hidden" id="navigation_menu_id" name="navigation_menu_id" />
 
@@ -102,7 +102,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="app_id">App</label>
-                            <select id="app_id" name="app_id" multiple="multiple" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
+                            <select id="app_id" name="app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
                             
                             </select>
                         </div>

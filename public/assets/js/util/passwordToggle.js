@@ -46,6 +46,8 @@ export class PasswordToggle {
         const trigger = e.target.closest('[data-password-toggle], .password-addon');
         if (!trigger) return;
 
+        e.stopPropagation();
+
         const input = this._resolveInput(trigger);
         if (!input) return;
 
@@ -61,22 +63,27 @@ export class PasswordToggle {
 
     toggle(toggleEl, inputEl) {
         const isCurrentlyMasked = inputEl.type === 'password';
+        
         inputEl.type = isCurrentlyMasked ? 'text' : 'password';
+
+        console.log('[PasswordToggle] After click:', {
+            type: inputEl.type,
+            computedSecurity: window.getComputedStyle(inputEl).getPropertyValue('-webkit-text-security')
+        });
 
         toggleEl.setAttribute('aria-pressed', String(isCurrentlyMasked));
 
         const icon = toggleEl.querySelector('i, svg');
-        
         if (icon) {
-            const activeClasses = this.config.eyeClass.split(' ');
-            const hiddenClasses = this.config.eyeOffClass.split(' ');
+            const eyeClasses = this.config.eyeClass.split(' ').filter(Boolean);
+            const eyeOffClasses = this.config.eyeOffClass.split(' ').filter(Boolean);
 
             if (isCurrentlyMasked) {
-                icon.classList.remove(...hiddenClasses);
-                icon.classList.add(...activeClasses);
+                icon.classList.remove(...eyeClasses);
+                icon.classList.add(...eyeOffClasses);
             } else {
-                icon.classList.remove(...activeClasses);
-                icon.classList.add(...hiddenClasses);
+                icon.classList.remove(...eyeOffClasses);
+                icon.classList.add(...eyeClasses);
             }
         }
 
@@ -85,7 +92,14 @@ export class PasswordToggle {
 
     _resolveInput(toggleEl) {
         const selector = toggleEl.getAttribute('data-target');
-        const element = selector ? this.root.querySelector(selector) : toggleEl.previousElementSibling;
+        let element = null;
+
+        if (selector) {
+            element = this.root.querySelector(selector);
+        } else {
+            element = toggleEl.previousElementSibling || toggleEl.closest('.input-group')?.querySelector('input');
+        }
+
         return element instanceof HTMLInputElement ? element : null;
     }
 
@@ -100,5 +114,3 @@ export class PasswordToggle {
         toggleEl.dataset[BOUND_FLAG] = 'true';
     }
 }
-
-PasswordToggle.autoInit();

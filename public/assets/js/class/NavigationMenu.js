@@ -53,7 +53,7 @@ export class NavigationMenu {
     }
 
     init() {
-        //this.initTable();
+        this.initTable();
         //this.initForm();
         //this.initDelete();
         this.initDropdownOption();
@@ -203,9 +203,9 @@ export class NavigationMenu {
 
     initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
-                url: CONFIG.endpoints.appOption,
-                dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
-            });
+            url: CONFIG.endpoints.appOption,
+            dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
+        });
     }
 
     registerGlobalListeners() {

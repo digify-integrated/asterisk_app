@@ -40,7 +40,7 @@ class AppController extends Controller
             report($e);
             
             return response()->json([
-                'message' => 'Failed to save record modifications due to a system storage fault.',
+                'message' => $e
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -58,7 +58,7 @@ class AppController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'An unexpected server error occurred while retrieving application details.',
+                'message' => 'An unexpected server error occurred while retrieving details.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

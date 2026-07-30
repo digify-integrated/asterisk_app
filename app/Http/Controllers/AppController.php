@@ -58,7 +58,7 @@ class AppController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'An unexpected server error occurred while retrieving details.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -76,7 +76,7 @@ class AppController extends Controller
             report($e);
             
             return response()->json([
-                'message' => 'Failed to delete the application due to a system error.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -94,7 +94,7 @@ class AppController extends Controller
             report($e);
             
             return response()->json([
-                'message' => 'Failed to delete the selected applications due to a system error.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

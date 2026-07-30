@@ -33,7 +33,7 @@ class SaveAppRequest extends FormRequest
             'app_id'         => ['nullable', 'integer', 'exists:apps,id'],
             'name'           => ['required', 'string', 'max:255'],
             'description'    => ['required', 'string'],
-            'order_sequence' => ['nullable', 'integer', 'min:0'],
+            'order_sequence' => ['required', 'integer', 'min:0'],
             'logo'           => ['nullable', File::types($allowedExt)->max($maxKb)],
         ];
     }

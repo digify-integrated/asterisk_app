@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AppOptionResource;
 use App\Models\NavigationMenu;
-use App\Http\Resources\AppTableResource;
-use App\Http\Resources\AppDetailsResource;
-use App\Http\Requests\SaveAppRequest;
-use App\Http\Requests\FetchAppDetailsRequest;
-use App\Http\Requests\DeleteAppRequest;
-use App\Http\Requests\DeleteMultipleAppsRequest;
+use App\Http\Resources\NavigationMenuTableResource;
+use App\Http\Resources\NavigationMenuDetailsResource;
+use App\Http\Requests\SaveNavigationMenuRequest;
+use App\Http\Requests\FetchNavigationMenuDetailsRequest;
+use App\Http\Requests\DeleteNavigationMenuRequest;
+use App\Http\Requests\DeleteMultipleNavigationMenusRequest;
 use App\Services\NavigationMenuManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class NavigationMenuController extends Controller
         protected NavigationMenuManagementService $navigationMenuService
     ) {}
 
-    public function save(SaveAppRequest $request): JsonResponse
+    public function save(SaveNavigationMenuRequest $request): JsonResponse
     {
         try {
             $this->navigationMenuService->saveNavigationMenu(
@@ -44,25 +44,25 @@ class NavigationMenuController extends Controller
         }
     }
 
-    public function fetch(FetchAppDetailsRequest $request): JsonResponse|AppDetailsResource
+    public function fetch(FetchNavigationMenuDetailsRequest $request): JsonResponse|NavigationMenuDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $navigationMenu = NavigationMenu::find($validated['navigation_menu_id']);
 
-            return new AppDetailsResource($navigationMenu);
+            return new NavigationMenuDetailsResource($navigationMenu);
 
         } catch (Exception $e) {
             report($e);
 
             return response()->json([
-                'message' => 'An unexpected server error occurred while retrieving details.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function delete(DeleteAppRequest $request): JsonResponse
+    public function delete(DeleteNavigationMenuRequest $request): JsonResponse
     {
         try {
             $this->navigationMenuService->deleteNavigationMenu((int) $request->validated()['navigation_menu_id']);
@@ -75,15 +75,15 @@ class NavigationMenuController extends Controller
             report($e);
             
             return response()->json([
-                'message' => 'Failed to delete the application due to a system error.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function deleteMultiple(DeleteMultipleAppsRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleNavigationMenusRequest $request): JsonResponse
     {
         try {
-            $this->navigationMenuService->deleteMultipleApps($request->validated()['navigation_menu_id']);
+            $this->navigationMenuService->deleteMultipleNavigationMenus($request->validated()['navigation_menu_id']);
 
             return response()->json([
                 'message' => 'The selected navigation menus have been deleted successfully',
@@ -93,7 +93,7 @@ class NavigationMenuController extends Controller
             report($e);
             
             return response()->json([
-                'message' => 'Failed to delete the selected applications due to a system error.',
+                'message' => $e,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -101,6 +101,8 @@ class NavigationMenuController extends Controller
     public function generateTable(Request $request): JsonResponse
     {
         $menuId = (int) $request->input('navigationMenuId');
+        $filter_parent_id = $request->input('filter_parent_id');
+        $filter_app_id = $request->input('filter_app_id');
         $user = $request->user();
 
         if (!$user || $menuId <= 0) {
@@ -112,7 +114,7 @@ class NavigationMenuController extends Controller
         $permissions = $user->getMenuPermissions($menuId);
         $navigationMenus = NavigationMenu::query()->orderBy('name')->get();
 
-        return AppTableResource::collection($navigationMenus)
+        return NavigationMenuTableResource::collection($navigationMenus)
             ->additional([
                 'permissions'  => $permissions,
             ])

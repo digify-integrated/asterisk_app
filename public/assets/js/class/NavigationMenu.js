@@ -54,18 +54,25 @@ export class NavigationMenu {
 
     init() {
         this.initTable();
-        //this.initForm();
-        //this.initDelete();
+        this.initForm();
+        this.initDelete();
         this.initDropdownOption();
-        //this.registerGlobalListeners();
+        this.registerGlobalListeners();
         
-        //AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
     }
 
     initTable() {
+        const filter_parent_id = $('#filter_parent_id').val();
+        const filter_app_id = $('#filter_app_id').val();
+
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
+            ajaxData: {
+                filter_parent_id : filter_parent_id,
+                filter_app_id : filter_app_id
+            },
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
             exportColumns: [2, 3, 4],

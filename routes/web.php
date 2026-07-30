@@ -4,6 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\AppRenderController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\NavigationMenuController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
 use Illuminate\Support\Facades\Route;
@@ -53,9 +54,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 
-    Route::prefix('navigation')
-        ->name('navigation.')
-        ->controller(AppController::class)
+    Route::prefix('navigation-menu')
+        ->name('navigation-menu.')
+        ->controller(NavigationMenuController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

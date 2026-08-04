@@ -52,7 +52,16 @@
                                 <div class="col-12">
                                     <label class="form-label required mb-2" for="filter_app_id">App</label>
                                     <select id="filter_app_id" name="filter_app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
-                                    
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label required mb-2" for="filter_page_type">Page Type</label>
+                                    <select id="filter_page_type" name="filter_page_type" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
+                                        <option value="menu">Menu</option>
+                                        <option value="single_page">Single Page</option>
+                                        <option value="multi_page">Multi Page</option>
                                     </select>
                                 </div>
                             </div>
@@ -110,7 +119,7 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="page_type">Page Type</label>
-                            <select id="page_type" name="page_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true">
+                            <select id="page_type" name="page_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select page type">
                                 <option value="menu">Menu</option>
                                 <option value="single_page">Single Page</option>
                                 <option value="multi_page">Multi Page</option>
@@ -118,8 +127,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-2" for="icon">Icon</label>
-                            <select id="icon" name="icon" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
-                                <option value="">--</option>
+                            <select id="icon" name="icon" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-placeholder="Select icon">
                                 @include('partials.icon-options')
                             </select>
                         </div>
@@ -148,11 +156,11 @@
                         </h6>
 
                         <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="index_view_file">View File</label>
+                            <label class="form-label mb-2" for="index_view_file">View File</label>
                             <input type="text" class="form-control form-control-sm" id="index_view_file" name="index_view_file" placeholder="Enter view file" maxlength="100" autocomplete="off">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="index_js_file">JS File</label>
+                            <label class="form-label mb-2" for="index_js_file">JS File</label>
                             <input type="text" class="form-control form-control-sm" id="index_js_file" name="index_js_file" placeholder="Enter JS file" maxlength="100" autocomplete="off">
                         </div>
                     </div>

@@ -88,17 +88,14 @@ export class AppModule {
                 { 
                     data: 'name',
                     title: 'App',
-                    render: (data, type, row) => `<h6 class="mb-0">${escapeHtml(row.name)}</h6>`
                 },
                 { 
                     data: 'description',
                     title: 'Description',
-                    render: (desc) => `<div class="text-gray-800 text-wrap">${escapeHtml(desc)}</div>`
                 },
                 { 
                     data: 'order_sequence',
                     title: 'Sequence',
-                    render: (seq) => escapeHtml(seq)
                 },
                 { 
                     data: null, 

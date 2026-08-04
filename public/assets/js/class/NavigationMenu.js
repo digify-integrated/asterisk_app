@@ -23,6 +23,7 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
+        applyFilter: '#apply-filter',
         checkboxes: '.datatable-checkbox-children:checked',
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
@@ -36,7 +37,7 @@ const CONFIG = {
         deleteMultiple: '/navigation-menu/delete-multiple',
         fetch: '/navigation-menu/fetch',
         appOption: '/app/generate-option',
-        parentOption: '/navigation/generate-option',
+        parentOption: '/navigation-menu/generate-option',
     }
 };
     
@@ -57,24 +58,25 @@ export class NavigationMenu {
         this.initForm();
         this.initDelete();
         this.initDropdownOption();
+        this.initParentDropdownOption();
         this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'navigation_menus');
     }
 
     initTable() {
-        const filter_parent_id = $('#filter_parent_id').val();
-        const filter_app_id = $('#filter_app_id').val();
-
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: {
-                filter_parent_id : filter_parent_id,
-                filter_app_id : filter_app_id
+            ajaxData: (d) => {
+                return Object.assign({}, d, {
+                    filter_parent_id: $('#filter_parent_id').val() || [],
+                    filter_app_id: $('#filter_app_id').val() || [],
+                    filter_page_type: $('#filter_page_type').val() || []
+                });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
-            order: [[2, 'asc']],
+            order: [[1, 'asc']],
             exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
@@ -83,8 +85,6 @@ export class NavigationMenu {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '5%', bSortable: false, targets: 1 },
-                { width: '15%', targets: 2 },
                 { width: '15%', targets: 4 },
                 { width: '10%', bSortable: false, targets: 5 },
             ],
@@ -97,23 +97,34 @@ export class NavigationMenu {
                         </div>`
                 },
                 { 
-                    data: 'logo',
-                    render: (data, type, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
-                },
-                { 
                     data: 'name',
-                    title: 'App',
-                    render: (data, type, row) => `<h6 class="mb-0">${escapeHtml(row.name)}</h6>`
+                    title: 'Navigation Menu',
                 },
                 { 
-                    data: 'description',
-                    title: 'Description',
-                    render: (desc) => `<div class="text-gray-800 text-wrap">${escapeHtml(desc)}</div>`
+                    data: 'apps',
+                    title: 'Apps',
+                    bSortable: false,
+                    render: (apps) => {
+                        if (!Array.isArray(apps) || apps.length === 0) {
+                            return `<span class="badge badge-light-secondary">No Apps</span>`;
+                        }
+
+                        return apps.map(app => 
+                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(app.name)}</span>`
+                        ).join('');
+                    }
+                },
+                { 
+                    data: 'parent',
+                    title: 'Parent',
+                },
+                { 
+                    data: 'page_type',
+                    title: 'Page Type',
                 },
                 { 
                     data: 'order_sequence',
                     title: 'Sequence',
-                    render: (seq) => escapeHtml(seq)
                 },
                 { 
                     data: null, 
@@ -135,14 +146,22 @@ export class NavigationMenu {
     }
 
     initForm() {
+        const isNotMenuPage = (form) => {
+            const pageType = form.querySelector('[name="page_type"]')?.value;
+            return Boolean(pageType && pageType !== 'menu');
+        };
+
         initValidation({
             forms: [
                 {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        description: { required: true },
-                        order_sequence: { required: true }
+                        app_id: { required: true },
+                        page_type: { required: true },
+                        order_sequence: { required: true },
+                        index_view_file: { requiredIf: isNotMenuPage },
+                        index_js_file: { requiredIf: isNotMenuPage }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -215,6 +234,14 @@ export class NavigationMenu {
         });
     }
 
+    initParentDropdownOption(navigationMenuId = null) {
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.parentOption,
+            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
+            data: {navigationMenuId : navigationMenuId}
+        });
+    }
+
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
@@ -229,7 +256,12 @@ export class NavigationMenu {
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
-                this.initDropdownOption();
+                this.initParentDropdownOption();
+            }
+            
+            const filterTrigger = target.closest(CONFIG.selectors.applyFilter);
+            if (filterTrigger) {
+                this.orchestrator.reload(CONFIG.selectors.table)
             }
         }, { signal: this.abortController.signal });
     }
@@ -245,25 +277,32 @@ export class NavigationMenu {
             onSuccess: async (response) => {
                 const data = response?.data || response;
                 if (!this.dom.form) return;
+                
+                await Promise.all([
+                    this.initParentDropdownOption(referenceId),
+                ]);
 
-                // Ensure options exist before binding values
-                await this.initDropdownOption();
-
+                // Map resource properties directly to form inputs
                 const targetFields = {
                     'navigation_menu_id': referenceId,
                     'name': data.name,
+                    'page_type': data.page_type,
+                    'icon': data.icon,
+                    'parent_id': data.parent_id,
                     'order_sequence': data.order_sequence,
-                    'description': data.description,
-                    'app_id': data.app_id,
-                    'parent_id': data.parent_id
+                    'app_id': data.app_ids || [], // Multi-select array
+                    'index_view_file': data.index_view_file,
+                    'index_js_file': data.index_js_file,
+                    'manage_view_file': data.manage_view_file,
+                    'manage_js_file': data.manage_js_file,
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
-                    const field = this.dom.form.elements[name];
-                    if (field) {
-                        field.value = val ?? '';
-                        // Triggers Select2 UI update via change event
-                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    const $field = $(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    
+                    if ($field.length) {
+                        // Handles both standard inputs and Select2 controls
+                        $field.val(val ?? '').trigger('change');
                     }
                 });
             }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AppOptionResource;
+use App\Http\Resources\NavigationMenuOptionResource;
 use App\Models\NavigationMenu;
 use App\Http\Resources\NavigationMenuTableResource;
 use App\Http\Resources\NavigationMenuDetailsResource;
@@ -49,7 +49,8 @@ class NavigationMenuController extends Controller
         try {
             $validated = $request->validated();
 
-            $navigationMenu = NavigationMenu::find($validated['navigation_menu_id']);
+            $navigationMenu = NavigationMenu::with(['apps', 'routes'])
+                ->findOrFail($validated['navigation_menu_id']);
 
             return new NavigationMenuDetailsResource($navigationMenu);
 
@@ -101,8 +102,6 @@ class NavigationMenuController extends Controller
     public function generateTable(Request $request): JsonResponse
     {
         $menuId = (int) $request->input('navigationMenuId');
-        $filter_parent_id = $request->input('filter_parent_id');
-        $filter_app_id = $request->input('filter_app_id');
         $user = $request->user();
 
         if (!$user || $menuId <= 0) {
@@ -112,7 +111,27 @@ class NavigationMenuController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $navigationMenus = NavigationMenu::query()->orderBy('name')->get();
+        $query = NavigationMenu::query()
+            ->with(['apps', 'parent']);
+
+        $query->when($request->filled('filter_parent_id'), function ($q) use ($request) {
+            $parents = (array) $request->input('filter_parent_id');
+            $q->whereIn('parent_id', $parents);
+        });
+
+        $query->when($request->filled('filter_app_id'), function ($q) use ($request) {
+            $apps = (array) $request->input('filter_app_id');
+            $q->whereHas('apps', function ($appQuery) use ($apps) {
+                $appQuery->whereIn('apps.id', $apps);
+            });
+        });
+
+        $query->when($request->filled('filter_page_type'), function ($q) use ($request) {
+            $types = (array) $request->input('filter_page_type');
+            $q->whereIn('page_type', $types);
+        });
+
+        $navigationMenus = $query->orderBy('order_sequence')->get();
 
         return NavigationMenuTableResource::collection($navigationMenus)
             ->additional([
@@ -124,6 +143,8 @@ class NavigationMenuController extends Controller
     public function generateOption(Request $request): JsonResponse
     {
         $user = $request->user();
+        
+        $navigation_menu_id = $request->input('navigationMenuId');
 
         if (!$user) {
             return response()->json([
@@ -131,9 +152,12 @@ class NavigationMenuController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $navigationMenus = NavigationMenu::query()->orderBy('name')->get();
+        $navigationMenus = NavigationMenu::query()
+            ->when($navigation_menu_id, fn ($query) => $query->where('id', '!=', $navigation_menu_id))
+            ->orderBy('name')
+            ->get();
 
-        return AppOptionResource::collection($navigationMenus)
+        return NavigationMenuOptionResource::collection($navigationMenus)
             ->response();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -25,6 +26,11 @@ class NavigationMenu extends Model
             ->using(NavigationMenuApp::class)
             ->withPivot('last_log_by')
             ->withTimestamps();
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(NavigationMenu::class, 'parent_id');
     }
 
     public function children(): HasMany

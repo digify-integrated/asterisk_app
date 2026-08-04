@@ -307,13 +307,51 @@ export class FormValidator {
     _resolveMessage({ field, fieldKey, ruleName, ruleValue }) {
         const custom = fieldKey ? this.config.messages?.[fieldKey]?.[ruleName] : null;
         const name = this._getFieldLabelText(field) || field.getAttribute('aria-label') || field.name || 'Field';
-        
+
+        const tag = field?.tagName;
+        const type = field?.type;
+
         let fallback = `${name} is invalid.`;
+
         switch (ruleName) {
-            case 'required': fallback = `Please enter ${name}.`; break;
-            case 'typeEmail': fallback = `Please enter a valid email for ${name}.`; break;
-            case 'minlength': fallback = `${name} must be at least ${ruleValue} characters.`; break;
-            case 'equalTo': fallback = `${name} values do not match.`; break;
+            case 'required': {
+                if (tag === 'SELECT' || type?.startsWith('select-')) {
+                    fallback = `Please select ${name}.`;
+                } else if (type === 'checkbox') {
+                    fallback = `Please check ${name}.`;
+                } else if (type === 'radio') {
+                    fallback = `Please choose an option for ${name}.`;
+                } else if (type === 'date' || type === 'datetime-local' || type === 'month' || type === 'week' || type === 'time') {
+                    fallback = `Please select a date for ${name}.`;
+                } else if (type === 'file') {
+                    fallback = `Please upload ${name}.`;
+                } else {
+                    fallback = `Please enter ${name}.`;
+                }
+                break;
+            }
+            case 'typeEmail':
+                fallback = `Please enter a valid email address for ${name}.`;
+                break;
+            case 'number':
+            case 'digits':
+                fallback = `${name} must be a valid number.`;
+                break;
+            case 'min':
+                fallback = `${name} must be greater than or equal to ${ruleValue}.`;
+                break;
+            case 'max':
+                fallback = `${name} must be less than or equal to ${ruleValue}.`;
+                break;
+            case 'minlength':
+                fallback = `${name} must be at least ${ruleValue} characters.`;
+                break;
+            case 'maxlength':
+                fallback = `${name} cannot exceed ${ruleValue} characters.`;
+                break;
+            case 'equalTo':
+                fallback = `${name} values do not match.`;
+                break;
         }
 
         const chosen = typeof custom === 'string' && custom.trim() ? custom : fallback;

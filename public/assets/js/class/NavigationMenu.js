@@ -9,6 +9,7 @@ import { ButtonStateManager } from '../util/buttonManager.js';
 import { DetailFetcher } from '../util/detailFetcher.js';
 import { initConfirmAction } from '../util/confirmationAction.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
+import { TableFilterManager } from '../util/tableFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
@@ -23,7 +24,9 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
+        filterModal: 'navigation_menu_table_filter_modal',
         applyFilter: '#apply-filter',
+        resetFilter: '#reset-filter',
         checkboxes: '.datatable-checkbox-children:checked',
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
@@ -45,6 +48,12 @@ export class NavigationMenu {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
+
+        this.filterManager = new TableFilterManager({
+            modalId: CONFIG.selectors.filterModal,
+            orchestrator: this.orchestrator,
+            tableSelector: CONFIG.selectors.table
+        });
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
@@ -258,11 +267,6 @@ export class NavigationMenu {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
                 this.initParentDropdownOption();
             }
-            
-            const filterTrigger = target.closest(CONFIG.selectors.applyFilter);
-            if (filterTrigger) {
-                this.orchestrator.reload(CONFIG.selectors.table)
-            }
         }, { signal: this.abortController.signal });
     }
 
@@ -282,7 +286,6 @@ export class NavigationMenu {
                     this.initParentDropdownOption(referenceId),
                 ]);
 
-                // Map resource properties directly to form inputs
                 const targetFields = {
                     'navigation_menu_id': referenceId,
                     'name': data.name,
@@ -290,7 +293,7 @@ export class NavigationMenu {
                     'icon': data.icon,
                     'parent_id': data.parent_id,
                     'order_sequence': data.order_sequence,
-                    'app_id': data.app_ids || [], // Multi-select array
+                    'app_id': data.app_ids || [],
                     'index_view_file': data.index_view_file,
                     'index_js_file': data.index_js_file,
                     'manage_view_file': data.manage_view_file,
@@ -301,7 +304,6 @@ export class NavigationMenu {
                     const $field = $(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
                     if ($field.length) {
-                        // Handles both standard inputs and Select2 controls
                         $field.val(val ?? '').trigger('change');
                     }
                 });

@@ -14,7 +14,7 @@ class NavigationMenuTableResource extends JsonResource
         return [
             'id'             => $this->id,
             'name'           => $this->name,
-            'parent'         => $this->parent?->name ?? 'None',
+            'parent'         => $this->parent?->name ?? '',
             'page_type'      => $this->page_type,
             'order_sequence' => $this->order_sequence,
             'apps'           => $this->apps->map(fn ($app) => [

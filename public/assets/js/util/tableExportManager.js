@@ -158,7 +158,7 @@ export class TableExportManager {
             headers: { 
                 'Content-Type': 'application/json', 
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken() // Automatically secure request headers
+                'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken()
             },
             body: JSON.stringify(bodyObj),
             credentials: 'same-origin'

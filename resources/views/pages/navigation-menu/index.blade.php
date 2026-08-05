@@ -43,21 +43,21 @@
                         <div class="d-flex flex-column gap-7">
                             <div class="row">
                                 <div class="col-12">
-                                    <label class="form-label required mb-2" for="filter_parent_id">Parent</label>
+                                    <label class="form-label mb-2" for="filter_parent_id">Parent</label>
                                     <select id="filter_parent_id" name="filter_parent_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <label class="form-label required mb-2" for="filter_app_id">App</label>
+                                    <label class="form-label mb-2" for="filter_app_id">App</label>
                                     <select id="filter_app_id" name="filter_app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <label class="form-label required mb-2" for="filter_page_type">Page Type</label>
+                                    <label class="form-label mb-2" for="filter_page_type">Page Type</label>
                                     <select id="filter_page_type" name="filter_page_type" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
                                         <option value="menu">Menu</option>
                                         <option value="single_page">Single Page</option>

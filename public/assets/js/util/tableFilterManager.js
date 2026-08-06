@@ -11,7 +11,7 @@ export class TableFilterManager {
      * @param {string} options.tableSelector - DataTables table selector string
      * @param {string} [options.statusContainerSelector] - Selector for status bar placement
      * @param {Function} [options.onApply] - Optional callback triggered after applying filters
-     * @param {Function} [options.onReset] - Optional callback triggered after resetting filters
+     * @Function} [options.onReset] - Optional callback triggered after resetting filters
      */
     constructor(options = {}) {
         this.modalId = options.modalId;
@@ -58,8 +58,8 @@ export class TableFilterManager {
         if (!statusEl) {
             statusEl = document.createElement('div');
             statusEl.id = containerId;
-            // Clean & Minimalist layout: Flex row without card boxes or heavy borders
-            statusEl.className = 'table-filter-status-bar d-none mb-3 py-1 d-flex align-items-center flex-wrap gap-2 fs-7';
+            // Clean, borderless horizontal flow
+            statusEl.className = 'table-filter-status-bar d-none mb-3 py-1 d-flex align-items-center justify-content-between flex-wrap gap-2';
             
             const parent = tableEl.closest('.card') || tableEl.parentElement;
             parent.parentNode.insertBefore(statusEl, parent);
@@ -265,7 +265,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Render sleek, non-badge filter chips with smooth text formatting
+     * Render linear, minimal filter chips with clear micro-interactions
      */
     renderStatusBar(formattedFilters = []) {
         if (!this.statusContainer) return;
@@ -276,33 +276,42 @@ export class TableFilterManager {
             return;
         }
 
-        // Minimalist Header text without container box or solid badges
+        // Clean subtle filter label & container
         let html = `
-            <span class="text-gray-500 fw-medium me-1">Active Filters:</span>
-            <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="text-muted opacity-75 fw-medium me-1 style-label" style="font-size: 0.75rem; letter-spacing: 0.03em;">FILTERED BY</span>
+                <div class="d-flex flex-wrap align-items-center gap-2">
         `;
 
-        // Clean, rounded tag pill elements
+        // Modern, sleek pill design
         formattedFilters.forEach(item => {
             html += `
-                <div class="d-inline-flex align-items-center gap-1 bg-gray-100 border border-gray-300 rounded px-2 py-1 fs-8 text-gray-700">
-                    <span class="text-gray-500 fw-normal">${this.escapeHtml(item.label)}:</span>
-                    <span class="fw-semibold text-gray-800">${this.escapeHtml(item.displayValue)}</span>
-                    <i class="ki-outline ki-cross fs-7 text-gray-400 text-hover-danger cursor-pointer ms-1" 
-                       data-remove-filter="${item.key}" 
-                       data-filter-value="${this.escapeHtml(item.rawValue)}"
-                       title="Remove filter: ${this.escapeHtml(item.displayValue)}"></i>
+                <div class="filter-chip-item d-inline-flex align-items-center border border-subtle rounded-2 px-2 py-1" style="font-size: 0.8125rem;">
+                    <span class="text-muted fw-normal me-1">${this.escapeHtml(item.label)}:</span>
+                    <span class="fw-semibold text-body me-1">${this.escapeHtml(item.displayValue)}</span>
+                    <button type="button" 
+                            class="btn-chip-remove border-0 bg-transparent p-0 ms-1 d-inline-flex align-items-center justify-content-center opacity-50 opacity-100-hover text-body cursor-pointer"
+                            data-remove-filter="${item.key}" 
+                            data-filter-value="${this.escapeHtml(item.rawValue)}"
+                            aria-label="Remove filter ${this.escapeHtml(item.displayValue)}"
+                            title="Remove filter"
+                            style="width: 16px; height: 16px; border-radius: 50%; transition: all 0.15s ease;">
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <line x1="2" y1="2" x2="10" y2="10"></line>
+                            <line x1="10" y1="2" x2="2" y2="10"></line>
+                        </svg>
+                    </button>
                 </div>
             `;
         });
 
-        html += `</div>`;
+        html += `</div></div>`;
 
-        // Subtle Clear All Text Link
+        // Subtle ghost link for Clear All
         html += `
-            <a href="javascript:void(0)" class="text-gray-500 text-hover-danger btn-clear-all-filters fs-8 fw-medium ms-2 text-decoration-none">
-                Clear All
-            </a>
+            <button type="button" class="btn-clear-all-filters btn btn-link p-0 text-muted link-danger fw-medium ms-auto" style="font-size: 0.75rem;">
+                CLEAR ALL
+            </button>
         `;
 
         this.statusContainer.innerHTML = html;

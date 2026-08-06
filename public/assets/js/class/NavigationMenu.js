@@ -95,7 +95,7 @@ export class NavigationMenu {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '15%', targets: 4 },
-                { width: '10%', bSortable: false, targets: 5 },
+                { width: '10%', bSortable: false, targets: 6 },
             ],
             columns: [
                 { 
@@ -160,6 +160,11 @@ export class NavigationMenu {
             return Boolean(pageType && pageType !== 'menu');
         };
 
+        const isMultiPage = (form) => {
+            const pageType = form.querySelector('[name="page_type"]')?.value;
+            return Boolean(pageType && pageType == 'multi_page');
+        };
+
         initValidation({
             forms: [
                 {
@@ -170,7 +175,9 @@ export class NavigationMenu {
                         page_type: { required: true },
                         order_sequence: { required: true },
                         index_view_file: { requiredIf: isNotMenuPage },
-                        index_js_file: { requiredIf: isNotMenuPage }
+                        index_js_file: { requiredIf: isNotMenuPage },
+                        manage_view_file: { requiredIf: isMultiPage },
+                        manage_js_file: { requiredIf: isMultiPage }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -195,8 +202,8 @@ export class NavigationMenu {
 
             if (await errorHandler.handleResponse(response, btn)) return;
 
-            FormEnvironmentManager.resetForm(formElement);
             this.dom.modal.modal('hide');
+            FormEnvironmentManager.resetForm(formElement);
             this.orchestrator.reload(CONFIG.selectors.table);
         } catch (error) {
             if (error.name === 'AbortError') return; 

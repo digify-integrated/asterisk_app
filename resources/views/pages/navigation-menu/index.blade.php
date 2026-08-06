@@ -6,7 +6,7 @@
 @endpush
 
 @section('content')
-    <div class="card border-0 shadow-sm mb-7">
+    <div class="card border-0 shadow-sm mb-3">
         <div class="card-body py-5">
             <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-5">
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
@@ -111,7 +111,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="app_id">App</label>
-                            <select id="app_id" name="app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
+                            <select id="app_id" name="app_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
                             
                             </select>
                         </div>

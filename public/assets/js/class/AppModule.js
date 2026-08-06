@@ -149,8 +149,8 @@ export class AppModule {
 
             if (await errorHandler.handleResponse(response, btn)) return;
 
-            FormEnvironmentManager.resetForm(formElement);
             this.dom.modal.modal('hide');
+            FormEnvironmentManager.resetForm(formElement);
             this.orchestrator.reload(CONFIG.selectors.table);
         } catch (error) {
             if (error.name === 'AbortError') return; 

@@ -8,6 +8,8 @@ import { errorHandler } from '../util/errorHandler.js';
 import { ButtonStateManager } from '../util/buttonManager.js';
 import { DetailFetcher } from '../util/detailFetcher.js';
 import { initConfirmAction } from '../util/confirmationAction.js';
+import { ComponentRegistry } from '../util/componentRegistry.js';
+import { TableFilterManager } from '../util/tableFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
@@ -22,7 +24,9 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
-        checkboxes: '.datatable-checkbox-children:checked'
+        checkboxes: '.datatable-checkbox-children:checked',
+        filterCollapse: 'app-filter-collapse',
+        filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
         tableData: '/app/generate-table',
@@ -37,6 +41,12 @@ export class AppModule {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
+
+        this.filterManager = new TableFilterManager({
+            containerId: CONFIG.selectors.filterCollapse,
+            orchestrator: this.orchestrator,
+            tableSelector: CONFIG.selectors.table
+        });
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
@@ -49,6 +59,7 @@ export class AppModule {
         this.initTable();
         this.initForm();
         this.initDelete();
+        this.initDateRangePicker();
         this.registerGlobalListeners();
         
         AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
@@ -58,6 +69,11 @@ export class AppModule {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
+            ajaxData: (d) => {
+                return Object.assign({}, d, {
+                    filter_created_date: $('#filter_created_date').val()
+                });
+            },
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
             exportColumns: [2, 3, 4],
@@ -69,9 +85,7 @@ export class AppModule {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '5%', bSortable: false, targets: 1 },
-                { width: '15%', targets: 2 },
-                { width: '15%', targets: 4 },
-                { width: '10%', bSortable: false, targets: 5 },
+                { width: '10%', bSortable: false, targets: 6 },
             ],
             columns: [
                 { 
@@ -96,6 +110,11 @@ export class AppModule {
                 { 
                     data: 'order_sequence',
                     title: 'Sequence',
+                },
+                { 
+                    data: 'created_at',
+                    title: 'Created At',
+                    visible: false
                 },
                 { 
                     data: null, 
@@ -187,6 +206,12 @@ export class AppModule {
             confirmButtonText: 'Delete Records',
             confirmButtonClass: 'danger',
             onSuccess: () => this.orchestrator.reload(CONFIG.selectors.table)
+        });
+    }
+
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
         });
     }
 

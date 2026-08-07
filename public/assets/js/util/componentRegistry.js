@@ -248,7 +248,7 @@ export class ComponentRegistry {
         flatpickr(elements, { enableTime, dateFormat });
     }
 
-    static initializeDateRangePicker(selector, options = {}) {
+    static initializeDateRangePicker({ selector, ...options } = {}) {
         if (typeof window.jQuery === 'undefined' || typeof moment === 'undefined') return;
 
         const config = {
@@ -266,17 +266,19 @@ export class ComponentRegistry {
             ...options
         };
 
+        const $element = window.jQuery(selector);
+        if (!$element.length) return;
+
         const pickerOptions = {
             autoUpdateInput: false,
+            alwaysShowCalendars: true, // Force calendars to stay visible when ranges are present
+            showCustomRangeLabel: true,
             ranges: config.ranges,
             locale: { cancelLabel: 'Clear' }
         };
 
         if (config.startDate) pickerOptions.startDate = config.startDate;
         if (config.endDate) pickerOptions.endDate = config.endDate;
-
-        const $element = window.jQuery(selector);
-        if (!$element.length) return;
 
         $element.daterangepicker(pickerOptions, (start, end) => {
             if (typeof config.callback === 'function') config.callback(start, end);

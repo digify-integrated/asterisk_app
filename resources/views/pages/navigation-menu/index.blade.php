@@ -7,66 +7,23 @@
 
 @section('content')
     <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body py-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-5">
+        <div class="card-body py-4">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
                     @include('partials.datatable-search')
                 </div>
-
                 <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
-
-                    @if($deletePermission)
-                        <div class="d-flex align-items-center grow-0 action-dropdown d-none">        
-                            <a href="#" class="btn btn-light-dark btn-sm btn-flex btn-center btn-active-light-primary show menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                Actions
-                                <i class="ki-outline ki-down fs-7 ms-1"></i>
-                            </a>
-
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fs-7 w-125px py-4" data-kt-menu="true">
-                                <div class="menu-item px-3">
-                                    <a href="javascript:void(0);" class="menu-link px-3 text-hover-danger" id="delete-data">
-                                        <i class="ki-outline ki-trash fs-6 me-2 text-danger"></i>Delete
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                    @component('partials.datatable-actions')
+                        @slot('deletePermission', $deletePermission)
+                    @endcomponent  
+                    
+                    @component('partials.filter-button')
+                        @slot('collapseId', 'navigation-menu-filter-collapse')
+                    @endcomponent
 
                     @if($exportPermission)
                         @include('partials.datatable-buttons')
                     @endif
-
-                    @component('partials.filter-modal')
-                        @slot('modalId', 'navigation_menu_table_filter_modal')
-                        @slot('size', 'md')
-
-                        <div class="d-flex flex-column gap-7">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label class="form-label mb-2" for="filter_parent_id">Parent</label>
-                                    <select id="filter_parent_id" name="filter_parent_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <label class="form-label mb-2" for="filter_app_id">App</label>
-                                    <select id="filter_app_id" name="filter_app_id" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <label class="form-label mb-2" for="filter_page_type">Page Type</label>
-                                    <select id="filter_page_type" name="filter_page_type" multiple class="form-select form-select-sm" data-dropdown-parent="#navigation_menu_table_filter_modal" data-control="select2" data-allow-clear="false">
-                                        <option value="menu">Menu</option>
-                                        <option value="single_page">Single Page</option>
-                                        <option value="multi_page">Multi Page</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    @endcomponent
 
                     @component('partials.column-dropdown')
                         @slot('dropdownId', 'navigation-menu-table-column-dropdown')
@@ -74,25 +31,39 @@
                     @endcomponent
                 </div>
             </div>
+
+            @component('partials.filter-module')
+                @slot('collapseId', 'navigation-menu-filter-collapse')
+                @slot('resetFilterId', 'navigation-menu-reset-filters-btn')
+                @slot('applyFilterId', 'navigation-menu-apply-filters-btn')
+                
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_app_id">App</label>
+                    <select id="filter_app_id" name="filter_app_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select App" data-allow-clear="true"></select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
+                    <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_page_type">Page Type</label>
+                    <select id="filter_page_type" name="filter_page_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Page Type" data-allow-clear="true">
+                        <option value="menu">Menu</option>
+                        <option value="single_page">Single Page</option>
+                        <option value="multi_page">Multi Page</option>
+                    </select>
+                </div>
+            @endcomponent
         </div>
     </div>
 
     <div class="card">
         <div class="card-body pt-3 pb-3 pe-0 ps-0">
-            <div class="table-responsive">
-                <table class="table table-sm table-hover align-middle cursor-pointer table-row-dashed gy-3" id="navigation-menu-table">
-                    <thead>
-                        <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
-                            <th>
-                                <div class="form-check form-check-sm ms-5">
-                                    <input class="form-check-input datatable-checkbox-master" type="checkbox">
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-semibold text-gray-800"></tbody>
-                </table>
-            </div>
+            @component('partials.index-table')
+                @slot('tableId', 'navigation-menu-table')
+            @endcomponent
         </div>
 
         @if($pageType == 'single_page')

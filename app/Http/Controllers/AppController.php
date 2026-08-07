@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Carbon\Carbon;
 use Exception;
 
 class AppController extends Controller
@@ -111,8 +112,23 @@ class AppController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $apps = App::query()->orderBy('name')->get();
         $defaultLogo = asset('assets/media/default/app-logo.png');
+
+        $query = App::query();
+
+        // Filter by Created Date Range
+        $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
+            $dates = explode(' - ', $request->input('filter_created_date'));
+
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
+
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        });
+
+        $apps = $query->orderBy('name')->get();
 
         return AppTableResource::collection($apps)
             ->additional([

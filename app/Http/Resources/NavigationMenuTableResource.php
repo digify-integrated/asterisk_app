@@ -18,10 +18,9 @@ class NavigationMenuTableResource extends JsonResource
             'page_type'      => $this->page_type,
             'order_sequence' => $this->order_sequence,
             'apps'           => $this->apps->map(fn ($app) => [
-                'id'       => $app->id,
-                'name'     => $app->name,
-                'logo_url' => $app->logo_url ?? null,
+                'name' => $app->name,
             ])->toArray(),
+            'created_at' => $this->created_at?->format('M d, Y h:i:s a') ?? '',
             'permissions'    => [
                 'can_write'  => (bool) ($this->permissions['write'] ?? false),
                 'can_logs'   => (bool) ($this->permissions['logs'] ?? false),

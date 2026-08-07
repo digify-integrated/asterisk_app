@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Carbon\Carbon;
 use Exception;
 
 class NavigationMenuController extends Controller
@@ -129,6 +130,18 @@ class NavigationMenuController extends Controller
         $query->when($request->filled('filter_page_type'), function ($q) use ($request) {
             $types = (array) $request->input('filter_page_type');
             $q->whereIn('page_type', $types);
+        });
+
+        // Filter by Created Date Range
+        $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
+            $dates = explode(' - ', $request->input('filter_created_date'));
+
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
+
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            }
         });
 
         $navigationMenus = $query->orderBy('order_sequence')->get();

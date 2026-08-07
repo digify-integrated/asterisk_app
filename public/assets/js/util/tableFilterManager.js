@@ -1,38 +1,41 @@
 /**
- * Dynamic DataTables Filter Manager
- * Handles multi-modal setups, granular per-value status tags, chip dismissals,
+ * Dynamic DataTables Filter Manager (Collapsible Edition)
+ * Handles collapsible filter panels, granular per-value status tags, chip dismissals,
  * minimal UI status bar, and DataTables reloads.
  */
 export class TableFilterManager {
     /**
      * @param {Object} options
-     * @param {string} options.modalId - ID of the filter modal
+     * @param {string} options.containerId - ID of the collapsible filter element
      * @param {Object} options.orchestrator - DataTables orchestrator instance
-     * @param {string} options.tableSelector - DataTables table selector string
+     * @param {string} [options.tableSelector='#table'] - DataTables table selector string
      * @param {string} [options.statusContainerSelector] - Selector for status bar placement
      * @param {Function} [options.onApply] - Optional callback triggered after applying filters
-     * @Function} [options.onReset] - Optional callback triggered after resetting filters
+     * @param {Function} [options.onReset] - Optional callback triggered after resetting filters
      */
     constructor(options = {}) {
-        this.modalId = options.modalId;
+        this.containerId = options.containerId;
         this.orchestrator = options.orchestrator;
         this.tableSelector = options.tableSelector || '#table';
         this.statusContainerSelector = options.statusContainerSelector || null;
         this.onApply = options.onApply || null;
         this.onReset = options.onReset || null;
 
-        // DOM References scoped to this specific modal instance
-        this.modal = document.getElementById(this.modalId);
-        if (!this.modal) {
-            console.warn(`TableFilterManager: Modal with ID "#${this.modalId}" was not found.`);
+        // DOM References scoped to this specific collapsible element
+        this.container = document.getElementById(this.containerId);
+        if (!this.container) {
+            console.warn(`TableFilterManager: Collapse container with ID "#${this.containerId}" was not found.`);
             return;
         }
 
-        this.form = this.modal.querySelector('form') || this.modal.querySelector('.modal-body');
-        
-        // Find badge associated with this modal
-        this.badge = document.querySelector(`[data-filter-badge="${this.modalId}"]`) || 
-                     document.querySelector(`[data-bs-target="#${this.modalId}"] .filter-count-badge`);
+        this.form = this.container.matches('form')
+            ? this.container
+            : this.container.querySelector('form') || this.container;
+
+        // Find badge associated with this collapsible trigger
+        this.badge = document.querySelector(`[data-filter-badge="${this.containerId}"]`) ||
+                     document.querySelector(`[data-bs-target="#${this.containerId}"] .filter-count-badge`) ||
+                     document.querySelector(`[href="#${this.containerId}"] .filter-count-badge`);
 
         // Setup container for Active Filter Status bar
         this.statusContainer = this.initStatusContainer();
@@ -52,13 +55,12 @@ export class TableFilterManager {
         const tableEl = document.querySelector(this.tableSelector);
         if (!tableEl) return null;
 
-        const containerId = `${this.modalId}_status_bar`;
-        let statusEl = document.getElementById(containerId);
+        const statusBarId = `${this.containerId}_status_bar`;
+        let statusEl = document.getElementById(statusBarId);
 
         if (!statusEl) {
             statusEl = document.createElement('div');
-            statusEl.id = containerId;
-            // Clean, borderless horizontal flow
+            statusEl.id = statusBarId;
             statusEl.className = 'table-filter-status-bar d-none mb-3 py-1 d-flex align-items-center justify-content-between flex-wrap gap-2';
             
             const parent = tableEl.closest('.card') || tableEl.parentElement;
@@ -69,21 +71,28 @@ export class TableFilterManager {
     }
 
     /**
-     * Bind click events inside the modal and status bar
+     * Bind click events inside collapsible container and status bar
      */
     initEvents() {
-        // Modal buttons
-        this.modal.addEventListener('click', (e) => {
-            if (e.target.closest('#apply-filter') || e.target.closest('.btn-apply-filter')) {
+        // Container button interactions (Apply & Reset buttons)
+        this.container.addEventListener('click', (e) => {
+            const applyBtn = e.target.closest(
+                '#apply-filter, .btn-apply-filter, [id*="apply-filter"], [id*="apply_filter"]'
+            );
+            const resetBtn = e.target.closest(
+                '#reset-filter, .btn-reset-filter, [id*="reset-filter"], [id*="reset_filter"]'
+            );
+
+            if (applyBtn) {
                 e.preventDefault();
                 this.apply();
-            } else if (e.target.closest('#reset-filter') || e.target.closest('.btn-reset-filter')) {
+            } else if (resetBtn) {
                 e.preventDefault();
                 this.reset();
             }
         });
 
-        // Delegate individual tag removal & clear all button on the status bar
+        // Delegate status bar tag removal & clear-all button
         if (this.statusContainer) {
             this.statusContainer.addEventListener('click', (e) => {
                 const removeTagBtn = e.target.closest('[data-remove-filter]');
@@ -213,7 +222,7 @@ export class TableFilterManager {
             if (labelEl) return labelEl.textContent.replace('*', '').trim();
         }
 
-        const parentLabel = element.closest('.form-group, .mb-3, .mb-5')?.querySelector('label');
+        const parentLabel = element.closest('.form-group, .mb-3, .mb-5, .col-form-label')?.querySelector('label');
         if (parentLabel) return parentLabel.textContent.replace('*', '').trim();
 
         const placeholder = element.getAttribute('placeholder');
@@ -235,7 +244,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Apply active filters to the DataTable & render status bar chips
+     * Apply active filters, hide collapsible drawer, and update UI
      */
     apply() {
         const { raw, formatted } = this.getFilterData();
@@ -248,15 +257,17 @@ export class TableFilterManager {
         // 2. Render Active Filters Status Bar
         this.renderStatusBar(formatted);
 
-        // 3. Close modal
-        const modalInstance = bootstrap.Modal.getInstance(this.modal);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
+        // 3. Hide Bootstrap Collapse container
+        this.closeCollapse();
 
         // 4. Reload DataTables passing extracted filter payload
         if (this.orchestrator && typeof this.orchestrator.reload === 'function') {
-            this.orchestrator.reload(this.tableSelector, this.currentFilters);
+            // If your orchestrator accepts a resetPaging flag:
+            this.orchestrator.reload(this.tableSelector, this.currentFilters, true);
+        } else {
+            // Direct DataTables API fallback:
+            const dt = $(this.tableSelector).DataTable();
+            dt.page('first').draw(false); 
         }
 
         if (typeof this.onApply === 'function') {
@@ -265,7 +276,21 @@ export class TableFilterManager {
     }
 
     /**
-     * Render linear, minimal filter chips with clear micro-interactions
+     * Hides the Bootstrap Collapse element
+     */
+    closeCollapse() {
+        if (typeof bootstrap === 'undefined') return;
+
+        // Get existing instance or create/toggle safely
+        let collapseInstance = bootstrap.Collapse.getInstance(this.container);
+        if (!collapseInstance) {
+            collapseInstance = new bootstrap.Collapse(this.container, { toggle: false });
+        }
+        collapseInstance.hide();
+    }
+
+    /**
+     * Render status bar chips
      */
     renderStatusBar(formattedFilters = []) {
         if (!this.statusContainer) return;
@@ -276,14 +301,12 @@ export class TableFilterManager {
             return;
         }
 
-        // Clean subtle filter label & container
         let html = `
             <div class="d-flex align-items-center flex-wrap gap-2">
                 <span class="text-muted opacity-75 fw-medium me-1 style-label" style="font-size: 0.75rem; letter-spacing: 0.03em;">FILTERED BY</span>
                 <div class="d-flex flex-wrap align-items-center gap-2">
         `;
 
-        // Modern, sleek pill design
         formattedFilters.forEach(item => {
             html += `
                 <div class="filter-chip-item d-inline-flex align-items-center border border-subtle rounded-2 px-2 py-1" style="font-size: 0.8125rem;">
@@ -291,7 +314,7 @@ export class TableFilterManager {
                     <span class="fw-semibold text-body me-1">${this.escapeHtml(item.displayValue)}</span>
                     <button type="button" 
                             class="btn-chip-remove border-0 bg-transparent p-0 ms-1 d-inline-flex align-items-center justify-content-center opacity-50 opacity-100-hover text-body cursor-pointer"
-                            data-remove-filter="${item.key}" 
+                            data-remove-filter="${this.escapeHtml(item.key)}" 
                             data-filter-value="${this.escapeHtml(item.rawValue)}"
                             aria-label="Remove filter ${this.escapeHtml(item.displayValue)}"
                             title="Remove filter"
@@ -307,7 +330,6 @@ export class TableFilterManager {
 
         html += `</div></div>`;
 
-        // Subtle ghost link for Clear All
         html += `
             <button type="button" class="btn-clear-all-filters btn btn-link p-0 text-muted link-danger fw-medium ms-auto" style="font-size: 0.75rem;">
                 CLEAR ALL
@@ -319,7 +341,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Remove a single target value from multi-selects/checkboxes dynamically
+     * Remove a single target value from inputs
      */
     removeGranularFilter(fieldName, valueToRemove) {
         if (!this.form) return;
@@ -389,7 +411,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Update filter badge visibility and number
+     * Update filter badge counter visibility
      */
     updateBadge(count) {
         if (!this.badge) return;
@@ -422,7 +444,7 @@ export class TableFilterManager {
      */
     exportFilters() {
         return {
-            modalId: this.modalId,
+            containerId: this.containerId,
             appliedCount: Object.keys(this.currentFilters).length,
             filters: { ...this.currentFilters }
         };

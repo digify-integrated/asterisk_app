@@ -24,14 +24,13 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
-        filterModal: 'navigation_menu_table_filter_modal',
-        applyFilter: '#apply-filter',
-        resetFilter: '#reset-filter',
         checkboxes: '.datatable-checkbox-children:checked',
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
+        filterCollapse: 'navigation-menu-filter-collapse',
         filterAppDropdown: '#filter_app_id',
         filterParentDropdown: '#filter_parent_id',
+        filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
         tableData: '/navigation-menu/generate-table',
@@ -50,7 +49,7 @@ export class NavigationMenu {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            modalId: CONFIG.selectors.filterModal,
+            containerId: CONFIG.selectors.filterCollapse,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });
@@ -67,6 +66,7 @@ export class NavigationMenu {
         this.initForm();
         this.initDelete();
         this.initDropdownOption();
+        this.initDateRangePicker();
         this.initParentDropdownOption();
         this.registerGlobalListeners();
         
@@ -81,7 +81,8 @@ export class NavigationMenu {
                 return Object.assign({}, d, {
                     filter_parent_id: $('#filter_parent_id').val() || [],
                     filter_app_id: $('#filter_app_id').val() || [],
-                    filter_page_type: $('#filter_page_type').val() || []
+                    filter_page_type: $('#filter_page_type').val() || [],
+                    filter_created_date: $('#filter_created_date').val()
                 });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
@@ -95,7 +96,7 @@ export class NavigationMenu {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '15%', targets: 4 },
-                { width: '10%', bSortable: false, targets: 6 },
+                { width: '10%', bSortable: false, targets: 7 },
             ],
             columns: [
                 { 
@@ -134,6 +135,11 @@ export class NavigationMenu {
                 { 
                     data: 'order_sequence',
                     title: 'Sequence',
+                },
+                { 
+                    data: 'created_at',
+                    title: 'Created At',
+                    visible: false
                 },
                 { 
                     data: null, 
@@ -247,6 +253,12 @@ export class NavigationMenu {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.appOption,
             dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
+        });
+    }
+
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
         });
     }
 

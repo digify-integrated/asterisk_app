@@ -263,9 +263,12 @@ export class DataTableOrchestrator {
         }
     }
 
-    reload(selectorOrNode) {
+    reload(selectorOrNode, resetPaging = true) {
         const dt = DataTableOrchestrator.getAPI(selectorOrNode);
-        if (dt) dt.ajax.reload(null, false);
+        if (dt) {
+            // Passing 'true' tells DataTables to jump back to Page 1
+            dt.ajax.reload(null, resetPaging);
+        }
     }
 
     destroy(selectorOrNode) {

@@ -5,6 +5,8 @@ use App\Http\Controllers\AppRenderController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\NavigationMenuController;
+use App\Http\Controllers\SystemActionController;
+use App\Http\Controllers\SystemParameterController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +59,30 @@ Route::middleware('auth')->group(function () {
     Route::prefix('navigation-menu')
         ->name('navigation-menu.')
         ->controller(NavigationMenuController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('system-action')
+        ->name('system-action.')
+        ->controller(SystemActionController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('system-parameter')
+        ->name('system-parameter.')
+        ->controller(SystemParameterController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

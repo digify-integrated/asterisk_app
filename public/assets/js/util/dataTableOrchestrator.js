@@ -76,7 +76,7 @@ export class DataTableOrchestrator {
             serverSide: config.serverSide,
             processing: config.processing,
             deferRender: true,
-            autoWidth: false,
+            autoWidth: true,
             orderClasses: false,
             orderMulti: true,               // Allow Shift+Click multi-column sort
             searchDelay: config.searchDelay,
@@ -180,8 +180,16 @@ export class DataTableOrchestrator {
         if (!column) return;
 
         const newState = forceState !== null ? forceState : !column.visible();
-        column.visible(newState);
+        
+        // Pass 'false' as 2nd param so DataTables doesn't do an immediate un-adjusted redraw
+        column.visible(newState, false);
+
+        // Recalculate column widths and redraw without resetting paging
         dt.columns.adjust();
+        if (dt.responsive) {
+            dt.responsive.recalc();
+        }
+        dt.draw(false);
     }
 
     /**

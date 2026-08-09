@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('navigation_menus', function (Blueprint $table) {
@@ -59,9 +56,18 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT DEFAULT 'Navigation menu updated.<br/><br/>';
+                DECLARE old_parent_name VARCHAR(255);
+                DECLARE new_parent_name VARCHAR(255);
 
-                DECLARE old_app_name VARCHAR(255);
-                DECLARE new_app_name VARCHAR(255);
+                SELECT name
+                INTO old_parent_name
+                FROM navigation_menus
+                WHERE id = OLD.parent_id;
+
+                SELECT name
+                INTO new_parent_name
+                FROM navigation_menus
+                WHERE id = NEW.parent_id;
 
                 IF NOT (NEW.name <=> OLD.name) THEN
                     SET audit_log = CONCAT(
@@ -81,6 +87,17 @@ return new class extends Migration
                         COALESCE(OLD.icon, 'Not set'),
                         '" → "',
                         COALESCE(NEW.icon, 'Not set'),
+                        '"<br/>'
+                    );
+                END IF;
+
+                IF NOT (NEW.parent_id <=> OLD.parent_id) THEN
+                    SET audit_log = CONCAT(
+                        audit_log,
+                        'Parent: "',
+                        COALESCE(old_parent_name, 'Not set'),
+                        '" → "',
+                        COALESCE(new_parent_name, 'Not set'),
                         '"<br/>'
                     );
                 END IF;
@@ -133,11 +150,18 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT;
+                DECLARE parent_name VARCHAR(255);
+
+                SELECT name
+                INTO parent_name
+                FROM navigation_menus
+                WHERE id = NEW.parent_id;
 
                 SET audit_log = CONCAT(
                     'Navigation menu created.<br/><br/>',
                     'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
                     'Icon: "', COALESCE(NEW.icon, 'Not set'), '"<br/>',
+                    'Parent: "', COALESCE(parent_name, 'Not set'), '"<br/>',
                     'Page Type: "', NEW.page_type, '"<br/>',
                     'Order Sequence: ', NEW.order_sequence
                 );
@@ -260,9 +284,6 @@ return new class extends Migration
         SQL);
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('navigation_menus');

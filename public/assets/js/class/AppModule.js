@@ -17,6 +17,7 @@ const CONFIG = {
         table: '#app-table',
         tableColumn: '#app-table-column-dropdown',
         form: '#app_form',
+        detailId: 'app_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -236,7 +237,7 @@ export class AppModule {
     async handleFetchWorkflow(referenceId) {
         await DetailFetcher.fetch({
             url: CONFIG.endpoints.fetch,
-            detailIdKey: 'app_id',
+            detailIdKey: CONFIG.selectors.detailId,
             detailIdValue: referenceId,
             formSelector: CONFIG.selectors.form,
             submitBtnSelector: CONFIG.selectors.submitButton,

@@ -20,7 +20,7 @@ class NavigationMenuTableResource extends JsonResource
             'apps'           => $this->apps->map(fn ($app) => [
                 'name' => $app->name,
             ])->toArray(),
-            'created_at' => $this->created_at?->format('M d, Y h:i:s a') ?? '',
+            'created_at'     => $this->created_at?->format('M d, Y h:i:s a') ?? '',
             'permissions'    => [
                 'can_write'  => (bool) ($this->permissions['write'] ?? false),
                 'can_logs'   => (bool) ($this->permissions['logs'] ?? false),

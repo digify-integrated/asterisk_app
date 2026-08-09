@@ -17,6 +17,7 @@ const CONFIG = {
         table: '#navigation-menu-table',
         tableColumn: '#navigation-menu-table-column-dropdown',
         form: '#navigation_menu_form',
+        detailId: 'navigation_menu_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -292,7 +293,7 @@ export class NavigationMenu {
     async handleFetchWorkflow(referenceId) {
         await DetailFetcher.fetch({
             url: CONFIG.endpoints.fetch,
-            detailIdKey: 'navigation_menu_id',
+            detailIdKey: CONFIG.selectors.detailId,
             detailIdValue: referenceId,
             formSelector: CONFIG.selectors.form,
             submitBtnSelector: CONFIG.selectors.submitButton,

@@ -61,6 +61,17 @@
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-2" for="symbol">Symbol</label>
+                            <input type="text" class="form-control form-control-sm" id="symbol" name="symbol" placeholder="Enter symbol" maxlength="10" autocomplete="off">
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label required mb-2" for="shorthand">Shorthand</label>
+                            <input type="text" class="form-control form-control-sm" id="shorthand" name="shorthand" placeholder="Enter shorthand" maxlength="100" autocomplete="off">
+                        </div>
+                    </div>
                 </div>
             @endcomponent
         @endif

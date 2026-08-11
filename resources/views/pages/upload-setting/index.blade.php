@@ -35,25 +35,6 @@
                 @slot('collapseId', 'navigation-menu-filter-collapse')
                 @slot('resetFilterId', 'navigation-menu-reset-filters-btn')
                 @slot('applyFilterId', 'navigation-menu-apply-filters-btn')
-                
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_app_id">App</label>
-                    <select id="filter_app_id" name="filter_app_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select App" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
-                    <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_page_type">Page Type</label>
-                    <select id="filter_page_type" name="filter_page_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Page Type" data-allow-clear="true">
-                        <option value="menu">Menu</option>
-                        <option value="single_page">Single Page</option>
-                        <option value="multi_page">Multi Page</option>
-                    </select>
-                </div>
             @endcomponent
         </div>
     </div>
@@ -68,10 +49,10 @@
         @if($pageType == 'single_page')
             @component('partials.form-modal')
                 @slot('formTitle', 'Navigation Menu Details')
-                @slot('formId', 'navigation_menu_form')
+                @slot('formId', 'upload_setting_form')
                 @slot('size', 'lg')
                 
-                <input type="hidden" id="navigation_menu_id" name="navigation_menu_id" />
+                <input type="hidden" id="upload_setting_id" name="upload_setting_id" />
 
                 <div class="d-flex flex-column gap-7">
                     <div class="row">

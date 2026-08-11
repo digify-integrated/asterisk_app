@@ -85,7 +85,7 @@ export class Currency {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '10%', bSortable: false, targets: 3 },
+                { width: '10%', bSortable: false, targets: 5 },
             ],
             columns: [
                 { 
@@ -98,6 +98,14 @@ export class Currency {
                 { 
                     data: 'name',
                     title: 'Currency',
+                },
+                { 
+                    data: 'symbol',
+                    title: 'Symbol',
+                },
+                { 
+                    data: 'shorthand',
+                    title: 'Shorthand',
                 },
                 { 
                     data: 'created_at',
@@ -130,6 +138,8 @@ export class Currency {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
+                        symbol: { required: true },
+                        shorthand: { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -234,6 +244,8 @@ export class Currency {
                 const targetFields = {
                     'currency_id': referenceId,
                     'name': data.name,
+                    'symbol': data.symbol,
+                    'shorthand': data.shorthand,
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

@@ -19,7 +19,7 @@ class UploadSettingSeeder extends Seeder
             'updated_at' => $now,
         ];
 
-        $systemActions = [
+        $uploadSettings = [
             [
                 'name' => 'Logo',
                 'max_file_size' => '500',
@@ -27,7 +27,7 @@ class UploadSettingSeeder extends Seeder
         ];
 
         DB::table('upload_settings')->insert(
-            array_map(fn ($row) => $row + $defaults, $systemActions)
+            array_map(fn ($row) => $row + $defaults, $uploadSettings)
         );
     }
 }

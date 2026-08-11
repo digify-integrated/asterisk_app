@@ -26,6 +26,10 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
+        countryDropdown: '#country_id',
+        stateDropdown: '#state_id',
+        filterCountryDropdown: '#filter_country_id',
+        filterStateDropdown: '#filter_state_id',
         filterCollapse: 'city-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
@@ -35,10 +39,12 @@ const CONFIG = {
         delete: '/city/delete',
         deleteMultiple: '/city/delete-multiple',
         fetch: '/city/fetch',
+        countryOption: '/country/generate-option',
+        stateOption: '/state/generate-option',
     }
 };
     
-export class State {
+export class City {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -60,6 +66,7 @@ export class State {
         this.initTable();
         this.initForm();
         this.initDelete();
+        this.initDropdownOption();
         this.initDateRangePicker();
         this.registerGlobalListeners();
         
@@ -72,6 +79,8 @@ export class State {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
+                    filter_country_id: $('#filter_country_id').val() || [],
+                    filter_state_id: $('#filter_state_id').val() || [],
                     filter_created_date: $('#filter_created_date').val()
                 });
             },
@@ -138,7 +147,7 @@ export class State {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        country: { required: true },
+                        state: { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -210,6 +219,18 @@ export class State {
         });
     }
 
+    initDropdownOption() {
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.countryOption,
+            dropdownSelector: [CONFIG.selectors.filterCountryDropdown]
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.stateOption,
+            dropdownSelector: [CONFIG.selectors.stateDropdown, CONFIG.selectors.filterStateDropdown]
+        });
+    }
+
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
@@ -243,7 +264,7 @@ export class State {
                 const targetFields = {
                     'city_id': referenceId,
                     'name': data.name,
-                    'state': data.state,
+                    'state_id': data.state_id,
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

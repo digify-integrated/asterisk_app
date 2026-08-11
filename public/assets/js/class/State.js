@@ -26,6 +26,8 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
+        countryDropdown: '#country_id',
+        filterCountryDropdown: '#filter_country_id',
         filterCollapse: 'state-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
@@ -35,6 +37,7 @@ const CONFIG = {
         delete: '/state/delete',
         deleteMultiple: '/state/delete-multiple',
         fetch: '/state/fetch',
+        countryOption: '/country/generate-option',
     }
 };
     
@@ -60,6 +63,7 @@ export class State {
         this.initTable();
         this.initForm();
         this.initDelete();
+        this.initDropdownOption();
         this.initDateRangePicker();
         this.registerGlobalListeners();
         
@@ -72,6 +76,7 @@ export class State {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
+                    filter_country_id: $('#filter_country_id').val() || [],
                     filter_created_date: $('#filter_created_date').val()
                 });
             },
@@ -134,7 +139,7 @@ export class State {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        country: { required: true },
+                        country_id: { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -206,6 +211,13 @@ export class State {
         });
     }
 
+    initDropdownOption() {
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.countryOption,
+            dropdownSelector: [CONFIG.selectors.countryDropdown, CONFIG.selectors.filterCountryDropdown]
+        });
+    }
+
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
@@ -239,7 +251,7 @@ export class State {
                 const targetFields = {
                     'state_id': referenceId,
                     'name': data.name,
-                    'country': data.country,
+                    'country_id': data.country_id,
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

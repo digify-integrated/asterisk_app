@@ -126,9 +126,9 @@ class SystemActionController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $systemActions = $query->orderBy('name')->get();
 
-        return SystemActionTableResource::collection($apps)
+        return SystemActionTableResource::collection($systemActions)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class SystemActionController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = SystemAction::query()->orderBy('name')->get();
+        $systemActions = SystemAction::query()->orderBy('name')->get();
 
-        return SystemActionOptionResource::collection($apps)
+        return SystemActionOptionResource::collection($systemActions)
             ->response();
     }
 }

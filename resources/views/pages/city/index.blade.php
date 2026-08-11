@@ -37,8 +37,8 @@
                 @slot('applyFilterId', 'city-apply-filters-btn')
                 
                 <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">Country</label>
-                    <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
+                    <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
                 </div>
                 
                 <div class="col-12 col-md-6 col-lg-3">

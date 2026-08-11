@@ -19,7 +19,7 @@ class UploadSettingExtensionSeeder extends Seeder
             'updated_at' => $now,
         ];
 
-        $systemActions = [
+        $uploadSettingExtensions = [
             [
                 'upload_setting_id' => '1',
                 'extension' => 'png',
@@ -35,7 +35,7 @@ class UploadSettingExtensionSeeder extends Seeder
         ];
 
         DB::table('upload_setting_extensions')->insert(
-            array_map(fn ($row) => $row + $defaults, $systemActions)
+            array_map(fn ($row) => $row + $defaults, $uploadSettingExtensions)
         );
     }
 }

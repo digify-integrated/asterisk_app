@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SystemParameterOptionResource;
-use App\Models\SystemParameter;
-use App\Http\Resources\SystemParameterTableResource;
-use App\Http\Resources\SystemParameterDetailsResource;
-use App\Http\Requests\SaveSystemParameterRequest;
-use App\Http\Requests\FetchSystemParameterDetailsRequest;
-use App\Http\Requests\DeleteSystemParameterRequest;
-use App\Http\Requests\DeleteMultipleSystemParametersRequest;
-use App\Services\SystemParameterManagementService;
+use App\Http\Resources\StateOptionResource;
+use App\Models\State;
+use App\Http\Resources\StateTableResource;
+use App\Http\Resources\StateDetailsResource;
+use App\Http\Requests\SaveStateRequest;
+use App\Http\Requests\FetchStateDetailsRequest;
+use App\Http\Requests\DeleteStateRequest;
+use App\Http\Requests\DeleteMultipleStatesRequest;
+use App\Services\StateManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,22 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class SystemParameterController extends Controller
+class StateController extends Controller
 {
     public function __construct(
-        protected SystemParameterManagementService $systemParameterService
+        protected StateManagementService $stateService
     ) {}
 
-    public function save(SaveSystemParameterRequest $request): JsonResponse
+    public function save(SaveStateRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->saveSystemParameter(
+            $this->stateService->saveState(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The system parameter has been saved successfully.',
+                'message' => 'The state has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -45,14 +45,14 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function fetch(FetchSystemParameterDetailsRequest $request): JsonResponse|SystemParameterDetailsResource
+    public function fetch(FetchStateDetailsRequest $request): JsonResponse|StateDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $systemParameter = SystemParameter::findOrFail($validated['system_parameter_id']);
+            $state = State::findOrFail($validated['state_id']);
 
-            return new SystemParameterDetailsResource($systemParameter);
+            return new StateDetailsResource($state);
 
         } catch (Exception $e) {
             report($e);
@@ -63,13 +63,13 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function delete(DeleteSystemParameterRequest $request): JsonResponse
+    public function delete(DeleteStateRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deleteSystemParameter((int) $request->validated()['system_parameter_id']);
+            $this->stateService->deleteState((int) $request->validated()['state_id']);
 
             return response()->json([
-                'message' => 'The system parameter has been deleted successfully',
+                'message' => 'The state has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -81,13 +81,13 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleSystemParametersRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleStatesRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deleteMultipleSystemParameters($request->validated()['system_parameter_id']);
+            $this->stateService->deleteMultipleStates($request->validated()['state_id']);
 
             return response()->json([
-                'message' => 'The selected system parameters have been deleted successfully',
+                'message' => 'The selected states have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -111,8 +111,12 @@ class SystemParameterController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
+        $query = State::query();
 
-        $query = SystemParameter::query();
+        $query->when($request->filled('filter_country_id'), function ($q) use ($request) {
+            $countries = (array) $request->input('filter_country_id');
+            $q->whereIn('country_id', $countries);
+        });
 
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -126,9 +130,9 @@ class SystemParameterController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $states = $query->orderBy('name')->get();
 
-        return SystemParameterTableResource::collection($apps)
+        return StateTableResource::collection($states)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +149,9 @@ class SystemParameterController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = SystemParameter::query()->orderBy('name')->get();
+        $states = State::query()->orderBy('name')->get();
 
-        return SystemParameterOptionResource::collection($apps)
+        return StateOptionResource::collection($states)
             ->response();
     }
 }

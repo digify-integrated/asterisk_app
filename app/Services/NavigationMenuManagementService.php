@@ -10,7 +10,6 @@ class NavigationMenuManagementService
     public function saveNavigationMenu(array $data, ?int $userId): NavigationMenu
     {
         return DB::transaction(function () use ($data, $userId) {
-            // 1. Save or Update Main Navigation Menu
             $payload = [
                 'name'           => $data['name'],
                 'page_type'      => $data['page_type'],
@@ -25,13 +24,11 @@ class NavigationMenuManagementService
                 $payload
             );
 
-            // 2. Sync Many-to-Many Relationship (NavigationMenuApp)
             $appIds = (array) ($data['app_id'] ?? []);
             $navigationMenu->apps()->syncWithPivotValues($appIds, [
                 'last_log_by' => $userId,
             ]);
 
-            // 3. Save "index" Route
             $navigationMenu->routes()->updateOrCreate(
                 [
                     'navigation_menu_id' => $navigationMenu->id,
@@ -44,7 +41,6 @@ class NavigationMenuManagementService
                 ]
             );
 
-            // 4. Save "manage" Route (if present)
             if (!empty($data['manage_view_file']) || !empty($data['manage_js_file'])) {
                 $navigationMenu->routes()->updateOrCreate(
                     [

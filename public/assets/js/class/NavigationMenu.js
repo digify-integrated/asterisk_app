@@ -250,16 +250,16 @@ export class NavigationMenu {
         });
     }
 
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
+        });
+    }
+
     initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.appOption,
             dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
-        });
-    }
-
-    initDateRangePicker() {
-        ComponentRegistry.initializeDateRangePicker({
-            selector: CONFIG.selectors.filterCreatedDate
         });
     }
 

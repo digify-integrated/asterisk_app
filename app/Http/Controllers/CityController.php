@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\NavigationMenuOptionResource;
-use App\Models\NavigationMenu;
-use App\Http\Resources\NavigationMenuTableResource;
-use App\Http\Resources\NavigationMenuDetailsResource;
-use App\Http\Requests\SaveNavigationMenuRequest;
-use App\Http\Requests\FetchNavigationMenuDetailsRequest;
-use App\Http\Requests\DeleteNavigationMenuRequest;
-use App\Http\Requests\DeleteMultipleNavigationMenusRequest;
-use App\Services\NavigationMenuManagementService;
+use App\Http\Resources\CityOptionResource;
+use App\Models\City;
+use App\Http\Resources\CityTableResource;
+use App\Http\Resources\CityDetailsResource;
+use App\Http\Requests\SaveCityRequest;
+use App\Http\Requests\FetchCityDetailsRequest;
+use App\Http\Requests\DeleteCityRequest;
+use App\Http\Requests\DeleteMultipleCitiesRequest;
+use App\Services\CityManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,22 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class NavigationMenuController extends Controller
+class CityController extends Controller
 {
     public function __construct(
-        protected NavigationMenuManagementService $navigationMenuService
+        protected CityManagementService $cityService
     ) {}
 
-    public function save(SaveNavigationMenuRequest $request): JsonResponse
+    public function save(SaveCityRequest $request): JsonResponse
     {
         try {
-            $this->navigationMenuService->saveNavigationMenu(
+            $this->cityService->saveCity(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The navigation menu has been saved successfully.',
+                'message' => 'The city has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -45,15 +45,14 @@ class NavigationMenuController extends Controller
         }
     }
 
-    public function fetch(FetchNavigationMenuDetailsRequest $request): JsonResponse|NavigationMenuDetailsResource
+    public function fetch(FetchCityDetailsRequest $request): JsonResponse|CityDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $navigationMenu = NavigationMenu::with(['apps', 'routes'])
-                ->findOrFail($validated['navigation_menu_id']);
+            $city = City::findOrFail($validated['city_id']);
 
-            return new NavigationMenuDetailsResource($navigationMenu);
+            return new CityDetailsResource($city);
 
         } catch (Exception $e) {
             report($e);
@@ -64,13 +63,13 @@ class NavigationMenuController extends Controller
         }
     }
 
-    public function delete(DeleteNavigationMenuRequest $request): JsonResponse
+    public function delete(DeleteCityRequest $request): JsonResponse
     {
         try {
-            $this->navigationMenuService->deleteNavigationMenu((int) $request->validated()['navigation_menu_id']);
+            $this->cityService->deleteCity((int) $request->validated()['city_id']);
 
             return response()->json([
-                'message' => 'The navigation menu has been deleted successfully',
+                'message' => 'The city has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -82,13 +81,13 @@ class NavigationMenuController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleNavigationMenusRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleCitiesRequest $request): JsonResponse
     {
         try {
-            $this->navigationMenuService->deleteMultipleNavigationMenus($request->validated()['navigation_menu_id']);
+            $this->cityService->deleteMultipleCities($request->validated()['city_id']);
 
             return response()->json([
-                'message' => 'The selected navigation menus have been deleted successfully',
+                'message' => 'The selected cities have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -112,24 +111,16 @@ class NavigationMenuController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $query = NavigationMenu::query()
-            ->with(['apps', 'parent']);
+        $query = City::query();
 
-        $query->when($request->filled('filter_parent_id'), function ($q) use ($request) {
-            $parents = (array) $request->input('filter_parent_id');
-            $q->whereIn('parent_id', $parents);
+        $query->when($request->filled('filter_state_id'), function ($q) use ($request) {
+            $states = (array) $request->input('filter_state_id');
+            $q->whereIn('state_id', $states);
         });
 
-        $query->when($request->filled('filter_app_id'), function ($q) use ($request) {
-            $navigationMenus = (array) $request->input('filter_app_id');
-            $q->whereHas('apps', function ($appQuery) use ($navigationMenus) {
-                $appQuery->whereIn('apps.id', $navigationMenus);
-            });
-        });
-
-        $query->when($request->filled('filter_page_type'), function ($q) use ($request) {
-            $types = (array) $request->input('filter_page_type');
-            $q->whereIn('page_type', $types);
+        $query->when($request->filled('filter_country_id'), function ($q) use ($request) {
+            $countries = (array) $request->input('filter_country_id');
+            $q->whereIn('country_id', $countries);
         });
 
         // Filter by Created Date Range
@@ -144,9 +135,9 @@ class NavigationMenuController extends Controller
             }
         });
 
-        $navigationMenus = $query->orderBy('order_sequence')->get();
+        $cities = $query->orderBy('name')->get();
 
-        return NavigationMenuTableResource::collection($navigationMenus)
+        return CityTableResource::collection($cities)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -156,8 +147,6 @@ class NavigationMenuController extends Controller
     public function generateOption(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        $navigation_menu_id = $request->input('navigationMenuId');
 
         if (!$user) {
             return response()->json([
@@ -165,12 +154,9 @@ class NavigationMenuController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $navigationMenus = NavigationMenu::query()
-            ->when($navigation_menu_id, fn ($query) => $query->where('id', '!=', $navigation_menu_id))
-            ->orderBy('name')
-            ->get();
+        $cities = City::query()->orderBy('name')->get();
 
-        return NavigationMenuOptionResource::collection($navigationMenus)
+        return CityOptionResource::collection($cities)
             ->response();
     }
 }

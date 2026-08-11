@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SystemParameterOptionResource;
-use App\Models\SystemParameter;
-use App\Http\Resources\SystemParameterTableResource;
-use App\Http\Resources\SystemParameterDetailsResource;
-use App\Http\Requests\SaveSystemParameterRequest;
-use App\Http\Requests\FetchSystemParameterDetailsRequest;
-use App\Http\Requests\DeleteSystemParameterRequest;
-use App\Http\Requests\DeleteMultipleSystemParametersRequest;
-use App\Services\SystemParameterManagementService;
+use App\Http\Resources\CurrencyOptionResource;
+use App\Models\Currency;
+use App\Http\Resources\CurrencyTableResource;
+use App\Http\Resources\CurrencyDetailsResource;
+use App\Http\Requests\SaveCurrencyRequest;
+use App\Http\Requests\FetchCurrencyDetailsRequest;
+use App\Http\Requests\DeleteCurrencyRequest;
+use App\Http\Requests\DeleteMultipleCurrenciesRequest;
+use App\Services\CurrencyManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,22 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class SystemParameterController extends Controller
+class CurrencyController extends Controller
 {
     public function __construct(
-        protected SystemParameterManagementService $systemParameterService
+        protected CurrencyManagementService $currencyService
     ) {}
 
-    public function save(SaveSystemParameterRequest $request): JsonResponse
+    public function save(SaveCurrencyRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->saveSystemParameter(
+            $this->currencyService->saveCurrency(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The system parameter has been saved successfully.',
+                'message' => 'The currency has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -45,14 +45,14 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function fetch(FetchSystemParameterDetailsRequest $request): JsonResponse|SystemParameterDetailsResource
+    public function fetch(FetchCurrencyDetailsRequest $request): JsonResponse|CurrencyDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $systemParameter = SystemParameter::findOrFail($validated['system_parameter_id']);
+            $currency = Currency::findOrFail($validated['currency_id']);
 
-            return new SystemParameterDetailsResource($systemParameter);
+            return new CurrencyDetailsResource($currency);
 
         } catch (Exception $e) {
             report($e);
@@ -63,13 +63,13 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function delete(DeleteSystemParameterRequest $request): JsonResponse
+    public function delete(DeleteCurrencyRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deleteSystemParameter((int) $request->validated()['system_parameter_id']);
+            $this->currencyService->deleteCurrency((int) $request->validated()['currency_id']);
 
             return response()->json([
-                'message' => 'The system parameter has been deleted successfully',
+                'message' => 'The currency has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -81,13 +81,13 @@ class SystemParameterController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleSystemParametersRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleCurrenciesRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deleteMultipleSystemParameters($request->validated()['system_parameter_id']);
+            $this->currencyService->deleteMultipleCurrencies($request->validated()['currency_id']);
 
             return response()->json([
-                'message' => 'The selected system parameters have been deleted successfully',
+                'message' => 'The selected currencies have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -112,7 +112,7 @@ class SystemParameterController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = SystemParameter::query();
+        $query = Currency::query();
 
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -126,9 +126,9 @@ class SystemParameterController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $currencies = $query->orderBy('name')->get();
 
-        return SystemParameterTableResource::collection($apps)
+        return CurrencyTableResource::collection($currencies)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class SystemParameterController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = SystemParameter::query()->orderBy('name')->get();
+        $currencies = Currency::query()->orderBy('name')->get();
 
-        return SystemParameterOptionResource::collection($apps)
+        return CurrencyOptionResource::collection($currencies)
             ->response();
     }
 }

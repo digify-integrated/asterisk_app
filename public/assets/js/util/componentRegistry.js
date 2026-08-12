@@ -299,4 +299,55 @@ export class ComponentRegistry {
             $element.val('');
         }
     }
+
+    /**
+     * Initializes Tagify on target input/textarea elements.
+     * @param {Object} params
+     * @param {string|HTMLElement|NodeList} params.selector - CSS selector or target elements
+     * @param {Array<string|Object>} [params.whitelist=[]] - Predefined tag suggestions
+     * @param {Object} [params.options={}] - Additional Tagify configuration options
+     * @returns {Array<Tagify>} Array of instantiated Tagify instances
+     */
+    static initializeTagify({ selector, whitelist = [], ...options } = {}) {
+        if (typeof Tagify === 'undefined') {
+            console.warn('Tagify library is not loaded.');
+            return [];
+        }
+
+        const elements = typeof selector === 'string' 
+            ? document.querySelectorAll(selector) 
+            : selector instanceof NodeList 
+                ? selector 
+                : [selector];
+
+        const instances = [];
+
+        elements.forEach(element => {
+            if (!element) return;
+
+            // Destroy previous instance if re-initializing on the same element
+            if (element.__tagify) {
+                element.__tagify.destroy();
+            }
+
+            try {
+                const tagify = new Tagify(element, {
+                    whitelist: whitelist,
+                    dropdown: {
+                        maxItems: 20,
+                        classname: 'tags-look',
+                        enabled: 0, // Show suggestions on focus
+                        closeOnSelect: false
+                    },
+                    ...options
+                });
+
+                instances.push(tagify);
+            } catch (error) {
+                errorHandler.handle(error, 'tagify_initialization_failed');
+            }
+        });
+
+        return instances;
+    }
 }

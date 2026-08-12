@@ -53841,7 +53841,9 @@ div.dt-container div.dt-paging ul.pagination{
     z-index: 1;
 }
 
-
+.tagify__input {
+    margin-top: 8px !important;
+}
 
 .audit-card{
     border:1px solid #E5E7EB;

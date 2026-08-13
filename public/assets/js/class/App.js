@@ -14,10 +14,10 @@ import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
     selectors: {
-        table: '#upload-setting-table',
-        tableColumn: '#upload-setting-table-column-dropdown',
-        form: '#upload_setting_form',
-        detailId: 'upload_setting_id',
+        table: '#app-table',
+        tableColumn: '#app-table-column-dropdown',
+        form: '#app_form',
+        detailId: 'app_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -26,20 +26,19 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        extenstionTagify: '#extension',
-        filterCollapse: 'upload-setting-filter-collapse',
+        filterCollapse: 'app-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
-        tableData: '/upload-setting/generate-table',
-        save: '/upload-setting/save',
-        delete: '/upload-setting/delete',
-        deleteMultiple: '/upload-setting/delete-multiple',
-        fetch: '/upload-setting/fetch',
+        tableData: '/app/generate-table',
+        save: '/app/save',
+        delete: '/app/delete',
+        deleteMultiple: '/app/delete-multiple',
+        fetch: '/app/fetch'
     }
 };
     
-export class UploadSetting {
+export class App {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -62,10 +61,9 @@ export class UploadSetting {
         this.initForm();
         this.initDelete();
         this.initDateRangePicker();
-        this.initTagify();
         this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'upload_settings');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
     }
 
     initTable() {
@@ -78,7 +76,7 @@ export class UploadSetting {
                 });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
-            order: [[1, 'asc']],
+            order: [[2, 'asc']],
             exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
@@ -87,7 +85,8 @@ export class UploadSetting {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '10%', bSortable: false, targets: 5 },
+                { width: '5%', bSortable: false, targets: 1 },
+                { width: '10%', bSortable: false, targets: 6 },
             ],
             columns: [
                 { 
@@ -98,27 +97,20 @@ export class UploadSetting {
                         </div>`
                 },
                 { 
+                    data: 'logo',
+                    render: (data, type, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
+                },
+                { 
                     data: 'name',
-                    title: 'System Parameter',
+                    title: 'App',
                 },
                 { 
-                    data: 'max_file_size',
-                    title: 'Max File Size',
-                    render: (size) => `${escapeHtml(size ?? 0)} MB`
+                    data: 'description',
+                    title: 'Description',
                 },
                 { 
-                    data: 'extensions',
-                    title: 'Allowed Extensions',
-                    bSortable: false,
-                    render: (extensions) => {
-                        if (!Array.isArray(extensions) || extensions.length === 0) {
-                            return `<span class="badge badge-light-secondary">No Extensions</span>`;
-                        }
-
-                        return extensions.map(ext => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(ext.name)}</span>`
-                        ).join('');
-                    }
+                    data: 'order_sequence',
+                    title: 'Sequence',
                 },
                 { 
                     data: 'created_at',
@@ -134,9 +126,9 @@ export class UploadSetting {
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.can_write || perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.can_logs || perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.can_delete || perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -151,8 +143,8 @@ export class UploadSetting {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        max_file_size: { required: true },
-                        extension: { required: true },
+                        description: { required: true },
+                        order_sequence: { required: true }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -192,7 +184,7 @@ export class UploadSetting {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { upload_setting_id: (el) => el.dataset.referenceId },
+            payload: { app_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -205,7 +197,7 @@ export class UploadSetting {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'upload_setting_id': () => {
+                'app_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -221,12 +213,6 @@ export class UploadSetting {
     initDateRangePicker() {
         ComponentRegistry.initializeDateRangePicker({
             selector: CONFIG.selectors.filterCreatedDate
-        });
-    }
-
-    initTagify() {
-        ComponentRegistry.initializeTagify({
-            selector: CONFIG.selectors.extenstionTagify
         });
     }
 
@@ -256,33 +242,22 @@ export class UploadSetting {
             formSelector: CONFIG.selectors.form,
             submitBtnSelector: CONFIG.selectors.submitButton,
             signal: this.abortController.signal,
-            onSuccess: async (response) => {
+            onSuccess: (response) => {
                 const data = response?.data || response;
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'upload_setting_id': referenceId,
+                    'app_id': referenceId,
                     'name': data.name,
-                    'max_file_size': data.max_file_size,
-                    'extension': data.extensions ?? data.extension ?? '',
+                    'order_sequence': data.order_sequence,
+                    'description': data.description
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
-                    const $field = $(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
-                    
-                    if ($field.length) {
-                        const inputEl = $field[0];
-
-                        if (inputEl.__tagify) {
-                            const tagify = inputEl.__tagify;
-                            tagify.removeAllTags();
-
-                            if (val) {
-                                tagify.addTags(val);
-                            }
-                        } else {
-                            $field.val(val ?? '').trigger('change');
-                        }
+                    const field = this.dom.form.elements[name];
+                    if (field) {
+                        field.value = val ?? '';
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 });
             }

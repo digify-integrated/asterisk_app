@@ -12,6 +12,7 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SystemActionController;
 use App\Http\Controllers\SystemParameterController;
 use App\Http\Controllers\UploadSettingController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
 use Illuminate\Support\Facades\Route;
@@ -148,6 +149,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('upload-setting')
         ->name('upload-setting.')
         ->controller(UploadSettingController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('user')
+        ->name('user.')
+        ->controller(UserController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

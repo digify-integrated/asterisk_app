@@ -19,7 +19,6 @@
                 <span class="input-group-text bg-transparent cursor-pointer password-addon" 
                     data-password-toggle 
                     data-target="#password">
-                    <!-- pe-none stops the icon itself from triggering a separate click event -->
                     <i class="fs-4 ki-outline ki-eye pe-none"></i>
                 </span>
             </div>

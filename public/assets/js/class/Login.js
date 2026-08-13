@@ -15,7 +15,7 @@ const CONFIG = {
     }
 };
 
-export class LoginModule {
+export class Login {
     constructor() {
         this.abortController = new AbortController();
 

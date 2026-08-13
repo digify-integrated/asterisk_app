@@ -1,8 +1,8 @@
 'use strict';
 
-import { LoginModule } from '../class/LoginModule.js';
+import { Login } from '../class/Login.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const manager = new LoginModule();
+    const manager = new Login();
     manager.init();
 });

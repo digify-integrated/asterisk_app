@@ -104,24 +104,16 @@ class NavigationMenuRouteSeeder extends Seeder
             [
                 'navigation_menu_id'    => 15,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.user-account.index',
-                'js_file'               => 'user-account/index',
+                'view_file'             => 'pages.user.index',
+                'js_file'               => 'user/index',
             ],
 
             // Role
             [
                 'navigation_menu_id'    => 16,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.user-account.index',
-                'js_file'               => 'user-account/index',
-            ],
-
-            // Role
-            [
-                'navigation_menu_id'    => 16,
-                'route_type'            => 'manage',
-                'view_file'             => 'pages.user-account.manage',
-                'js_file'               => 'user-account/manage',
+                'view_file'             => 'pages.role.index',
+                'js_file'               => 'role/index',
             ],
 
             // Permission

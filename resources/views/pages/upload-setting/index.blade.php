@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="max_file_size">Max File Size</label>
-                            <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="0" max="100">
+                            <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="1" step="1">
                         </div>
                     </div>
                     <div class="row">

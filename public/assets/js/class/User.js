@@ -14,10 +14,10 @@ import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
     selectors: {
-        table: '#app-table',
-        tableColumn: '#app-table-column-dropdown',
-        form: '#app_form',
-        detailId: 'app_id',
+        table: '#user-table',
+        tableColumn: '#user-table-column-dropdown',
+        form: '#user_form',
+        detailId: 'user_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -26,19 +26,19 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        filterCollapse: 'app-filter-collapse',
+        filterCollapse: 'user-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
-        tableData: '/app/generate-table',
-        save: '/app/save',
-        delete: '/app/delete',
-        deleteMultiple: '/app/delete-multiple',
-        fetch: '/app/fetch'
+        tableData: '/user/generate-table',
+        save: '/user/save',
+        delete: '/user/delete',
+        deleteMultiple: '/user/delete-multiple',
+        fetch: '/user/fetch'
     }
 };
     
-export class AppModule {
+export class User {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -63,7 +63,7 @@ export class AppModule {
         this.initDateRangePicker();
         this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'apps');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'users');
     }
 
     initTable() {
@@ -72,7 +72,8 @@ export class AppModule {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
-                    filter_created_date: $('#filter_created_date').val()
+                    filter_status: $('#filter_status').val() || [],
+                    filter_created_date: $('#filter_created_date').val(),
                 });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
@@ -97,20 +98,27 @@ export class AppModule {
                         </div>`
                 },
                 { 
-                    data: 'logo',
-                    render: (data, type, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
+                    data: 'profile_picture',
+                    render: (data, type, row) => `<img src="${escapeHtml(row.profile_picture)}" alt="User Profile Picture" width="45" onerror="this.src='/assets/media/default/default-avatar.jpg';" />`
                 },
                 { 
                     data: 'name',
-                    title: 'App',
+                    title: 'User',
                 },
                 { 
-                    data: 'description',
-                    title: 'Description',
+                    data: 'email',
+                    title: 'Email',
                 },
                 { 
-                    data: 'order_sequence',
-                    title: 'Sequence',
+                    data: 'status',
+                    title: 'Status',
+                    render: (status) => {
+                        const statusVal = (status || '').toString();
+                        const isSuccess = statusVal.toLowerCase() === 'active';
+                        const badgeClass = isSuccess ? 'badge-light-success' : 'badge-light-danger';
+                        
+                        return `<span class="badge ${badgeClass} fw-bold px-3 py-2">${escapeHtml(statusVal)}</span>`;
+                    }
                 },
                 { 
                     data: 'created_at',
@@ -143,8 +151,23 @@ export class AppModule {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        description: { required: true },
-                        order_sequence: { required: true }
+                        email: { 
+                            required: true,
+                            typeEmail: true
+                        },
+                        password: { 
+                            requiredIf: {
+                                selector: '[name="user_id"]',
+                                value: ''
+                            },
+                            passwordStrength: 'medium' 
+                        },
+                        status: { required: true }
+                    },
+                    messages: {
+                        password: {
+                            requiredIf: 'Password is required when creating a new user.'
+                        }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -184,7 +207,7 @@ export class AppModule {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { app_id: (el) => el.dataset.referenceId },
+            payload: { user_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -197,7 +220,7 @@ export class AppModule {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'app_id': () => {
+                'user_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -247,10 +270,10 @@ export class AppModule {
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'app_id': referenceId,
+                    'user_id': referenceId,
                     'name': data.name,
-                    'order_sequence': data.order_sequence,
-                    'description': data.description
+                    'email': data.email,
+                    'status': data.status
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

@@ -11,16 +11,17 @@ class UploadSettingTableResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $extensionsCollection = $this->relationLoaded('extensions')
+            ? $this->extensions
+            : $this->extensions()->get();
+
         return [
             'id'            => $this->id,
             'name'          => $this->name,
             'max_file_size' => $this->max_file_size,
-            'extensions'    => $this->relationLoaded('extensions')
-                ? $this->extensions->map(fn ($ext) => [
-                    'id'   => $ext->id,
-                    'name' => strtoupper($ext->extension),
-                ])->values()->toArray()
-                : [],
+            'extensions'    => $extensionsCollection->map(fn ($ext) => [
+                'name' => strtoupper($ext->extension),
+            ])->values()->toArray(),
             'created_at'    => $this->created_at?->format('M d, Y h:i:s a') ?? '',
             'permissions'   => [
                 'can_write'  => (bool) ($this->permissions['write'] ?? false),

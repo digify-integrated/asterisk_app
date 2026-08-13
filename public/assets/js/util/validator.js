@@ -21,7 +21,8 @@ export class FormValidator {
 
     static RULE_ORDER = [
         'required', 'requiredIf', 'typeEmail', 'typeUrl', 'typeTel', 
-        'typeNumber', 'minlength', 'maxlength', 'min', 'max', 'step', 'pattern', 'equalTo'
+        'typeNumber', 'minlength', 'maxlength', 'min', 'max', 'step', 
+        'passwordStrength', 'pattern', 'equalTo'
     ];
 
     constructor(formElement, options = {}) {
@@ -41,6 +42,7 @@ export class FormValidator {
         this.form.dataset.validationBound = 'true';
 
         this._bindSelect2Events();
+        this._bindTagifyEvents();
         const { signal } = this._abortController;
 
         if (this.config.notifyOnFieldInvalid) {
@@ -56,6 +58,7 @@ export class FormValidator {
         this._abortController.abort();
         delete this.form.dataset.validationBound;
         delete this.form.dataset.select2InvalidBound;
+        delete this.form.dataset.tagifyInvalidBound;
     }
 
     _handleInvalidField(field) {
@@ -206,6 +209,28 @@ export class FormValidator {
                 if (value === '') return true;
                 const re = ruleValue instanceof RegExp ? ruleValue : new RegExp(`^(?:${String(ruleValue)})$`);
                 return re.test(String(value));
+            case 'passwordStrength': {
+                if (value === '') return true;
+                const valStr = String(value);
+
+                // Custom function rule
+                if (typeof ruleValue === 'function') return !!ruleValue(valStr, field);
+
+                // RegExp rule
+                if (ruleValue instanceof RegExp) return ruleValue.test(valStr);
+
+                // Preset options: 'basic', 'medium', 'strong' (default: 'medium')
+                const level = typeof ruleValue === 'string' ? ruleValue.toLowerCase() : 'medium';
+                if (level === 'basic') {
+                    return valStr.length >= 6;
+                } else if (level === 'strong') {
+                    // Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(valStr);
+                } else {
+                    // 'medium': Min 8 chars, 1 letter, 1 number
+                    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(valStr);
+                }
+            }
             case 'min':
             case 'max': {
                 if (value === '') return true;
@@ -236,6 +261,9 @@ export class FormValidator {
         if (['email', 'url', 'tel', 'number'].includes(type)) {
             rules[`type${type.charAt(0).toUpperCase() + type.slice(1)}`] = true;
         }
+
+        const passStrength = field.getAttribute('data-rule-password-strength');
+        if (passStrength) rules.passwordStrength = passStrength;
 
         const minLen = field.getAttribute('minlength');
         if (minLen) rules.minlength = Number(minLen);
@@ -337,6 +365,9 @@ export class FormValidator {
             case 'digits':
                 fallback = `${name} must be a valid number.`;
                 break;
+            case 'passwordStrength':
+                fallback = `${name} does not meet the security requirements.`;
+                break;
             case 'min':
                 fallback = `${name} must be greater than or equal to ${ruleValue}.`;
                 break;
@@ -414,10 +445,34 @@ export class FormValidator {
         return this._isSelect2(field) ? field.nextElementSibling?.querySelector('.select2-selection') || field : field;
     }
 
+    _isTagify(field) {
+        return !!(field?.tagify || field?.nextElementSibling?.classList?.contains('tagify'));
+    }
+
+    _getTagifyTarget(field) {
+        // If field itself is or was wrapped inside a tagify wrapper
+        if (field?.tagName === 'TAGS' && field.classList.contains('tagify')) {
+            return field;
+        }
+        // Check if Tagify created a <tags> or .tagify sibling or parent wrapper
+        const container = field.closest('.tagify-wrapper') || field.parentElement;
+        const tagifyEl = container?.querySelector('tags.tagify, .tagify') || field.nextElementSibling;
+        
+        if (tagifyEl && tagifyEl.classList.contains('tagify')) {
+            return tagifyEl;
+        }
+        
+        return field;
+    }
+
     _setFieldInvalidState(field, on = true) {
         field.classList.toggle('is-invalid', !!on);
-        const target = this._getSelect2Target(field);
-        if (target !== field) target.classList.toggle('is-invalid', !!on);
+        
+        const s2Target = this._getSelect2Target(field);
+        if (s2Target !== field) s2Target.classList.toggle('is-invalid', !!on);
+
+        const tagifyTarget = this._getTagifyTarget(field);
+        if (tagifyTarget !== field) tagifyTarget.classList.toggle('is-invalid', !!on);
     }
 
     _bindSelect2Events() {
@@ -430,15 +485,41 @@ export class FormValidator {
         });
     }
 
+    _bindTagifyEvents() {
+        const tagifyInputs = this.form.querySelectorAll('input.tagify, textarea.tagify, [data-tagify]');
+        tagifyInputs.forEach(el => {
+            if (el.dataset.tagifyInvalidBound === 'true') return;
+            el.dataset.tagifyInvalidBound = 'true';
+
+            const clearHandler = () => this._setFieldInvalidState(el, false);
+            el.addEventListener('change', clearHandler);
+            
+            if (el.tagify) {
+                el.tagify.on('add', clearHandler);
+                el.tagify.on('remove', clearHandler);
+                el.tagify.on('change', clearHandler);
+            }
+        });
+    }
+
     _focusFieldSmart(field, { scroll, focus }) {
         const isS2 = this._isSelect2(field);
-        const container = isS2 ? field.nextElementSibling : field;
+        const isTagify = this._isTagify(field);
+        const container = isS2 
+            ? field.nextElementSibling 
+            : (isTagify ? this._getTagifyTarget(field) : field);
 
         if (scroll && container) container.scrollIntoView({ behavior: 'smooth', block: 'center' });
         if (focus) {
             setTimeout(() => {
                 if (isS2 && window.jQuery) {
                     try { window.jQuery(field).select2('open'); } catch { container.querySelector('.select2-selection')?.focus(); }
+                } else if (isTagify) {
+                    if (field.tagify) {
+                        field.tagify.DOM.input.focus();
+                    } else {
+                        container.querySelector('span.tagify__input')?.focus();
+                    }
                 } else {
                     field.focus({ preventScroll: true });
                 }

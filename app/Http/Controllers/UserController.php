@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UploadSetting;
-use App\Http\Resources\UploadSettingTableResource;
-use App\Http\Resources\UploadSettingDetailsResource;
-use App\Http\Requests\SaveUploadSettingRequest;
-use App\Http\Requests\FetchUploadSettingDetailsRequest;
-use App\Http\Requests\DeleteUploadSettingRequest;
-use App\Http\Requests\DeleteMultipleUploadSettingsRequest;
-use App\Services\UploadSettingManagementService;
+use App\Http\Resources\UserOptionResource;
+use App\Models\User;
+use App\Http\Resources\UserTableResource;
+use App\Http\Resources\UserDetailsResource;
+use App\Http\Requests\SaveUserRequest;
+use App\Http\Requests\FetchUserDetailsRequest;
+use App\Http\Requests\DeleteUserRequest;
+use App\Http\Requests\DeleteMultipleUsersRequest;
+use App\Services\UserManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,41 +18,42 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class UploadSettingController extends Controller
+class UserController extends Controller
 {
     public function __construct(
-        protected UploadSettingManagementService $uploadSettingService
+        protected UserManagementService $userService
     ) {}
 
-    public function save(SaveUploadSettingRequest $request): JsonResponse
+    public function save(SaveUserRequest $request): JsonResponse
     {
         try {
-            $this->uploadSettingService->saveUploadSetting(
+            $this->userService->saveUser(
                 $request->validated(),
+                $request->file('profile_picture'),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The upload setting has been saved successfully.',
+                'message' => 'The user has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
             report($e);
             
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function fetch(FetchUploadSettingDetailsRequest $request): JsonResponse|UploadSettingDetailsResource
+    public function fetch(FetchUserDetailsRequest $request): JsonResponse|UserDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $uploadSetting = UploadSetting::findOrFail($validated['upload_setting_id']);
+            $user = User::find($validated['user_id']);
 
-            return new UploadSettingDetailsResource($uploadSetting);
+            return new UserDetailsResource($user);
 
         } catch (Exception $e) {
             report($e);
@@ -62,13 +64,13 @@ class UploadSettingController extends Controller
         }
     }
 
-    public function delete(DeleteUploadSettingRequest $request): JsonResponse
+    public function delete(DeleteUserRequest $request): JsonResponse
     {
         try {
-            $this->uploadSettingService->deleteUploadSetting((int) $request->validated()['upload_setting_id']);
+            $this->userService->deleteUser((int) $request->validated()['user_id']);
 
             return response()->json([
-                'message' => 'The upload setting has been deleted successfully',
+                'message' => 'The user has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -80,13 +82,13 @@ class UploadSettingController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleUploadSettingsRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleUsersRequest $request): JsonResponse
     {
         try {
-            $this->uploadSettingService->deleteMultipleUploadSettings($request->validated()['upload_setting_id']);
+            $this->userService->deleteMultipleUsers($request->validated()['user_id']);
 
             return response()->json([
-                'message' => 'The selected upload settings have been deleted successfully',
+                'message' => 'The selected users have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -110,9 +112,16 @@ class UploadSettingController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
+        $defaultProfilePicture = asset('assets/media/default/default-avatar.jpg');
 
-        $query = UploadSetting::with('extensions');
+        $query = User::query();
 
+        $query->when($request->filled('filter_status'), function ($q) use ($request) {
+            $status = (array) $request->input('filter_status');
+            $q->whereIn('status', $status);
+        });
+
+        // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
             $dates = explode(' - ', $request->input('filter_created_date'));
 
@@ -124,12 +133,29 @@ class UploadSettingController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $users = $query->orderBy('name')->get();
 
-        return UploadSettingTableResource::collection($apps)
+        return UserTableResource::collection($users)
             ->additional([
-                'permissions' => $permissions,
+                'permissions'  => $permissions,
+                'default_profile_picture' => $defaultProfilePicture,
             ])
+            ->response();
+    }
+
+    public function generateOption(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'Unauthorized or missing menu parameter.'
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $users = User::query()->orderBy('name')->get();
+
+        return UserOptionResource::collection($users)
             ->response();
     }
 }

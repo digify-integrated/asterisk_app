@@ -1,8 +1,8 @@
 'use strict';
 
-import { App } from '../../class/App.js';
+import { User } from '../../class/User.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const manager = new App();
+    const manager = new User();
     manager.init();
 });

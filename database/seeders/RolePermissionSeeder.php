@@ -166,10 +166,22 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Permission ID: 17
+            // Page Permission ID: 17
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 17,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // System Action Permission ID: 18
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 18,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,

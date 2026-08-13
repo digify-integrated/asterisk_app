@@ -37,22 +37,8 @@
                 @slot('applyFilterId', 'role-apply-filters-btn')
                 
                 <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_app_id">App</label>
-                    <select id="filter_app_id" name="filter_app_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select App" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
-                    <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_page_type">Page Type</label>
-                    <select id="filter_page_type" name="filter_page_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Page Type" data-allow-clear="true">
-                        <option value="menu">Menu</option>
-                        <option value="single_page">Single Page</option>
-                        <option value="multi_page">Multi Page</option>
-                    </select>
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_user_id">User Account</label>
+                    <select id="filter_user_id" name="filter_user_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select User Account" data-allow-clear="true"></select>
                 </div>
             @endcomponent
         </div>
@@ -82,7 +68,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <label class="form-label required mb-2" for="user_id">User</label>
+                            <label class="form-label mb-2" for="user_id">User Accounts</label>
                             <select id="user_id" name="user_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
                         </div>
                     </div>
@@ -90,7 +76,7 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="description">Description</label>
-                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the app..." maxlength="500"></textarea>
+                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the role..." maxlength="500"></textarea>
                         </div>
                     </div>
                 </div>

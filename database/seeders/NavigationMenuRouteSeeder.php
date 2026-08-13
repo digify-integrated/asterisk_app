@@ -116,12 +116,20 @@ class NavigationMenuRouteSeeder extends Seeder
                 'js_file'               => 'role/index',
             ],
 
-            // Permission
+            // Page Permission
             [
                 'navigation_menu_id'    => 17,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.permission.index',
-                'js_file'               => 'permission/index',
+                'view_file'             => 'pages.page.permission.index',
+                'js_file'               => 'page-permission/index',
+            ],
+
+            // System Action Permission
+            [
+                'navigation_menu_id'    => 18,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.system.action.permission.index',
+                'js_file'               => 'system-action-permission/index',
             ],
         ];
 

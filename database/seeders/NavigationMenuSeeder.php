@@ -162,13 +162,22 @@ class NavigationMenuSeeder extends Seeder
                 'name'              => 'Role',
                 'icon'              => null,
                 'parent_id'         => 3,
-                'page_type'         => 'multi_page',
+                'page_type'         => 'single_page',
                 'order_sequence'    => 18,
             ],
 
-            // Permission ID: 17
+            // Page Permission ID: 17
             [
-                'name'              => 'Permission',
+                'name'              => 'Page Permission',
+                'icon'              => null,
+                'parent_id'         => 3,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 18,
+            ],
+
+            // System Action Permission ID: 18
+            [
+                'name'              => 'System Action Permission',
                 'icon'              => null,
                 'parent_id'         => 3,
                 'page_type'         => 'single_page',

@@ -24,18 +24,6 @@ class SystemActionSeeder extends Seeder
                 'name' => 'Import Data',
                 'description' => 'Access to import data.',
             ],
-            [
-                'name' => 'Manage Role User Account',
-                'description' => 'Access to manage assigned user accounts to role.',
-            ],
-            [
-                'name' => 'Manage Role Access',
-                'description' => 'Access to manage role access.',
-            ],
-            [
-                'name' => 'Manage Role System Action Access',
-                'description' => 'Access to manage the role system action access.',
-            ],
         ];
 
         DB::table('system_actions')->insert(

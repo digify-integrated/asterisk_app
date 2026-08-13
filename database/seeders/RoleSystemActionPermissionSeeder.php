@@ -25,16 +25,6 @@ class RoleSystemActionPermissionSeeder extends Seeder
                 'system_action_id' => 1,
                 'access' => true,
             ],
-            [
-                'role_id' => 1,
-                'system_action_id' => 2,
-                'access' => true,
-            ],
-            [
-                'role_id' => 1,
-                'system_action_id' => 3,
-                'access' => true,
-            ],
         ];
 
         DB::table('role_system_action_permissions')->insert(

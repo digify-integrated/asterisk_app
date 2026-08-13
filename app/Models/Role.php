@@ -8,9 +8,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
+    protected $fillable = [
+        'name',
+        'description',
+        'last_log_by'
+    ];
+    
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'role_users');
+        return $this->belongsToMany(App::class, 'role_users', 'role_id', 'user_id')
+            ->using(RoleUser::class)
+            ->withPivot('last_log_by')
+            ->withTimestamps();
     }
 
     public function permissions(): HasMany

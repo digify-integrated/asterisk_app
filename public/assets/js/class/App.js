@@ -86,6 +86,7 @@ export class App {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '5%', bSortable: false, targets: 1 },
+                { width: '40%', bSortable: false, targets: 3 },
                 { width: '10%', bSortable: false, targets: 6 },
             ],
             columns: [

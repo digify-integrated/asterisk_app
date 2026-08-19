@@ -102,6 +102,16 @@ class NavigationMenuAppSeeder extends Seeder
                 'app_id'             => 1,
                 'last_log_by'        => 1
             ],
+            [
+                'navigation_menu_id' => 18,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
+                'navigation_menu_id' => 19,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
         ];
 
         DB::table('navigation_menu_apps')->insert(

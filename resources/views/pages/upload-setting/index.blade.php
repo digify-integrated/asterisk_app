@@ -50,19 +50,22 @@
             @component('partials.form-modal')
                 @slot('formTitle', 'Upload Setting Details')
                 @slot('formId', 'upload_setting_form')
-                @slot('size', 'lg')
+                @slot('size', 'md')
                 
                 <input type="hidden" id="upload_setting_id" name="upload_setting_id" />
 
                 <div class="d-flex flex-column gap-7">
                     <div class="row">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-7">
                             <label class="form-label required mb-2" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-5">
                             <label class="form-label required mb-2" for="max_file_size">Max File Size</label>
-                            <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="1" step="1">
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="1" step="1">
+                                <span class="input-group-text">kb</span>
+                            </div>
                         </div>
                     </div>
                     <div class="row">

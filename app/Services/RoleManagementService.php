@@ -22,7 +22,7 @@ class RoleManagementService
             );
 
             $userIds = (array) ($data['user_id'] ?? []);
-            $role->apps()->syncWithPivotValues($userIds, [
+            $role->users()->syncWithPivotValues($userIds, [
                 'last_log_by' => $userId,
             ]);
 

@@ -14,34 +14,30 @@ import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
     selectors: {
-        table: '#role-table',
-        tableColumn: '#role-table-column-dropdown',
-        form: '#role_form',
-        detailId: 'role_id',
+        table: '#page-permission-table',
+        tableColumn: '#page-permission-table-column-dropdown',
+        form: '#page_permission_form',
+        detailId: 'page_permission_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
-        updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        userDropdown: '#user_id',
-        filterCollapse: 'role-filter-collapse',
-        filterUserDropdown: '#filter_user_id',
+        filterCollapse: 'page-permission-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
-        tableData: '/role/generate-table',
-        save: '/role/save',
-        delete: '/role/delete',
-        deleteMultiple: '/role/delete-multiple',
-        fetch: '/role/fetch',
-        userOption: '/user/generate-option',
+        tableData: '/page-permission/generate-table',
+        save: '/page-permission/save',
+        delete: '/page-permission/delete',
+        deleteMultiple: '/page-permission/delete-multiple',
+        fetch: '/page-permission/fetch',
     }
 };
     
-export class Role {
+export class PagePermission {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -63,11 +59,12 @@ export class Role {
         this.initTable();
         this.initForm();
         this.initDelete();
-        this.initDropdownOption();
         this.initDateRangePicker();
+        this.initRoleOption();
+        this.initNavigationMenuOption();
         this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'roles');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'page_permissions');
     }
 
     initTable() {
@@ -76,7 +73,6 @@ export class Role {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
-                    filter_user_id: $('#filter_user_id').val() || [],
                     filter_created_date: $('#filter_created_date').val()
                 });
             },
@@ -90,9 +86,13 @@ export class Role {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '40%', targets: 2 },
-                { width: '20%', targets: 3 },
-                { width: '10%', bSortable: false, targets: 5 },
+                { bSortable: false, targets: 3 },
+                { bSortable: false, targets: 4 },
+                { bSortable: false, targets: 5 },
+                { bSortable: false, targets: 6 },
+                { bSortable: false, targets: 7 },
+                { bSortable: false, targets: 8 },
+                { width: '10%', bSortable: false, targets: 9 },
             ],
             columns: [
                 { 
@@ -103,26 +103,36 @@ export class Role {
                         </div>`
                 },
                 { 
-                    data: 'name',
+                    data: 'role',
                     title: 'Role',
                 },
                 { 
-                    data: 'description',
-                    title: 'Description',
+                    data: 'page',
+                    title: 'Page',
                 },
                 { 
-                    data: 'users',
-                    title: 'User Accounts',
-                    bSortable: false,
-                    render: (users) => {
-                        if (!Array.isArray(users) || users.length === 0) {
-                            return `<span class="badge badge-light-warning">No User Accounts</span>`;
-                        }
-
-                        return users.map(user => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(user.name)}</span><br/>`
-                        ).join('');
-                    }
+                    data: 'read_access',
+                    title: 'Read Access',
+                },
+                { 
+                    data: 'write_access',
+                    title: 'Write Access',
+                },
+                { 
+                    data: 'create_access',
+                    title: 'Create Access',
+                },
+                { 
+                    data: 'delete_access',
+                    title: 'Delete Access',
+                },
+                { 
+                    data: 'export_access',
+                    title: 'Export Access',
+                },
+                { 
+                    data: 'logs_access',
+                    title: 'Logs Access',
                 },
                 { 
                     data: 'created_at',
@@ -138,7 +148,6 @@ export class Role {
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
                             ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
                             ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
@@ -156,6 +165,7 @@ export class Role {
                     rules: {
                         name: { required: true },
                         description: { required: true },
+                        value: { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -195,7 +205,7 @@ export class Role {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { role_id: (el) => el.dataset.referenceId },
+            payload: { page_permission_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -208,7 +218,7 @@ export class Role {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'role_id': () => {
+                'page_permission_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -227,23 +237,25 @@ export class Role {
         });
     }
 
-    initDropdownOption() {
+    initRoleOption() {
         ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.userOption,
-            dropdownSelector: [CONFIG.selectors.userDropdown, CONFIG.selectors.filterUserDropdown]
+            url: CONFIG.endpoints.parentOption,
+            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
+            data: {navigationMenuId : navigationMenuId}
+        });
+    }
+
+    initNavigationMenuOption() {
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.parentOption,
+            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
+            data: {navigationMenuId : navigationMenuId}
         });
     }
 
     registerGlobalListeners() {
         document.addEventListener('click', async (event) => {
             const { target } = event;
-            
-            const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
-            if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
-                this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
-                return;
-            }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
@@ -265,10 +277,10 @@ export class Role {
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'role_id': referenceId,
+                    'page_permission_id': referenceId,
                     'name': data.name,
                     'description': data.description,
-                    'user_id': data.user_ids || [],
+                    'value': data.value,
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

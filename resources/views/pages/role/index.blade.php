@@ -55,7 +55,7 @@
             @component('partials.form-modal')
                 @slot('formTitle', 'Role Details')
                 @slot('formId', 'role_form')
-                @slot('size', 'lg')
+                @slot('size', 'md')
                 
                 <input type="hidden" id="role_id" name="role_id" />
 

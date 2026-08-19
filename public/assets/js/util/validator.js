@@ -450,11 +450,10 @@ export class FormValidator {
     }
 
     _getTagifyTarget(field) {
-        // If field itself is or was wrapped inside a tagify wrapper
         if (field?.tagName === 'TAGS' && field.classList.contains('tagify')) {
             return field;
         }
-        // Check if Tagify created a <tags> or .tagify sibling or parent wrapper
+        
         const container = field.closest('.tagify-wrapper') || field.parentElement;
         const tagifyEl = container?.querySelector('tags.tagify, .tagify') || field.nextElementSibling;
         

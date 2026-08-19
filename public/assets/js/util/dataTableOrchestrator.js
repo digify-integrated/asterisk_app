@@ -78,7 +78,7 @@ export class DataTableOrchestrator {
             deferRender: true,
             autoWidth: true,
             orderClasses: false,
-            orderMulti: true,               // Allow Shift+Click multi-column sort
+            orderMulti: true,
             searchDelay: config.searchDelay,
             responsive: config.responsive,
             scrollX: config.scrollX,

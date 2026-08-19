@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RoleOptionResource;
-use App\Models\Role;
-use App\Http\Resources\RoleTableResource;
-use App\Http\Resources\RoleDetailsResource;
-use App\Http\Requests\SaveRoleRequest;
-use App\Http\Requests\FetchRoleDetailsRequest;
-use App\Http\Requests\DeleteRoleRequest;
-use App\Http\Requests\DeleteMultipleRolesRequest;
-use App\Services\RoleManagementService;
+use App\Http\Resources\PagePermissionOptionResource;
+use App\Models\PagePermission;
+use App\Http\Resources\PagePermissionTableResource;
+use App\Http\Resources\PagePermissionDetailsResource;
+use App\Http\Requests\SavePagePermissionRequest;
+use App\Http\Requests\FetchPagePermissionDetailsRequest;
+use App\Http\Requests\DeletePagePermissionRequest;
+use App\Http\Requests\DeleteMultiplePagePermissionsRequest;
+use App\Services\PagePermissionManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,22 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class RoleController extends Controller
+class PagePermissionController extends Controller
 {
     public function __construct(
-        protected RoleManagementService $roleService
+        protected PagePermissionManagementService $systemParameterService
     ) {}
 
-    public function save(SaveRoleRequest $request): JsonResponse
+    public function save(SavePagePermissionRequest $request): JsonResponse
     {
         try {
-            $this->roleService->saveRole(
+            $this->systemParameterService->savePagePermission(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The role has been saved successfully.',
+                'message' => 'The system parameter has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -45,15 +45,14 @@ class RoleController extends Controller
         }
     }
 
-    public function fetch(FetchRoleDetailsRequest $request): JsonResponse|RoleDetailsResource
+    public function fetch(FetchPagePermissionDetailsRequest $request): JsonResponse|PagePermissionDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $role = Role::with(['users'])
-                ->findOrFail($validated['role_id']);
+            $systemParameter = PagePermission::findOrFail($validated['system_parameter_id']);
 
-            return new RoleDetailsResource($role);
+            return new PagePermissionDetailsResource($systemParameter);
 
         } catch (Exception $e) {
             report($e);
@@ -64,13 +63,13 @@ class RoleController extends Controller
         }
     }
 
-    public function delete(DeleteRoleRequest $request): JsonResponse
+    public function delete(DeletePagePermissionRequest $request): JsonResponse
     {
         try {
-            $this->roleService->deleteRole((int) $request->validated()['role_id']);
+            $this->systemParameterService->deletePagePermission((int) $request->validated()['system_parameter_id']);
 
             return response()->json([
-                'message' => 'The role has been deleted successfully',
+                'message' => 'The system parameter has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -82,13 +81,13 @@ class RoleController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleRolesRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultiplePagePermissionsRequest $request): JsonResponse
     {
         try {
-            $this->roleService->deleteMultipleRoles($request->validated()['role_id']);
+            $this->systemParameterService->deleteMultiplePagePermissions($request->validated()['system_parameter_id']);
 
             return response()->json([
-                'message' => 'The selected roles have been deleted successfully',
+                'message' => 'The selected system parameters have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -112,15 +111,8 @@ class RoleController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $query = Role::query()->with(['users']);
 
-        // FIX: Filter via relation pivot table instead of directly on $q
-        $query->when($request->filled('filter_user_id'), function ($q) use ($request) {
-            $users = (array) $request->input('filter_user_id');
-            $q->whereHas('users', function ($userQuery) use ($users) {
-                $userQuery->whereIn('users.id', $users); // or 'role_users.user_id'
-            });
-        });
+        $query = PagePermission::query();
 
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -134,11 +126,11 @@ class RoleController extends Controller
             }
         });
 
-        $roles = $query->orderBy('name')->get();
+        $apps = $query->orderBy('name')->get();
 
-        return RoleTableResource::collection($roles)
+        return PagePermissionTableResource::collection($apps)
             ->additional([
-                'permissions' => $permissions,
+                'permissions'  => $permissions,
             ])
             ->response();
     }
@@ -146,8 +138,6 @@ class RoleController extends Controller
     public function generateOption(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        $role_id = $request->input('roleId');
 
         if (!$user) {
             return response()->json([
@@ -155,12 +145,9 @@ class RoleController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $roles = Role::query()
-            ->when($role_id, fn ($query) => $query->where('id', '!=', $role_id))
-            ->orderBy('name')
-            ->get();
+        $apps = PagePermission::query()->orderBy('name')->get();
 
-        return RoleOptionResource::collection($roles)
+        return PagePermissionOptionResource::collection($apps)
             ->response();
     }
 }

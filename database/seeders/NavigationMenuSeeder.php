@@ -30,10 +30,10 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            
-            // Configurations ID: 2
+
+            // Company ID: 3
             [
-                'name'              => 'Configurations',
+                'name'              => 'Company',
                 'icon'              => 'ki-outline ki-wrench',
                 'parent_id'         => null,
                 'page_type'         => 'menu',
@@ -103,7 +103,16 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 21,
             ],
 
-            // Localization ID: 10
+            // Configurations ID: 10
+            [
+                'name'              => 'Configurations',
+                'icon'              => null,
+                'parent_id'         => null,
+                'page_type'         => 'menu',
+                'order_sequence'    => 3,
+            ],
+
+            // Localization ID: 11
             [
                 'name'              => 'Localization',
                 'icon'              => null,
@@ -112,43 +121,43 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 12,
             ],
 
-            // Country ID: 11
+            // Country ID: 12
             [
                 'name'              => 'Country',
                 'icon'              => null,
-                'parent_id'         => 10,
+                'parent_id'         => 11,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
 
-            // State ID: 12
+            // State ID: 13
             [
                 'name'              => 'State',
                 'icon'              => null,
-                'parent_id'         => 10,
+                'parent_id'         => 11,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 19,
             ],
 
-            // City ID: 13
+            // City ID: 14
             [
                 'name'              => 'City',
                 'icon'              => null,
-                'parent_id'         => 10,
+                'parent_id'         => 11,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
 
-            // Currency ID: 14
+            // Currency ID: 15
             [
                 'name'              => 'Currency',
                 'icon'              => null,
-                'parent_id'         => 10,
+                'parent_id'         => 11,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
 
-            // User Account ID: 15
+            // User Account ID: 16
             [
                 'name'              => 'User Account',
                 'icon'              => null,
@@ -157,7 +166,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 21,
             ],
 
-            // Role ID: 16
+            // Role ID: 17
             [
                 'name'              => 'Role',
                 'icon'              => null,
@@ -166,7 +175,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 18,
             ],
 
-            // Page Permission ID: 17
+            // Page Permission ID: 18
             [
                 'name'              => 'Page Permission',
                 'icon'              => null,
@@ -175,7 +184,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 18,
             ],
 
-            // System Action Permission ID: 18
+            // System Action Permission ID: 19
             [
                 'name'              => 'System Action Permission',
                 'icon'              => null,

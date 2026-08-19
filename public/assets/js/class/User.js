@@ -11,6 +11,7 @@ import { initConfirmAction } from '../util/confirmationAction.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
 import { TableFilterManager } from '../util/tableFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
+import { PasswordToggle } from '../util/passwordToggle.js';
 
 const CONFIG = {
     selectors: {
@@ -54,6 +55,8 @@ export class User {
             form: document.querySelector(CONFIG.selectors.form),
             modal: $(CONFIG.selectors.modal)
         };
+
+        this.passwordToggle = new PasswordToggle();
     }
 
     init() {

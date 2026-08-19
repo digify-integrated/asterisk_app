@@ -94,10 +94,10 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Country ID: 11
+            // Company ID: 10
             [
                 'role_id' => 1,
-                'navigation_menu_id' => 11,
+                'navigation_menu_id' => 10,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,
@@ -106,7 +106,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // State ID: 12
+            // Country ID: 12
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 12,
@@ -118,7 +118,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // City ID: 13
+            // State ID: 13
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 13,
@@ -130,7 +130,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Currency ID: 14
+            // City ID: 14
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 14,
@@ -142,7 +142,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // User Account ID: 15
+            // Currency ID: 15
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 15,
@@ -154,7 +154,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Role ID: 16
+            // User Account ID: 16
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 16,
@@ -166,7 +166,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Page Permission ID: 17
+            // Role ID: 17
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 17,
@@ -178,10 +178,22 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // System Action Permission ID: 18
+            // Page Permission ID: 18
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 18,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // System Action Permission ID: 19
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 19,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,

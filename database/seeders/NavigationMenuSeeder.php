@@ -31,79 +31,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 1,
             ],
 
-            // Company ID: 3
-            [
-                'name'              => 'Company',
-                'icon'              => 'ki-outline ki-wrench',
-                'parent_id'         => null,
-                'page_type'         => 'menu',
-                'order_sequence'    => 3,
-            ],
-            
-            // Security ID: 3
-            [
-                'name'              => 'Security',
-                'icon'              => 'ki-outline ki-lock-2',
-                'parent_id'         => null,
-                'page_type'         => 'menu',
-                'order_sequence'    => 100,
-            ],
-
-            // Technical ID: 4
-            [
-                'name'              => 'Technical',
-                'icon'              => 'ki-outline ki-abstract-26',
-                'parent_id'         => null,
-                'page_type'         => 'menu',
-                'order_sequence'    => 500,
-            ],
-
-            // Apps ID: 5
-            [
-                'name'              => 'Apps',
-                'icon'              => null,
-                'parent_id'         => 4,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 1,
-            ],
-
-            // Navigation Menu ID: 6
-            [
-                'name'              => 'Navigation Menu',
-                'icon'              => null,
-                'parent_id'         => 4,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 14,
-            ],
-
-            // System Action ID: 7
-            [
-                'name'              => 'System Action',
-                'icon'              => null,
-                'parent_id'         => 4,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 19,
-            ],
-
-            // System Parameters ID: 8
-            [
-                'name'              => 'System Parameters',
-                'icon'              => null,
-                'parent_id'         => 4,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 19,
-            ],
-
-            // Upload Setting ID: 9
-            [
-                'name'              => 'Upload Setting',
-                'icon'              => null,
-                'parent_id'         => 4,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 21,
-            ],
-
-            // Configurations ID: 10
+            // Configurations ID: 2
             [
                 'name'              => 'Configurations',
                 'icon'              => null,
@@ -112,7 +40,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 3,
             ],
 
-            // Localization ID: 11
+            // Localization ID: 3
             [
                 'name'              => 'Localization',
                 'icon'              => null,
@@ -121,77 +49,159 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 12,
             ],
 
-            // Country ID: 12
+            // Country ID: 4
             [
                 'name'              => 'Country',
                 'icon'              => null,
-                'parent_id'         => 11,
+                'parent_id'         => 3,
                 'page_type'         => 'single_page',
-                'order_sequence'    => 3,
+                'order_sequence'    => 1,
             ],
 
-            // State ID: 13
+            // State ID: 5
             [
                 'name'              => 'State',
                 'icon'              => null,
-                'parent_id'         => 11,
+                'parent_id'         => 3,
                 'page_type'         => 'single_page',
-                'order_sequence'    => 19,
+                'order_sequence'    => 2,
             ],
 
-            // City ID: 14
+            // City ID: 6
             [
                 'name'              => 'City',
                 'icon'              => null,
-                'parent_id'         => 11,
+                'parent_id'         => 3,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
 
-            // Currency ID: 15
+            // Currency ID: 7
             [
                 'name'              => 'Currency',
                 'icon'              => null,
+                'parent_id'         => 3,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 4,
+            ],
+            
+            // Security ID: 8
+            [
+                'name'              => 'Security',
+                'icon'              => 'ki-outline ki-lock-2',
+                'parent_id'         => null,
+                'page_type'         => 'menu',
+                'order_sequence'    => 100,
+            ],
+
+            // User Account ID: 9
+            [
+                'name'              => 'User Account',
+                'icon'              => null,
+                'parent_id'         => 8,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 1,
+            ],
+
+            // Role ID: 10
+            [
+                'name'              => 'Role',
+                'icon'              => null,
+                'parent_id'         => 8,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 2,
+            ],
+            
+            // Security ID: 11
+            [
+                'name'              => 'Security',
+                'icon'              => null,
+                'parent_id'         => 8,
+                'page_type'         => 'menu',
+                'order_sequence'    => 3,
+            ],
+
+            // Page Permission ID: 12
+            [
+                'name'              => 'Page Permission',
+                'icon'              => null,
                 'parent_id'         => 11,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 1,
+            ],
+
+            // System Action Permission ID: 13
+            [
+                'name'              => 'System Action Permission',
+                'icon'              => null,
+                'parent_id'         => 11,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 2,
+            ],
+
+            // Technical ID: 14
+            [
+                'name'              => 'Technical',
+                'icon'              => 'ki-outline ki-abstract-26',
+                'parent_id'         => null,
+                'page_type'         => 'menu',
+                'order_sequence'    => 500,
+            ],
+
+            // Apps ID: 15
+            [
+                'name'              => 'Apps',
+                'icon'              => null,
+                'parent_id'         => 13,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 1,
+            ],
+
+            // Company ID: 16
+            [
+                'name'              => 'Company',
+                'icon'              => null,
+                'parent_id'         => 13,
+                'page_type'         => 'menu',
+                'order_sequence'    => 2,
+            ],
+
+            // Navigation Menu ID: 17
+            [
+                'name'              => 'Navigation Menu',
+                'icon'              => null,
+                'parent_id'         => 13,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
 
-            // User Account ID: 16
+            // System Action ID: 18
             [
-                'name'              => 'User Account',
+                'name'              => 'System Action',
                 'icon'              => null,
-                'parent_id'         => 3,
+                'parent_id'         => 13,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 4,
+            ],
+
+            // System Parameters ID: 19
+            [
+                'name'              => 'System Parameters',
+                'icon'              => null,
+                'parent_id'         => 13,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 5,
+            ],
+
+            // Upload Setting ID: 20
+            [
+                'name'              => 'Upload Setting',
+                'icon'              => null,
+                'parent_id'         => 13,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 21,
             ],
 
-            // Role ID: 17
-            [
-                'name'              => 'Role',
-                'icon'              => null,
-                'parent_id'         => 3,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 18,
-            ],
-
-            // Page Permission ID: 18
-            [
-                'name'              => 'Page Permission',
-                'icon'              => null,
-                'parent_id'         => 3,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 18,
-            ],
-
-            // System Action Permission ID: 19
-            [
-                'name'              => 'System Action Permission',
-                'icon'              => null,
-                'parent_id'         => 3,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 18,
-            ],
         ];
 
         DB::table('navigation_menus')->insert(

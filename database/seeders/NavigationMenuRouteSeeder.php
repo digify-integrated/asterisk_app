@@ -20,7 +20,7 @@ class NavigationMenuRouteSeeder extends Seeder
         ];
 
         $navigationMenuRoutes = [
-            // General Setting
+            // Account Setting
             [
                 'navigation_menu_id'    => 1,
                 'route_type'            => 'index',
@@ -28,65 +28,17 @@ class NavigationMenuRouteSeeder extends Seeder
                 'js_file'               => 'general-setting/index',
             ],
             
-            // Apps
-            [
-                'navigation_menu_id'    => 5,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.app.index',
-                'js_file'               => 'app/index',
-            ],
-            
-            // Navigation Menu
-            [
-                'navigation_menu_id'    => 6,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.navigation-menu.index',
-                'js_file'               => 'navigation-menu/index',
-            ],
-            
-            // System Action
-            [
-                'navigation_menu_id'    => 7,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.system-action.index',
-                'js_file'               => 'system-action/index',
-            ],
-            
-            // System Parameters
-            [
-                'navigation_menu_id'    => 8,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.system-parameter.index',
-                'js_file'               => 'system-parameter/index',
-            ],
-            
-            // Upload Setting
-            [
-                'navigation_menu_id'    => 9,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.upload-setting.index',
-                'js_file'               => 'upload-setting/index',
-            ],
-            
-            // Company
-            [
-                'navigation_menu_id'    => 11,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.company.index',
-                'js_file'               => 'company/index',
-            ],
-            
             // Country
             [
-                'navigation_menu_id'    => 12,
+                'navigation_menu_id'    => 4,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.country.index',
                 'js_file'               => 'country/index',
             ],
-            
+
             // State
             [
-                'navigation_menu_id'    => 13,
+                'navigation_menu_id'    => 5,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.state.index',
                 'js_file'               => 'state/index',
@@ -94,7 +46,7 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // City
             [
-                'navigation_menu_id'    => 14,
+                'navigation_menu_id'    => 6,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.city.index',
                 'js_file'               => 'city/index',
@@ -102,7 +54,7 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // Currency
             [
-                'navigation_menu_id'    => 15,
+                'navigation_menu_id'    => 7,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.currency.index',
                 'js_file'               => 'currency/index',
@@ -110,7 +62,7 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // User Account
             [
-                'navigation_menu_id'    => 16,
+                'navigation_menu_id'    => 9,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.user.index',
                 'js_file'               => 'user/index',
@@ -118,7 +70,7 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // Role
             [
-                'navigation_menu_id'    => 17,
+                'navigation_menu_id'    => 10,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.role.index',
                 'js_file'               => 'role/index',
@@ -126,7 +78,7 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // Page Permission
             [
-                'navigation_menu_id'    => 18,
+                'navigation_menu_id'    => 11,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.page-permission.index',
                 'js_file'               => 'page-permission/index',
@@ -134,10 +86,58 @@ class NavigationMenuRouteSeeder extends Seeder
 
             // System Action Permission
             [
-                'navigation_menu_id'    => 19,
+                'navigation_menu_id'    => 12,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.system-action-permission.index',
                 'js_file'               => 'system-action-permission/index',
+            ],
+
+            // Apps
+            [
+                'navigation_menu_id'    => 14,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.app.index',
+                'js_file'               => 'app/index',
+            ],
+
+            // Company
+            [
+                'navigation_menu_id'    => 15,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.company.index',
+                'js_file'               => 'company/index',
+            ],
+            
+            // Navigation Menu
+            [
+                'navigation_menu_id'    => 16,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.navigation-menu.index',
+                'js_file'               => 'navigation-menu/index',
+            ],
+            
+            // System Action
+            [
+                'navigation_menu_id'    => 17,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.system-action.index',
+                'js_file'               => 'system-action/index',
+            ],
+            
+            // System Parameters
+            [
+                'navigation_menu_id'    => 18,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.system-parameter.index',
+                'js_file'               => 'system-parameter/index',
+            ],
+            
+            // Upload Setting
+            [
+                'navigation_menu_id'    => 19,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.upload-setting.index',
+                'js_file'               => 'upload-setting/index',
             ],
         ];
 

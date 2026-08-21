@@ -15,10 +15,16 @@ class SavePagePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'system_parameter_id'   => ['nullable', 'integer', 'exists:system_parameters,id'],
-            'name'                  => ['required', 'string', 'max:100'],
-            'description'           => ['required', 'string'],
-            'value'                 => ['required', 'string'],
+            'role_id'               => ['required', 'array', 'min:1'],
+            'role_id.*'             => ['integer', 'exists:roles,id'],
+            'navigation_menu_id'    => ['required', 'array', 'min:1'],
+            'navigation_menu_id.*'  => ['integer', 'exists:navigation_menus,id'],
+            'read_access'           => ['required', 'boolean'],
+            'write_access'          => ['required', 'boolean'],
+            'create_access'         => ['required', 'boolean'],
+            'delete_access'         => ['required', 'boolean'],
+            'export_access'         => ['required', 'boolean'],
+            'logs_access'           => ['required', 'boolean'],
         ];
     }
 }

@@ -15,9 +15,33 @@
     <div class="row g-7">
         @forelse($apps as $app)
             @php
-                $firstMenu = $app->navigationMenus->first(function ($menu) {
-                    return $menu->page_type !== 'menu';
+                // Group all menus by their parent_id for rapid hierarchical lookup
+                $menusByParent = $app->navigationMenus->groupBy(function ($item) {
+                    return $item->parent_id ?? 0;
                 });
+
+                // Helper function to recursively find the first actionable leaf page inside a parent menu tree
+                $findFirstLeafPage = function ($parentId) use (&$findFirstLeafPage, $menusByParent) {
+                    $children = $menusByParent->get($parentId, collect());
+
+                    foreach ($children as $child) {
+                        // If it's a direct page, return it immediately
+                        if ($child->page_type !== 'menu') {
+                            return $child;
+                        }
+
+                        // If it's a folder/menu container, recursively search inside its children
+                        $leaf = $findFirstLeafPage($child->id);
+                        if ($leaf) {
+                            return $leaf;
+                        }
+                    }
+
+                    return null;
+                };
+
+                // Find the absolute first executable menu starting from root parents (parent_id = 0)
+                $firstMenu = $findFirstLeafPage(0);
 
                 $defaultLink = $firstMenu
                     ? route('apps.base', [

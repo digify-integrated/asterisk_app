@@ -35,7 +35,6 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/app', [AppRenderController::class, 'index'])->name('apps.main');
-    Route::get('/app', [AppRenderController::class, 'index'])->name('apps.main');
 
     Route::middleware([MenuReadMiddleware::class, ShareNavigationData::class])->group(function () {
         Route::get('/app/{appId}/module/{navigationMenuId}', [AppRenderController::class, 'renderModule'])

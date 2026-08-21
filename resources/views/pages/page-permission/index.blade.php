@@ -114,12 +114,12 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="role_id">Role</label>
-                            <select id="role_id" name="role_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="navigation_menu_id">Page</label>
-                            <select id="navigation_menu_id" name="navigation_menu_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="navigation_menu_id" name="navigation_menu_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
                         </div>
                     </div>
 

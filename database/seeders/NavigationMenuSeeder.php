@@ -112,9 +112,9 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 2,
             ],
             
-            // Security ID: 11
+            // Permissions ID: 11
             [
-                'name'              => 'Security',
+                'name'              => 'Permissions',
                 'icon'              => null,
                 'parent_id'         => 8,
                 'page_type'         => 'menu',
@@ -152,7 +152,7 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'Apps',
                 'icon'              => null,
-                'parent_id'         => 13,
+                'parent_id'         => 14,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
@@ -161,8 +161,8 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'Company',
                 'icon'              => null,
-                'parent_id'         => 13,
-                'page_type'         => 'menu',
+                'parent_id'         => 14,
+                'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
 
@@ -170,7 +170,7 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'Navigation Menu',
                 'icon'              => null,
-                'parent_id'         => 13,
+                'parent_id'         => 14,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
@@ -179,7 +179,7 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'System Action',
                 'icon'              => null,
-                'parent_id'         => 13,
+                'parent_id'         => 14,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 4,
             ],
@@ -188,7 +188,7 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'System Parameters',
                 'icon'              => null,
-                'parent_id'         => 13,
+                'parent_id'         => 14,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 5,
             ],
@@ -197,7 +197,7 @@ class NavigationMenuSeeder extends Seeder
             [
                 'name'              => 'Upload Setting',
                 'icon'              => null,
-                'parent_id'         => 13,
+                'parent_id'         => 14,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 21,
             ],

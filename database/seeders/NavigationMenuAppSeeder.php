@@ -23,6 +23,16 @@ class NavigationMenuAppSeeder extends Seeder
                 'last_log_by'        => 1
             ],
             [
+                'navigation_menu_id' => 2,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
+                'navigation_menu_id' => 3,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
                 'navigation_menu_id' => 4,
                 'app_id'             => 1,
                 'last_log_by'        => 1
@@ -43,6 +53,11 @@ class NavigationMenuAppSeeder extends Seeder
                 'last_log_by'        => 1
             ],
             [
+                'navigation_menu_id' => 8,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
                 'navigation_menu_id' => 9,
                 'app_id'             => 1,
                 'last_log_by'        => 1
@@ -59,6 +74,11 @@ class NavigationMenuAppSeeder extends Seeder
             ],
             [
                 'navigation_menu_id' => 12,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
+                'navigation_menu_id' => 13,
                 'app_id'             => 1,
                 'last_log_by'        => 1
             ],
@@ -89,6 +109,11 @@ class NavigationMenuAppSeeder extends Seeder
             ],
             [
                 'navigation_menu_id' => 19,
+                'app_id'             => 1,
+                'last_log_by'        => 1
+            ],
+            [
+                'navigation_menu_id' => 20,
                 'app_id'             => 1,
                 'last_log_by'        => 1
             ],

@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PagePermissionOptionResource;
 use App\Models\PagePermission;
 use App\Http\Resources\PagePermissionTableResource;
-use App\Http\Resources\PagePermissionDetailsResource;
 use App\Http\Requests\SavePagePermissionRequest;
-use App\Http\Requests\FetchPagePermissionDetailsRequest;
 use App\Http\Requests\DeletePagePermissionRequest;
 use App\Http\Requests\DeleteMultiplePagePermissionsRequest;
+use App\Models\RolePermission;
 use App\Services\PagePermissionManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,24 +38,6 @@ class PagePermissionController extends Controller
         } catch (Exception $e) {
             report($e);
             
-            return response()->json([
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function fetch(FetchPagePermissionDetailsRequest $request): JsonResponse|PagePermissionDetailsResource
-    {
-        try {
-            $validated = $request->validated();
-
-            $systemParameter = PagePermission::findOrFail($validated['system_parameter_id']);
-
-            return new PagePermissionDetailsResource($systemParameter);
-
-        } catch (Exception $e) {
-            report($e);
-
             return response()->json([
                 'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -112,7 +93,7 @@ class PagePermissionController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = PagePermission::query();
+        $query = RolePermission::query();
 
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -132,22 +113,6 @@ class PagePermissionController extends Controller
             ->additional([
                 'permissions'  => $permissions,
             ])
-            ->response();
-    }
-
-    public function generateOption(Request $request): JsonResponse
-    {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
-        $apps = PagePermission::query()->orderBy('name')->get();
-
-        return PagePermissionOptionResource::collection($apps)
             ->response();
     }
 }

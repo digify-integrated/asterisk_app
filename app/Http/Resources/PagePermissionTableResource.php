@@ -13,12 +13,16 @@ class PagePermissionTableResource extends JsonResource
     {
         return [
             'id'             => $this->id,
-            'name'           => $this->name,
-            'description'    => $this->description,
-            'value'          => $this->value,
+            'role'           => $this->role,
+            'page'           => $this->navigation_menu,
+            'read_access'    => $this->read_access,
+            'write_access'   => $this->write_access,
+            'create_access'  => $this->create_access,
+            'delete_access'  => $this->delete_access,
+            'export_access'  => $this->export_access,
+            'logs_access'    => $this->logs_access,
             'created_at'     => $this->created_at?->format('M d, Y h:i:s a') ?? '',
             'permissions'    => [
-                'can_write'  => (bool) ($this->permissions['write'] ?? false),
                 'can_logs'   => (bool) ($this->permissions['logs'] ?? false),
                 'can_delete' => (bool) ($this->permissions['delete'] ?? false),
             ],

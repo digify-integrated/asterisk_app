@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\PagePermission;
+use App\Models\RolePermission;
 use Illuminate\Support\Facades\DB;
 
 class PagePermissionManagementService
 {
-    public function savePagePermission(array $data, ?int $userId): PagePermission
+    public function savePagePermission(array $data, ?int $userId): RolePermission
     {
         return DB::transaction(function () use ($data, $userId) {
             $payload = [
@@ -17,7 +17,7 @@ class PagePermissionManagementService
                 'last_log_by'   => $userId,
             ];
 
-            $systemParameter = PagePermission::query()->updateOrCreate(
+            $systemParameter = RolePermission::query()->updateOrCreate(
                 ['id' => $data['system_parameter_id'] ?? null],
                 $payload
             );
@@ -29,7 +29,7 @@ class PagePermissionManagementService
     public function deletePagePermission(int $systemParameterId): void
     {
         DB::transaction(function () use ($systemParameterId) {
-            $systemParameter = PagePermission::query()->select(['id'])->findOrFail($systemParameterId);
+            $systemParameter = RolePermission::query()->select(['id'])->findOrFail($systemParameterId);
 
             $systemParameter->delete();
         });
@@ -38,7 +38,7 @@ class PagePermissionManagementService
     public function deleteMultiplePagePermissions(array $systemParameterIds): void
     {
         DB::transaction(function () use ($systemParameterIds) {
-            PagePermission::query()->whereIn('id', $systemParameterIds)->delete();
+            RolePermission::query()->whereIn('id', $systemParameterIds)->delete();
         });
     }
 }

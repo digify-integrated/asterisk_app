@@ -66,6 +66,7 @@
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>
                     </div>
+                    
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label mb-2" for="user_id">User Accounts</label>

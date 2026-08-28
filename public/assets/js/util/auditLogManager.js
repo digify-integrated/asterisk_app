@@ -167,31 +167,22 @@ export class AuditLogManager {
             const { title, changes } = this._parseLogContent(item.raw_log);
             const action = title.toLowerCase();
 
-            let icon = 'ki-pencil';
-            let badgeBg = 'bg-light-primary';
-            let iconColor = 'text-primary';
+            const defaults = { icon: 'ki-pencil', type: 'primary' };
 
-            if (action.includes('create') || action.includes('added')) {
-                icon = 'ki-plus';
-                badgeBg = 'bg-light-success';
-                iconColor = 'text-success';
-            } else if (action.includes('delete') || action.includes('remove')) {
-                icon = 'ki-trash';
-                badgeBg = 'bg-light-danger';
-                iconColor = 'text-danger';
-            } else if (action.includes('approve') || action.includes('confirm')) {
-                icon = 'ki-check';
-                badgeBg = 'bg-light-success';
-                iconColor = 'text-success';
-            } else if (action.includes('reject') || action.includes('decline')) {
-                icon = 'ki-cross';
-                badgeBg = 'bg-light-danger';
-                iconColor = 'text-danger';
-            } else if (action.includes('archive')) {
-                icon = 'ki-archive';
-                badgeBg = 'bg-light-warning';
-                iconColor = 'text-warning';
-            }
+            const mappings = [
+                { keywords: ['create', 'added', 'approve', 'confirm'], icon: 'ki-plus', type: 'success' },
+                { keywords: ['delete', 'remove', 'reject', 'decline'], icon: 'ki-cross', type: 'danger' },
+                { keywords: ['archive'], icon: 'ki-archive', type: 'warning' }
+            ];
+
+            if (action.includes('delete') || action.includes('remove')) defaults.icon = 'ki-trash';
+
+            const match = mappings.find(m => m.keywords.some(k => action.includes(k))) || defaults;
+
+            const icon = match.icon;
+            const badgeBg = `bg-light-${match.type}`;
+            const border = `border-${match.type}`;
+            const iconColor = `text-${match.type}`;
 
             const visibleLimit = 5;
             const hasMore = changes.length > visibleLimit;
@@ -277,7 +268,7 @@ export class AuditLogManager {
                     
                     <div class="timeline-icon me-4 position-relative z-index-1">
                         <div class="symbol symbol-40px">
-                            <div class="symbol-label ${badgeBg} rounded-circle border border-white border-2 shadow-sm">
+                            <div class="symbol-label ${badgeBg} rounded-circle border ${border} border-2 shadow-sm">
                                 <i class="ki-outline ${icon} fs-5 ${iconColor}"></i>
                             </div>
                         </div>

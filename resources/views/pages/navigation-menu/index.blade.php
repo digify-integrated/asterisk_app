@@ -74,7 +74,7 @@
                 <input type="hidden" id="navigation_menu_id" name="navigation_menu_id" />
 
                 <div class="d-flex flex-column gap-7">
-                    <div class="row">
+                    <div class="row gy-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
@@ -84,7 +84,7 @@
                             <select id="app_id" name="app_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row gy-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="page_type">Page Type</label>
                             <select id="page_type" name="page_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select page type">
@@ -100,7 +100,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row gy-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-2" for="parent_id">Parent</label>
                             <select id="parent_id" name="parent_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
@@ -115,7 +115,7 @@
 
                     <div class="separator separator-dashed"></div>
 
-                    <div class="row">
+                    <div class="row gy-5">
                         <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
                             <i class="ki-duotone ki-element-plus fs-4 me-2 text-primary">
                                 <span class="path1"></span><span class="path2"></span>
@@ -132,7 +132,7 @@
                             <input type="text" class="form-control form-control-sm" id="index_js_file" name="index_js_file" placeholder="Enter JS file" maxlength="100" autocomplete="off">
                         </div>
                     </div>
-                    <div class="row">
+                   <div class="row gy-5">
                         <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
                             <i class="ki-duotone ki-setting-2 fs-4 me-2 text-primary">
                                 <span class="path1"></span><span class="path2"></span>

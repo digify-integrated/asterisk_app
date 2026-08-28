@@ -55,7 +55,7 @@
                 <input type="hidden" id="system_parameter_id" name="system_parameter_id" />
 
                 <div class="d-flex flex-column gap-7">
-                    <div class="row">
+                    <div class="row gy-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">

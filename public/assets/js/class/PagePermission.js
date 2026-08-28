@@ -25,7 +25,11 @@ const CONFIG = {
         deleteTrigger: '.delete-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
+        roleDropdown: '#role_id',
+        navigationMenuDropdown: '#navigation_menu_id',
         filterCollapse: 'page-permission-filter-collapse',
+        filterNavigationMenuDropdown: '#filter_navigation_menu_id',
+        filterRoleDropdown: '#filter_role_id',
         filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
@@ -34,6 +38,8 @@ const CONFIG = {
         delete: '/page-permission/delete',
         deleteMultiple: '/page-permission/delete-multiple',
         fetch: '/page-permission/fetch',
+        roleOption: '/role/generate-option',
+        navigationMenuOption: '/navigation-menu/generate-option',
     }
 };
     
@@ -56,7 +62,7 @@ export class PagePermission {
     }
 
     init() {
-        this.initTable();
+        //this.initTable();
         this.initForm();
         this.initDelete();
         this.initDateRangePicker();
@@ -239,17 +245,15 @@ export class PagePermission {
 
     initRoleOption() {
         ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.parentOption,
-            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
-            data: {navigationMenuId : navigationMenuId}
+            url: CONFIG.endpoints.roleOption,
+            dropdownSelector: [CONFIG.selectors.roleDropdown, CONFIG.selectors.filterRoleDropdown],
         });
     }
 
     initNavigationMenuOption() {
         ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.parentOption,
-            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
-            data: {navigationMenuId : navigationMenuId}
+            url: CONFIG.endpoints.navigationMenuOption,
+            dropdownSelector: [CONFIG.selectors.navigationMenuDropdown, CONFIG.selectors.filterNavigationMenuDropdown],
         });
     }
 

@@ -14,10 +14,10 @@ import { activateTriggers } from '../util/activateTriggers.js';
 
 const CONFIG = {
     selectors: {
-        table: '#page-permission-table',
-        tableColumn: '#page-permission-table-column-dropdown',
-        form: '#page_permission_form',
-        detailId: 'page_permission_id',
+        table: '#system-action-permission-table',
+        tableColumn: '#system-action-permission-table-column-dropdown',
+        form: '#system_action_permission_form',
+        detailId: 'system_action_permission_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -27,25 +27,25 @@ const CONFIG = {
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         roleDropdown: '#role_id',
-        navigationMenuDropdown: '#navigation_menu_id',
-        filterCollapse: 'page-permission-filter-collapse',
-        filterNavigationMenuDropdown: '#filter_navigation_menu_id',
+        systemActionDropdown: '#system_action_id',
+        filterCollapse: 'system-action-permission-filter-collapse',
+        filterSystemActionDropdown: '#filter_system_action_id',
         filterRoleDropdown: '#filter_role_id',
         filterCreatedDate: '#filter_created_date'
     },
     endpoints: {
-        tableData: '/page-permission/generate-table',
-        save: '/page-permission/save',
-        update: '/page-permission/update',
-        delete: '/page-permission/delete',
-        deleteMultiple: '/page-permission/delete-multiple',
-        fetch: '/page-permission/fetch',
+        tableData: '/system-action-permission/generate-table',
+        save: '/system-action-permission/save',
+        update: '/system-action-permission/update',
+        delete: '/system-action-permission/delete',
+        deleteMultiple: '/system-action-permission/delete-multiple',
+        fetch: '/system-action-permission/fetch',
         roleOption: '/role/generate-option',
-        navigationMenuOption: '/navigation-menu/generate-option',
+        systemActionOption: '/system-action/generate-option',
     }
 };
     
-export class PagePermission {
+export class SystemActionPermission {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -69,20 +69,20 @@ export class PagePermission {
         this.initDelete();
         this.initDateRangePicker();
         this.initRoleOption();
-        this.initNavigationMenuOption();
+        this.initSystemActionOption();
         this.registerGlobalListeners();
 
         activateTriggers({
             trigger: CONFIG.selectors.updateTrigger,
             url: CONFIG.endpoints.update,
             payload: {
-                page_permission_id: (el) => el.dataset.id,
+                system_action_permission_id: (el) => el.dataset.id,
                 access_field: (el) => el.dataset.field,
                 access_value: (el) => (el.checked ? 1 : 0),
             },
         });
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'role_permissions');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'role_system_action_permissions');
     }
 
     initTable() {
@@ -92,19 +92,14 @@ export class PagePermission {
             ajaxData: (d) => {
                 return Object.assign({}, d, {
                     filter_role_id: $('#filter_role_id').val() || [],
-                    filter_navigation_menu_id: $('#filter_navigation_menu_id').val() || [],
-                    filter_read_access: $('#filter_read_access').val() || [],
-                    filter_write_access: $('#filter_write_access').val() || [],
-                    filter_create_access: $('#filter_create_access').val() || [],
-                    filter_delete_access: $('#filter_delete_access').val() || [],
-                    filter_export_access: $('#filter_export_access').val() || [],
-                    filter_logs_access: $('#filter_logs_access').val() || [],
+                    filter_system_action_id: $('#filter_system_action_id').val() || [],
+                    filter_access: $('#filter_access').val() || [],
                     filter_created_date: $('#filter_created_date').val()
                 });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
-            exportColumns: [1, 2, 8],
+            exportColumns: [1, 2, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -112,8 +107,8 @@ export class PagePermission {
             },
             columnDefs: [
                 { width: '5%', orderable: false, targets: 0 },
-                { orderable: false, targets: [3, 4, 5, 6, 7, 8] },
-                { width: '10%', orderable: false, targets: 10 }
+                { orderable: false, targets: 2 },
+                { width: '10%', orderable: false, targets: 4 }
             ],
             columns: [
                 { 
@@ -124,8 +119,8 @@ export class PagePermission {
                         </div>`
                 },
                 { data: 'role', title: 'Role' },
-                { data: 'page', title: 'Page' },
-                ...['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'].map(field => ({
+                { data: 'system_action', title: 'System Action' },
+                ...['access'].map(field => ({
                     data: field,
                     title: field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
                     render: (data, type, row) => {
@@ -181,13 +176,8 @@ export class PagePermission {
                     selector: CONFIG.selectors.form,
                     rules: {
                         'role_id[]': { required: true },
-                        'navigation_menu_id[]': { required: true },
-                        'read_access': { required: true },
-                        'write_access': { required: true },
-                        'create_access': { required: true },
-                        'delete_access': { required: true },
-                        'export_access': { required: true },
-                        'logs_access': { required: true }
+                        'system_action_id[]': { required: true },
+                        'access': { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -227,7 +217,7 @@ export class PagePermission {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { page_permission_id: (el) => el.dataset.referenceId },
+            payload: { system_action_permission_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -240,7 +230,7 @@ export class PagePermission {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'page_permission_id': () => {
+                'system_action_permission_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -266,10 +256,10 @@ export class PagePermission {
         });
     }
 
-    initNavigationMenuOption() {
+    initSystemActionOption() {
         ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.navigationMenuOption,
-            dropdownSelector: [CONFIG.selectors.navigationMenuDropdown, CONFIG.selectors.filterNavigationMenuDropdown],
+            url: CONFIG.endpoints.systemActionOption,
+            dropdownSelector: [CONFIG.selectors.systemActionDropdown, CONFIG.selectors.filterSystemActionDropdown],
             data: {pageType : ['single_page', 'multi_page']}
         });
     }

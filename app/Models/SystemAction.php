@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SystemAction extends Model
 {
@@ -13,4 +14,9 @@ class SystemAction extends Model
         'description',
         'last_log_by'
     ];
+
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(RoleSystemActionPermission::class);
+    }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\PagePermissionTableResource;
-use App\Http\Requests\SavePagePermissionRequest;
-use App\Http\Requests\UpdatePagePermissionRequest;
-use App\Http\Requests\DeletePagePermissionRequest;
-use App\Http\Requests\DeleteMultiplePagePermissionsRequest;
-use App\Models\RolePermission;
-use App\Services\PagePermissionManagementService;
+use App\Http\Resources\SystemActionPermissionTableResource;
+use App\Http\Requests\SaveSystemActionPermissionRequest;
+use App\Http\Requests\UpdateSystemActionPermissionRequest;
+use App\Http\Requests\DeleteSystemActionPermissionRequest;
+use App\Http\Requests\DeleteMultipleSystemActionPermissionsRequest;
+use App\Models\RoleSystemActionPermission;
+use App\Services\SystemActionPermissionManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,22 +16,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class PagePermissionController extends Controller
+class SystemActionPermissionController extends Controller
 {
     public function __construct(
-        protected PagePermissionManagementService $pagePermissionManagementService
+        protected SystemActionPermissionManagementService $pagePermissionManagementService
     ) {}
 
-    public function save(SavePagePermissionRequest $request): JsonResponse
+    public function save(SaveSystemActionPermissionRequest $request): JsonResponse
     {
         try {
-            $this->pagePermissionManagementService->savePagePermission(
+            $this->pagePermissionManagementService->saveSystemActionPermission(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The page permission has been saved successfully.',
+                'message' => 'The system action permission has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -43,16 +43,16 @@ class PagePermissionController extends Controller
         }
     }
 
-    public function update(UpdatePagePermissionRequest $request): JsonResponse
+    public function update(UpdateSystemActionPermissionRequest $request): JsonResponse
     {
         try {
-            $this->pagePermissionManagementService->updatePagePermission(
+            $this->pagePermissionManagementService->updateSystemActionPermission(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The page permission has been updated successfully.',
+                'message' => 'The system action permission has been updated successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -64,13 +64,13 @@ class PagePermissionController extends Controller
         }
     }
 
-    public function delete(DeletePagePermissionRequest $request): JsonResponse
+    public function delete(DeleteSystemActionPermissionRequest $request): JsonResponse
     {
         try {
-            $this->pagePermissionManagementService->deletePagePermission((int) $request->validated()['page_permission_id']);
+            $this->pagePermissionManagementService->deleteSystemActionPermission((int) $request->validated()['system_action_permission_id']);
 
             return response()->json([
-                'message' => 'The page permission has been deleted successfully',
+                'message' => 'The system action permission has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -82,13 +82,13 @@ class PagePermissionController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultiplePagePermissionsRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleSystemActionPermissionsRequest $request): JsonResponse
     {
         try {
-            $this->pagePermissionManagementService->deleteMultiplePagePermissions($request->validated()['page_permission_id']);
+            $this->pagePermissionManagementService->deleteMultipleSystemActionPermissions($request->validated()['system_action_permission_id']);
 
             return response()->json([
-                'message' => 'The selected page permissions have been deleted successfully',
+                'message' => 'The selected system action permissions have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -113,12 +113,12 @@ class PagePermissionController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = RolePermission::with(['role', 'navigationMenu']);
+        $query = RoleSystemActionPermission::with(['role', 'systemAction']);
 
         $query->when($request->filled('filter_role_id'), fn($q) => $q->filterBy('role_id', $request->input('filter_role_id')));
-        $query->when($request->filled('filter_navigation_menu_id'), fn($q) => $q->filterBy('navigation_menu_id', $request->input('filter_navigation_menu_id')));
+        $query->when($request->filled('filter_system_action_id'), fn($q) => $q->filterBy('system_action_id', $request->input('filter_system_action_id')));
 
-        $accessFlags = ['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'];
+        $accessFlags = ['access'];
         foreach ($accessFlags as $flag) {
             if ($request->filled("filter_{$flag}")) {
                 $query->filterBy($flag, $request->input("filter_{$flag}"));
@@ -132,17 +132,17 @@ class PagePermissionController extends Controller
                 $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
                 $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
 
-                $q->whereBetween('role_permissions.created_at', [$startDate, $endDate]);
+                $q->whereBetween('role_system_action_permissions.created_at', [$startDate, $endDate]);
             }
         });
 
         $permissionsData = $query->whereHas('role')
-            ->join('roles', 'role_permissions.role_id', '=', 'roles.id')
+            ->join('roles', 'role_system_action_permissions.role_id', '=', 'roles.id')
             ->orderBy('roles.name', 'asc')
-            ->select('role_permissions.*')
+            ->select('role_system_action_permissions.*')
             ->get();
 
-        return PagePermissionTableResource::collection($permissionsData)
+        return SystemActionPermissionTableResource::collection($permissionsData)
             ->additional([
                 'permissions' => $permissions,
             ])

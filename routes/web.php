@@ -12,6 +12,7 @@ use App\Http\Controllers\PagePermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\SystemActionController;
+use App\Http\Controllers\SystemActionPermissionController;
 use App\Http\Controllers\SystemParameterController;
 use App\Http\Controllers\UploadSettingController;
 use App\Http\Controllers\UserController;
@@ -186,6 +187,17 @@ Route::middleware('auth')->group(function () {
     Route::prefix('page-permission')
         ->name('page-permission.')
         ->controller(PagePermissionController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::post('/update', 'update')->name('update');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+        });
+
+    Route::prefix('system-action-permission')
+        ->name('system-action-permission.')
+        ->controller(SystemActionPermissionController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::post('/update', 'update')->name('update');

@@ -57,7 +57,18 @@ class SaveUserRequest extends FormRequest
                 'string',
                 Password::min(8)->letters()->numbers()
             ],
-            'status' => ['required', 'string'],
+            'status' => [
+                'required', 
+                'string',
+                function ($attribute, $value, $fail) {
+                    $targetUserId = (int) $this->input('user_id');
+                    $currentUserId = (int) $this->user()?->id;
+
+                    if ($targetUserId === $currentUserId && strtolower($value) === 'inactive') {
+                        $fail('You cannot set your own account to inactive status.');
+                    }
+                },
+            ],
             'profile_picture' => [
                 'nullable', 
                 File::types($allowedExt)->max($maxKb)

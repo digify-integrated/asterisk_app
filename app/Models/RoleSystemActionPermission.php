@@ -6,28 +6,19 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class RolePermission extends Model
+class RoleSystemActionPermission extends Model
 {
-    protected $table = 'role_permissions';
-
+    protected $table = 'role_system_action_permissions';
+    
     protected $fillable = [
         'role_id',
-        'navigation_menu_id',
-        'read_access',
-        'write_access',
-        'create_access',
-        'delete_access',
-        'export_access',
+        'system_action_id',
+        'access',
         'logs_access',
     ];
 
     protected $casts = [
-        'read_access'   => 'boolean',
-        'write_access'  => 'boolean',
-        'create_access' => 'boolean',
-        'delete_access' => 'boolean',
-        'export_access' => 'boolean',
-        'logs_access'   => 'boolean',
+        'access'   => 'boolean',
     ];
 
     public function role(): BelongsTo
@@ -35,9 +26,9 @@ class RolePermission extends Model
         return $this->belongsTo(Role::class);
     }
 
-    public function navigationMenu(): BelongsTo
+    public function systemAction(): BelongsTo
     {
-        return $this->belongsTo(NavigationMenu::class);
+        return $this->belongsTo(SystemAction::class);
     }
 
     public function scopeFilterBy(Builder $query, string $column, mixed $value): Builder

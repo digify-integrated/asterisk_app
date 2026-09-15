@@ -93,49 +93,18 @@ class PagePermissionController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = RolePermission::query();
+        $query = RolePermission::with(['role', 'navigationMenu']);
 
-        $query->when($request->filled('filter_role_id'), function ($q) use ($request) {
-            $roles = (array) $request->input('filter_role_id');
-            $q->whereIn('role_id', $roles);
-        });
+        $query->when($request->filled('filter_role_id'), fn($q) => $q->filterBy('role_id', $request->input('filter_role_id')));
+        $query->when($request->filled('filter_navigation_menu_id'), fn($q) => $q->filterBy('navigation_menu_id', $request->input('filter_navigation_menu_id')));
 
-        $query->when($request->filled('filter_navigation_menu_id'), function ($q) use ($request) {
-            $navigationMenus = (array) $request->input('filter_navigation_menu_id');
-            $q->whereIn('navigation_menu_id', $navigationMenus);
-        });
+        $accessFlags = ['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'];
+        foreach ($accessFlags as $flag) {
+            if ($request->filled("filter_{$flag}")) {
+                $query->filterBy($flag, $request->input("filter_{$flag}"));
+            }
+        }
 
-        $query->when($request->filled('filter_read_access'), function ($q) use ($request) {
-            $readAccess = (array) $request->input('filter_read_access');
-            $q->whereIn('read_access', $readAccess);
-        });
-
-        $query->when($request->filled('filter_write_access'), function ($q) use ($request) {
-            $writeAccess = (array) $request->input('filter_write_access');
-            $q->whereIn('write_access', $writeAccess);
-        });
-
-        $query->when($request->filled('filter_create_access'), function ($q) use ($request) {
-            $createAccess = (array) $request->input('filter_create_access');
-            $q->whereIn('create_access', $createAccess);
-        });
-
-        $query->when($request->filled('filter_delete_access'), function ($q) use ($request) {
-            $deleteAccess = (array) $request->input('filter_delete_access');
-            $q->whereIn('delete_access', $deleteAccess);
-        });
-
-        $query->when($request->filled('filter_export_access'), function ($q) use ($request) {
-            $exportAccess = (array) $request->input('filter_export_access');
-            $q->whereIn('export_access', $exportAccess);
-        });
-
-        $query->when($request->filled('filter_logs_access'), function ($q) use ($request) {
-            $logsAccess = (array) $request->input('filter_logs_access');
-            $q->whereIn('logs_access', $logsAccess);
-        });
-
-        // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
             $dates = explode(' - ', $request->input('filter_created_date'));
 
@@ -147,12 +116,17 @@ class PagePermissionController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $permissionsData = $query->whereHas('role')
+            ->join('roles', 'role_permissions.role_id', '=', 'roles.id')
+            ->orderBy('roles.name', 'asc')
+            ->select('role_permissions.*')
+            ->get();
 
-        return PagePermissionTableResource::collection($apps)
+        return PagePermissionTableResource::collection($permissionsData)
             ->additional([
-                'permissions'  => $permissions,
+                'permissions' => $permissions,
             ])
             ->response();
     }
+
 }

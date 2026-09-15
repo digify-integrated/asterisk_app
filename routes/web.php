@@ -8,6 +8,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\NavigationMenuController;
+use App\Http\Controllers\PagePermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\SystemActionController;
@@ -180,6 +181,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('page-permission')
+        ->name('page-permission.')
+        ->controller(PagePermissionController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
         });
 
     Route::prefix('audit-log')

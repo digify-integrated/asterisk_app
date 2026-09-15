@@ -62,7 +62,7 @@ export class PagePermission {
     }
 
     init() {
-        //this.initTable();
+        this.initTable();
         this.initForm();
         this.initDelete();
         this.initDateRangePicker();
@@ -79,26 +79,29 @@ export class PagePermission {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
+                    filter_role_id: $('#filter_role_id').val() || [],
+                    filter_navigation_menu_id: $('#filter_navigation_menu_id').val() || [],
+                    filter_read_access: $('#filter_read_access').val() || [],
+                    filter_write_access: $('#filter_write_access').val() || [],
+                    filter_create_access: $('#filter_create_access').val() || [],
+                    filter_delete_access: $('#filter_delete_access').val() || [],
+                    filter_export_access: $('#filter_export_access').val() || [],
+                    filter_logs_access: $('#filter_logs_access').val() || [],
                     filter_created_date: $('#filter_created_date').val()
                 });
             },
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
-            exportColumns: [2, 3, 4],
+            exportColumns: [1, 2, 3, 4, 5, 6, 7, 8],
             addons: { 
                 controls: true, 
                 export: true,
                 columnVisibility: true
             },
             columnDefs: [
-                { width: '5%', bSortable: false, targets: 0 },
-                { bSortable: false, targets: 3 },
-                { bSortable: false, targets: 4 },
-                { bSortable: false, targets: 5 },
-                { bSortable: false, targets: 6 },
-                { bSortable: false, targets: 7 },
-                { bSortable: false, targets: 8 },
-                { width: '10%', bSortable: false, targets: 9 },
+                { width: '5%', orderable: false, targets: 0 },
+                { orderable: false, targets: [3, 4, 5, 6, 7, 8] },
+                { width: '10%', orderable: false, targets: 10 }
             ],
             columns: [
                 { 
@@ -108,38 +111,26 @@ export class PagePermission {
                             <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
                         </div>`
                 },
-                { 
-                    data: 'role',
-                    title: 'Role',
-                },
-                { 
-                    data: 'page',
-                    title: 'Page',
-                },
-                { 
-                    data: 'read_access',
-                    title: 'Read Access',
-                },
-                { 
-                    data: 'write_access',
-                    title: 'Write Access',
-                },
-                { 
-                    data: 'create_access',
-                    title: 'Create Access',
-                },
-                { 
-                    data: 'delete_access',
-                    title: 'Delete Access',
-                },
-                { 
-                    data: 'export_access',
-                    title: 'Export Access',
-                },
-                { 
-                    data: 'logs_access',
-                    title: 'Logs Access',
-                },
+                { data: 'role', title: 'Role' },
+                { data: 'page', title: 'Page' },
+                ...['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'].map(field => ({
+                    data: field,
+                    title: field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    render: (data, type, row) => {
+                        const isChecked = Boolean(data);
+                        const safeId = escapeHtml(row.id);
+                        
+                        return `
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input permission-switch h-20px w-30px" 
+                                type="checkbox" 
+                                value="1" 
+                                data-id="${safeId}" 
+                                data-field="${field}" 
+                                ${isChecked ? 'checked="checked"' : ''} />
+                        </div>`;
+                    }
+                })),
                 { 
                     data: 'created_at',
                     title: 'Created At',
@@ -149,13 +140,21 @@ export class PagePermission {
                     data: null, 
                     title: '&nbsp;',
                     render: (data, type, row, meta) => {
-                        const perms = meta.settings.json?.permissions || row.permissions || {};
+                        const globalPerms = meta.settings.json?.permissions || {};
+                        const rowPerms = row.permissions || {};
+                        
+                        const canLogs = globalPerms.logs ?? rowPerms.logs ?? false;
+                        const canDelete = globalPerms.delete ?? rowPerms.delete ?? false;
                         const safeId = escapeHtml(row.id);
+
+                        if (!canLogs && !canDelete) {
+                            return '';
+                        }
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }

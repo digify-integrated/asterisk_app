@@ -49,48 +49,48 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_read_access">Read Access</label>
                     <select id="filter_read_access" name="filter_read_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Read Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_write_access">Write Access</label>
                     <select id="filter_write_access" name="filter_write_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Write Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_create_access">Create Access</label>
                     <select id="filter_create_access" name="filter_create_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Create Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_delete_access">Delete Access</label>
                     <select id="filter_delete_access" name="filter_delete_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Delete Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_export_access">Export Access</label>
                     <select id="filter_export_access" name="filter_export_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Export Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_logs_access">Logs Access</label>
                     <select id="filter_logs_access" name="filter_logs_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Logs Access" data-allow-clear="true">
-                        <option value="true">True</option>
-                        <option value="false">False</option>
+                        <option value="1">True</option>
+                        <option value="0">False</option>
                     </select>
                 </div>
             @endcomponent
@@ -138,22 +138,22 @@
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="read_access">Read Access</label>
                             <select id="read_access" name="read_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="write_access">Write Access</label>
                             <select id="write_access" name="write_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="create_access">Create Access</label>
                             <select id="create_access" name="create_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                     </div>
@@ -161,22 +161,22 @@
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="delete_access">Delete Access</label>
                             <select id="delete_access" name="delete_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="export_access">Export Access</label>
                             <select id="export_access" name="export_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4 ">
                             <label class="form-label required mb-2" for="logs_access">Logs Access</label>
                             <select id="logs_access" name="logs_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
-                                <option value="true">True</option>
-                                <option value="false" selected>False</option>
+                                <option value="1">True</option>
+                                <option value="0" selected>False</option>
                             </select>
                         </div>
                     </div>

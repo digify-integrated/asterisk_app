@@ -14,6 +14,7 @@ use App\Services\NavigationMenuManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
@@ -156,8 +157,6 @@ class NavigationMenuController extends Controller
     public function generateOption(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        $navigation_menu_id = $request->input('navigationMenuId');
 
         if (!$user) {
             return response()->json([
@@ -165,8 +164,26 @@ class NavigationMenuController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
+        $navigation_menu_id = $request->input('navigationMenuId') ?? $request->input('navigation_menu_id');
+
+        $page_type = $request->input('pageType');
+
+        // Convert string or array into a clean array
+        if (is_string($page_type)) {
+            $page_type = explode(',', $page_type);
+        }
+
+        $types = array_filter(array_map('trim', Arr::wrap($page_type)));
+
         $navigationMenus = NavigationMenu::query()
-            ->when($navigation_menu_id, fn ($query) => $query->where('id', '!=', $navigation_menu_id))
+            ->when($navigation_menu_id, function ($query, $id) {
+                $query->where('id', '!=', $id);
+            })
+            // Use whereIn to ONLY include these types
+            // (Or switch to whereNotIn if you want to exclude them)
+            ->when(!empty($types), function ($query) use ($types) {
+                $query->whereIn('page_type', $types);
+            })
             ->orderBy('name')
             ->get();
 

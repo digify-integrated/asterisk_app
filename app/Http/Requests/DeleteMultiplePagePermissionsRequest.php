@@ -13,9 +13,9 @@ class DeleteMultiplePagePermissionsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('system_parameter_id') && is_string($this->system_parameter_id)) {
+        if ($this->has('page_permission_id') && is_string($this->page_permission_id)) {
             $this->merge([
-                'system_parameter_id' => array_map('intval', explode(',', $this->system_parameter_id)),
+                'page_permission_id' => array_map('intval', explode(',', $this->page_permission_id)),
             ]);
         }
     }
@@ -23,8 +23,8 @@ class DeleteMultiplePagePermissionsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'system_parameter_id'   => ['required', 'array', 'min:1'],
-            'system_parameter_id.*' => ['integer', 'distinct', 'exists:system_parameters,id'],
+            'page_permission_id'   => ['required', 'array', 'min:1'],
+            'page_permission_id.*' => ['integer', 'distinct', 'exists:role_permissions,id'],
         ];
     }
 }

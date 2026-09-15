@@ -15,7 +15,7 @@ class DeletePagePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'system_parameter_id' => ['required', 'integer', 'min:1', 'exists:system_parameters,id'],
+            'page_permission_id' => ['required', 'integer', 'min:1', 'exists:role_permissions,id'],
         ];
     }
 }

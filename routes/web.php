@@ -188,6 +188,7 @@ Route::middleware('auth')->group(function () {
         ->controller(PagePermissionController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
+            Route::post('/update', 'update')->name('update');
             Route::delete('/delete', 'delete')->name('delete');
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/generate-table', 'generateTable')->name('generate.table');

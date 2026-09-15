@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\PagePermissionOptionResource;
-use App\Models\PagePermission;
 use App\Http\Resources\PagePermissionTableResource;
 use App\Http\Requests\SavePagePermissionRequest;
+use App\Http\Requests\UpdatePagePermissionRequest;
 use App\Http\Requests\DeletePagePermissionRequest;
 use App\Http\Requests\DeleteMultiplePagePermissionsRequest;
 use App\Models\RolePermission;
@@ -20,19 +19,40 @@ use Exception;
 class PagePermissionController extends Controller
 {
     public function __construct(
-        protected PagePermissionManagementService $systemParameterService
+        protected PagePermissionManagementService $pagePermissionManagementService
     ) {}
 
     public function save(SavePagePermissionRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->savePagePermission(
+            $this->pagePermissionManagementService->savePagePermission(
                 $request->validated(),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The system parameter has been saved successfully.',
+                'message' => 'The page permission has been saved successfully.',
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function update(UpdatePagePermissionRequest $request): JsonResponse
+    {
+        try {
+            $this->pagePermissionManagementService->updatePagePermission(
+                $request->validated(),
+                Auth::id()
+            );
+
+            return response()->json([
+                'message' => 'The page permission has been updated successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -47,10 +67,10 @@ class PagePermissionController extends Controller
     public function delete(DeletePagePermissionRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deletePagePermission((int) $request->validated()['system_parameter_id']);
+            $this->pagePermissionManagementService->deletePagePermission((int) $request->validated()['page_permission_id']);
 
             return response()->json([
-                'message' => 'The system parameter has been deleted successfully',
+                'message' => 'The page permission has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -65,10 +85,10 @@ class PagePermissionController extends Controller
     public function deleteMultiple(DeleteMultiplePagePermissionsRequest $request): JsonResponse
     {
         try {
-            $this->systemParameterService->deleteMultiplePagePermissions($request->validated()['system_parameter_id']);
+            $this->pagePermissionManagementService->deleteMultiplePagePermissions($request->validated()['page_permission_id']);
 
             return response()->json([
-                'message' => 'The selected system parameters have been deleted successfully',
+                'message' => 'The selected page permissions have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {

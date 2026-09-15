@@ -11,6 +11,7 @@ import { initConfirmAction } from '../util/confirmationAction.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
 import { TableFilterManager } from '../util/tableFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
+import { activateTriggers } from '../util/activateTriggers.js';
 
 const CONFIG = {
     selectors: {
@@ -23,6 +24,7 @@ const CONFIG = {
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
+        updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         roleDropdown: '#role_id',
@@ -35,6 +37,7 @@ const CONFIG = {
     endpoints: {
         tableData: '/page-permission/generate-table',
         save: '/page-permission/save',
+        update: '/page-permission/update',
         delete: '/page-permission/delete',
         deleteMultiple: '/page-permission/delete-multiple',
         fetch: '/page-permission/fetch',
@@ -69,6 +72,19 @@ export class PagePermission {
         this.initRoleOption();
         this.initNavigationMenuOption();
         this.registerGlobalListeners();
+
+        activateTriggers({
+            trigger: CONFIG.selectors.updateTrigger,
+            url: CONFIG.endpoints.update,
+            payload: {
+                page_permission_id: (el) => el.dataset.id,
+                access_field: (el) => el.dataset.field,
+                access_value: (el) => (el.checked ? 1 : 0),
+            },
+            onSuccess: (data, element) => {
+                console.log('Permission saved successfully', data);
+            }
+        });
         
         AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'page_permissions');
     }
@@ -122,7 +138,7 @@ export class PagePermission {
                         
                         return `
                         <div class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input permission-switch h-20px w-30px" 
+                            <input class="form-check-input update-details h-20px w-30px" 
                                 type="checkbox" 
                                 value="1" 
                                 data-id="${safeId}" 
@@ -168,9 +184,14 @@ export class PagePermission {
                 {
                     selector: CONFIG.selectors.form,
                     rules: {
-                        name: { required: true },
-                        description: { required: true },
-                        value: { required: true },
+                        'role_id[]': { required: true },
+                        'navigation_menu_id[]': { required: true },
+                        'read_access': { required: true },
+                        'write_access': { required: true },
+                        'create_access': { required: true },
+                        'delete_access': { required: true },
+                        'export_access': { required: true },
+                        'logs_access': { required: true }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -253,10 +274,12 @@ export class PagePermission {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.navigationMenuOption,
             dropdownSelector: [CONFIG.selectors.navigationMenuDropdown, CONFIG.selectors.filterNavigationMenuDropdown],
+            data: {pageType : ['single_page', 'multi_page']}
         });
     }
 
     registerGlobalListeners() {
+        
         document.addEventListener('click', async (event) => {
             const { target } = event;
             

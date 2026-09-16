@@ -5,6 +5,7 @@ use App\Http\Controllers\AppRenderController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\NavigationMenuController;
@@ -204,6 +205,18 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete', 'delete')->name('delete');
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
+        });
+
+    Route::prefix('company')
+        ->name('company.')
+        ->controller(CompanyController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 
     Route::prefix('audit-log')

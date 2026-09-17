@@ -249,7 +249,10 @@ export class ComponentRegistry {
     }
 
     static initializeDateRangePicker({ selector, ...options } = {}) {
-        if (typeof window.jQuery === 'undefined' || typeof moment === 'undefined') return;
+        if (typeof window.jQuery === 'undefined' || typeof moment === 'undefined' || !selector) return;
+
+        const $element = window.jQuery(Array.isArray(selector) ? selector.join(', ') : selector);
+        if (!$element.length) return;
 
         const config = {
             startDate: null,
@@ -266,24 +269,24 @@ export class ComponentRegistry {
             ...options
         };
 
-        const $element = window.jQuery(selector);
-        if (!$element.length) return;
-
         const pickerOptions = {
             autoUpdateInput: false,
-            alwaysShowCalendars: true, // Force calendars to stay visible when ranges are present
+            alwaysShowCalendars: true,
             showCustomRangeLabel: true,
             ranges: config.ranges,
-            locale: { cancelLabel: 'Clear' }
+            locale: { cancelLabel: 'Clear' },
+            ...options // Allows overriding default picker options if passed
         };
 
         if (config.startDate) pickerOptions.startDate = config.startDate;
         if (config.endDate) pickerOptions.endDate = config.endDate;
 
+        // Initialize the plugin on all matched elements
         $element.daterangepicker(pickerOptions, (start, end) => {
             if (typeof config.callback === 'function') config.callback(start, end);
         });
 
+        // Event listeners using delegated or direct binding for the matched elements
         $element.on('apply.daterangepicker', function (ev, picker) {
             window.jQuery(this).val(`${picker.startDate.format('MM/DD/YYYY')} - ${picker.endDate.format('MM/DD/YYYY')}`);
         });
@@ -292,6 +295,7 @@ export class ComponentRegistry {
             window.jQuery(this).val('');
         });
 
+        // Set initial values if provided
         if (config.startDate && config.endDate) {
             if (typeof config.callback === 'function') config.callback(config.startDate, config.endDate);
             $element.val(`${config.startDate.format('MM/DD/YYYY')} - ${config.endDate.format('MM/DD/YYYY')}`);

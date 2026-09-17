@@ -68,8 +68,7 @@ export class PagePermission {
         this.initForm();
         this.initDelete();
         this.initDateRangePicker();
-        this.initRoleOption();
-        this.initNavigationMenuOption();
+        this.initDropdownOption();
         this.registerGlobalListeners();
 
         activateTriggers({
@@ -259,14 +258,12 @@ export class PagePermission {
         });
     }
 
-    initRoleOption() {
+    initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.roleOption,
             dropdownSelector: [CONFIG.selectors.roleDropdown, CONFIG.selectors.filterRoleDropdown],
         });
-    }
 
-    initNavigationMenuOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.navigationMenuOption,
             dropdownSelector: [CONFIG.selectors.navigationMenuDropdown, CONFIG.selectors.filterNavigationMenuDropdown],

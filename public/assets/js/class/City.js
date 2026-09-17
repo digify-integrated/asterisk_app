@@ -227,7 +227,13 @@ export class City {
 
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.stateOption,
-            dropdownSelector: [CONFIG.selectors.stateDropdown, CONFIG.selectors.filterStateDropdown]
+            dropdownSelector: [CONFIG.selectors.stateDropdown, CONFIG.selectors.filterStateDropdown],
+            data: {type : 'state_country'}
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.stateOption,
+            dropdownSelector: [CONFIG.selectors.filterStateDropdown]
         });
     }
 

@@ -127,7 +127,7 @@
 
                     <div class="separator separator-dashed"></div>
 
-                    <div class="row gy-5">
+                    <div class="row g-5">
                         <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
                             <i class="ki-duotone ki-check fs-4 me-2 text-primary">
                                 <span class="path1"></span><span class="path2"></span>
@@ -157,7 +157,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row gy-5">
+                    <div class="row g-5">
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="delete_access">Delete Access</label>
                             <select id="delete_access" name="delete_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">

@@ -68,8 +68,7 @@ export class SystemActionPermission {
         this.initForm();
         this.initDelete();
         this.initDateRangePicker();
-        this.initRoleOption();
-        this.initSystemActionOption();
+        this.initDropdownOption();
         this.registerGlobalListeners();
 
         activateTriggers({
@@ -249,14 +248,12 @@ export class SystemActionPermission {
         });
     }
 
-    initRoleOption() {
+    initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.roleOption,
             dropdownSelector: [CONFIG.selectors.roleDropdown, CONFIG.selectors.filterRoleDropdown],
         });
-    }
 
-    initSystemActionOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.systemActionOption,
             dropdownSelector: [CONFIG.selectors.systemActionDropdown, CONFIG.selectors.filterSystemActionDropdown],

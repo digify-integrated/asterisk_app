@@ -17,8 +17,8 @@ const CONFIG = {
     selectors: {
         table: '#company-table',
         tableColumn: '#company-table-column-dropdown',
-        form: '#user_form',
-        detailId: 'user_id',
+        form: '#company_form',
+        detailId: 'company_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesTrigger: '.view-log-notes',
@@ -27,15 +27,27 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
+        cityDropdown: '#city_id',
+        currencyDropdown: '#currency_id',
+        dateRegistered: '#date_registered',
+        filterDateRegistered: '#filter_date_registered',
         filterCollapse: 'company-filter-collapse',
-        filterCreatedDate: '#filter_created_date'
+        filterCityDropdown: '#filter_city_id',
+        filterStateDropdown: '#filter_state_id',
+        filterCountryDropdown: '#filter_country_id',
+        filterCurrencyDropdown: '#filter_currency_id',
+        filterCreatedDate: '#filter_created_date',
     },
     endpoints: {
         tableData: '/company/generate-table',
         save: '/company/save',
         delete: '/company/delete',
         deleteMultiple: '/company/delete-multiple',
-        fetch: '/company/fetch'
+        fetch: '/company/fetch',
+        cityOption: '/city/generate-option',
+        stateOption: '/state/generate-option',
+        countryOption: '/country/generate-option',
+        currencyOption: '/currency/generate-option',
     }
 };
     
@@ -60,9 +72,10 @@ export class Company {
     }
 
     init() {
-        this.initTable();
-        this.initForm();
+        //this.initTable();
+        //this.initForm();
         this.initDelete();
+        this.initDropdownOption();
         this.initDateRangePicker();
         this.registerGlobalListeners();
         
@@ -75,7 +88,14 @@ export class Company {
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => {
                 return Object.assign({}, d, {
-                    filter_status: $('#filter_status').val() || [],
+                    filter_entity_type: $('#filter_entity_type').val() || [],
+                    filter_vat_status: $('#filter_vat_status').val() || [],
+                    filter_city_id: $('#filter_city_id').val() || [],
+                    filter_state_id: $('#filter_state_id').val() || [],
+                    filter_country_id: $('#filter_country_id').val() || [],
+                    filter_currency_id: $('#filter_currency_id').val() || [],
+                    filter_fiscal_year_start_month: $('#filter_fiscal_year_start_month').val() || [],
+                    filter_date_registered: $('#filter_date_registered').val(),
                     filter_created_date: $('#filter_created_date').val(),
                 });
             },
@@ -105,23 +125,82 @@ export class Company {
                     render: (data, type, row) => `<img src="${escapeHtml(row.profile_picture)}" alt="Company Profile Picture" width="45" onerror="this.src='/assets/media/default/default-avatar.jpg';" />`
                 },
                 { 
-                    data: 'name',
-                    title: 'Company',
+                    data: 'legal_name',
+                    title: 'Legal Name',
+                },
+                { 
+                    data: 'trade_name',
+                    title: 'Trade Name',
+                    visible: false
+                },
+                { 
+                    data: 'address',
+                    title: 'Address'
+                },
+                { 
+                    data: 'tin',
+                    title: 'TIN',
+                    visible: false
+                },
+                { 
+                    data: 'branch_code',
+                    title: 'Branch Code',
+                    visible: false
+                },
+                { 
+                    data: 'entity_type',
+                    title: 'Entity Type',
+                    visible: false
+                },
+                { 
+                    data: 'sec_dti_registration_no',
+                    title: 'SEC/DTI Registration No.',
+                    visible: false
+                },
+                { 
+                    data: 'date_registered',
+                    title: 'Date Registered',
+                    visible: false
+                },
+                { 
+                    data: 'psic_code',
+                    title: 'PSIC Code',
+                    visible: false
+                },
+                { 
+                    data: 'line_of_business',
+                    title: 'Line of Business',
+                    visible: false
+                },
+                { 
+                    data: 'vat_status',
+                    title: 'VAT Status',
+                    visible: false
+                },
+                { 
+                    data: 'currency',
+                    title: 'Currency',
+                    visible: false
+                },
+                { 
+                    data: 'phone',
+                    title: 'Phone',
+                    visible: false
                 },
                 { 
                     data: 'email',
                     title: 'Email',
+                    visible: false
                 },
                 { 
-                    data: 'status',
-                    title: 'Status',
-                    render: (status) => {
-                        const statusVal = (status || '').toString();
-                        const isSuccess = statusVal.toLowerCase() === 'active';
-                        const badgeClass = isSuccess ? 'badge-light-success' : 'badge-light-danger';
-                        
-                        return `<span class="badge ${badgeClass} fw-bold px-3 py-2">${escapeHtml(statusVal)}</span>`;
-                    }
+                    data: 'website',
+                    title: 'Website',
+                    visible: false
+                },
+                { 
+                    data: 'contact_person',
+                    title: 'Contact Person',
+                    visible: false
                 },
                 { 
                     data: 'created_at',
@@ -160,7 +239,7 @@ export class Company {
                         },
                         password: { 
                             requiredIf: {
-                                selector: '[name="user_id"]',
+                                selector: '[name="company_id"]',
                                 value: ''
                             },
                             passwordStrength: 'medium' 
@@ -210,7 +289,7 @@ export class Company {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { user_id: (el) => el.dataset.referenceId },
+            payload: { company_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -223,7 +302,7 @@ export class Company {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'user_id': () => {
+                'company_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -238,7 +317,35 @@ export class Company {
 
     initDateRangePicker() {
         ComponentRegistry.initializeDateRangePicker({
-            selector: CONFIG.selectors.filterCreatedDate
+            selector: [CONFIG.selectors.filterCreatedDate, CONFIG.selectors.filterDateRegistered, CONFIG.selectors.dateRegistered]
+        });
+    }
+
+    initDropdownOption() {
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.cityOption,
+            dropdownSelector: [CONFIG.selectors.cityDropdown]
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.cityOption,
+            dropdownSelector: [CONFIG.selectors.filterCityDropdown],
+            data: {type : 'city_only'}
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.stateOption,
+            dropdownSelector: [CONFIG.selectors.filterStateDropdown]
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.countryOption,
+            dropdownSelector: [CONFIG.selectors.filterCountryDropdown]
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.currencyOption,
+            dropdownSelector: [CONFIG.selectors.currencyDropdown, CONFIG.selectors.filterCurrencyDropdown]
         });
     }
 
@@ -273,7 +380,7 @@ export class Company {
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'user_id': referenceId,
+                    'company_id': referenceId,
                     'name': data.name,
                     'email': data.email,
                     'status': data.status

@@ -87,7 +87,7 @@
 
                     <div class="separator separator-dashed"></div>
 
-                    <div class="row gy-5">
+                    <div class="row g-5">
                         <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
                             <i class="ki-duotone ki-check fs-4 me-2 text-primary">
                                 <span class="path1"></span><span class="path2"></span>

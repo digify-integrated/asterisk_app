@@ -68,7 +68,6 @@ export class NavigationMenu {
         this.initDelete();
         this.initDropdownOption();
         this.initDateRangePicker();
-        this.initParentDropdownOption();
         this.registerGlobalListeners();
         
         AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'navigation_menus');
@@ -261,9 +260,7 @@ export class NavigationMenu {
             url: CONFIG.endpoints.appOption,
             dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
         });
-    }
 
-    initParentDropdownOption(navigationMenuId = null) {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.parentOption,
             dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],

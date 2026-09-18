@@ -28,7 +28,7 @@ class AuditLogController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'An internal database parsing error occurred while attempting to assemble logs.',
+                'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

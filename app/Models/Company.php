@@ -37,6 +37,10 @@ class Company extends Model
         'last_log_by'
     ];
 
+    protected $casts = [
+        'date_registered' => 'date',
+    ];
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class, 'city_id');

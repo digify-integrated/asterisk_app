@@ -82,14 +82,14 @@
                         
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="app_id">App</label>
-                            <select id="app_id" name="app_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="app_id" name="app_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select app"></select>
                         </div>
                     </div>
 
                     <div class="row g-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="page_type">Page Type</label>
-                            <select id="page_type" name="page_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select page type">
+                            <select id="page_type" name="page_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select page type">
                                 <option value="menu">Menu</option>
                                 <option value="single_page">Single Page</option>
                                 <option value="multi_page">Multi Page</option>
@@ -98,7 +98,7 @@
 
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-2" for="icon">Icon</label>
-                            <select id="icon" name="icon" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-placeholder="Select icon">
+                            <select id="icon" name="icon" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select icon">
                                 @include('partials.icon-options')
                             </select>
                         </div>
@@ -107,8 +107,7 @@
                     <div class="row g-5">
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-2" for="parent_id">Parent</label>
-                            <select id="parent_id" name="parent_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
-                                <option value="">--</option>
+                            <select id="parent_id" name="parent_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select parent">
                             </select>
                         </div>
                         

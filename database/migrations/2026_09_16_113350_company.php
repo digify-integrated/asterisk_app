@@ -14,9 +14,9 @@ return new class extends Migration
             $table->string('trade_name')->nullable();
             $table->string('logo')->nullable();
             
-            $table->string('tin', 20);
-            $table->string('branch_code', 5)->default('0000');
-            $table->string('rdo_code', 5)->nullable();
+            $table->string('tin', 20)->nullable();
+            $table->string('branch_code', 10)->default('0000');
+            $table->string('rdo_code', 10)->nullable();
             $table->enum('entity_type', ['Corporation', 'Partnership', 'Sole Proprietorship', 'Cooperative', 'One Person Corporation (OPC)'])->default('Corporation');
             $table->string('sec_dti_registration_no')->nullable();
             $table->date('date_registered')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('street_1')->nullable();
             $table->string('street_2')->nullable();
             $table->string('barangay')->nullable();
-            $table->foreignId('city_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
             $table->foreignId('state_id')->nullable()->constrained('states')->nullOnDelete();
             $table->foreignId('country_id')->nullable()->constrained('countries')->nullOnDelete();
             

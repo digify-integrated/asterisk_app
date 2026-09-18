@@ -70,7 +70,7 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label mb-2" for="user_id">User Accounts</label>
-                            <select id="user_id" name="user_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="user_id" name="user_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select user accounts"></select>
                         </div>
                     </div>
 

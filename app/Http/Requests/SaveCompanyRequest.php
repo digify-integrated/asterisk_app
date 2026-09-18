@@ -4,9 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\UploadSetting;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
-use Illuminate\Validation\Rules\Password;
 
 class SaveCompanyRequest extends FormRequest
 {    
@@ -42,22 +40,29 @@ class SaveCompanyRequest extends FormRequest
             ->all();
 
         return [
-            'user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'name'  => ['required', 'string', 'max:100'],
-            'email' => [
-                'required', 
-                'string', 
-                'email', 
-                'max:255', 
-                Rule::unique('users', 'email')->ignore($this->input('user_id'))
-            ],
-            'password' => [
-                Rule::requiredIf(fn() => blank($this->input('user_id'))),
-                'nullable',
-                'string',
-                Password::min(8)->letters()->numbers()
-            ],
-            'logo' => [
+            'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
+            'legal_name'              => ['required', 'string', 'max:255'],
+            'trade_name'              => ['required', 'string', 'max:255'],
+            'tin'                     => ['nullable', 'string', 'max:50'],
+            'branch_code'             => ['nullable', 'string', 'max:50'],
+            'rdo_code'                => ['nullable', 'string', 'max:50'],
+            'entity_type'             => ['required', 'string', 'max:50'],
+            'sec_dti_registration_no' => ['nullable', 'string', 'max:100'],
+            'date_registered'         => ['nullable', 'string'],
+            'psic_code'               => ['nullable', 'string', 'max:50'],
+            'line_of_business'        => ['nullable', 'string', 'max:255'],
+            'vat_status'              => ['required', 'string', 'max:50'],
+            'fiscal_year_start_month' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'street_1'                => ['required', 'string', 'max:255'],
+            'street_2'                => ['nullable', 'string', 'max:255'],
+            'barangay'                => ['nullable', 'string', 'max:255'],
+            'city_id'                 => ['required', 'integer', 'exists:cities,id'],
+            'currency_id'             => ['nullable', 'integer', 'exists:currencies,id'],
+            'phone'                   => ['nullable', 'string', 'max:50'],
+            'email'                   => ['nullable', 'string', 'email', 'max:255'],
+            'website'                 => ['nullable', 'string', 'max:255'],
+            'contact_person'          => ['nullable', 'string', 'max:255'],
+            'logo'                    => [
                 'nullable', 
                 File::types($allowedExt)->max($maxKb)
             ],

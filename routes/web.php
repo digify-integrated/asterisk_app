@@ -19,6 +19,7 @@ use App\Http\Controllers\UploadSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
+use App\Models\Company;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -224,6 +225,18 @@ Route::middleware('auth')->group(function () {
         ->controller(AuditLogController::class)
         ->group(function () {
             Route::get('/fetch', 'fetch')->name('fetch');
+        });
+
+        Route::get('/test-n1', function () {
+            // 1. Fetch companies WITHOUT eager loading
+            $companies = Company::all();
+
+            // 2. Loop through them and access a relationship (This will trigger the exception)
+            foreach ($companies as $company) {
+                $ownerName = $company->owner->name; 
+            }
+
+            return 'Done';
         });
 
     Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');

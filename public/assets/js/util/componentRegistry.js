@@ -62,12 +62,6 @@ export class ComponentRegistry {
 
                 $dropdown.empty();
 
-                if (!$dropdown.prop('multiple')) {
-                    $dropdown.append(
-                        new Option('--', '', false, false)
-                    );
-                }
-
                 options.forEach(item => {
                     $dropdown.append(
                         new Option(

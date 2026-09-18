@@ -98,7 +98,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label required mb-2" for="status">Status</label>
-                            <select id="status" name="status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select status">
+                            <select id="status" name="status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select status">
                                 <option value="Inactive">Inactive</option>
                                 <option value="Active">Active</option>
                             </select>

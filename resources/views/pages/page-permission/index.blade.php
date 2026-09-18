@@ -114,14 +114,14 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="role_id">Role</label>
-                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select roles"></select>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="navigation_menu_id">Page</label>
-                            <select id="navigation_menu_id" name="navigation_menu_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="navigation_menu_id" name="navigation_menu_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select pages"></select>
                         </div>
                     </div>
 
@@ -137,21 +137,21 @@
 
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="read_access">Read Access</label>
-                            <select id="read_access" name="read_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="read_access" name="read_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="write_access">Write Access</label>
-                            <select id="write_access" name="write_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="write_access" name="write_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="create_access">Create Access</label>
-                            <select id="create_access" name="create_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="create_access" name="create_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>
@@ -160,21 +160,21 @@
                     <div class="row g-5">
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="delete_access">Delete Access</label>
-                            <select id="delete_access" name="delete_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="delete_access" name="delete_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label required mb-2" for="export_access">Export Access</label>
-                            <select id="export_access" name="export_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="export_access" name="export_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-4 ">
                             <label class="form-label required mb-2" for="logs_access">Logs Access</label>
-                            <select id="logs_access" name="logs_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="logs_access" name="logs_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>

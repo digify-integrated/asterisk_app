@@ -69,8 +69,7 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="country_id">Country</label>
-                            <select id="country_id" name="country_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
-                                <option value="">--</option>
+                            <select id="country_id" name="country_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select country">
                             </select>
                         </div>
                     </div>

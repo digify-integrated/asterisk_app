@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label mb-2" for="parent_id">Allowed Extensions</label>
-                            <input class="form-control form-control-sm" id="extension" name="extension"/>
+                            <input class="form-control form-control-sm" id="extension" name="extension" placeholder="Enter file extensions separated by (,)"/>
                         </div>
                     </div>
                 </div>

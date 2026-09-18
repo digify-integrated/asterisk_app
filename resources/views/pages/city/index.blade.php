@@ -75,8 +75,7 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="state_id">State</label>
-                            <select id="state_id" name="state_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false">
-                                <option value="">--</option>
+                            <select id="state_id" name="state_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select state">
                             </select>
                         </div>
                     </div>

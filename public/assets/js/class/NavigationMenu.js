@@ -260,7 +260,9 @@ export class NavigationMenu {
             url: CONFIG.endpoints.appOption,
             dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
         });
+    }
 
+    initParentDropdownOption(navigationMenuId) {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.parentOption,
             dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
@@ -282,7 +284,7 @@ export class NavigationMenu {
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
-                this.initParentDropdownOption();
+                this.initParentDropdownOption(null);
             }
         }, { signal: this.abortController.signal });
     }

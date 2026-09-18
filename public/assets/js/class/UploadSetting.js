@@ -104,7 +104,21 @@ export class UploadSetting {
                 { 
                     data: 'max_file_size',
                     title: 'Max File Size',
-                    render: (size) => `${escapeHtml(size ?? 0)} MB`
+                    render: (size) => {
+                        const kb = size ?? 0;
+                        if (kb === 0) return '0 Kb';
+
+                        const units = ['Kb', 'Mb', 'Gb', 'Tb', 'Pb'];
+                        let i = 0;
+                        let val = kb;
+
+                        while (val >= 1024 && i < units.length - 1) {
+                            val /= 1024;
+                            i++;
+                        }
+
+                        return `${parseFloat(val.toFixed(2))} ${units[i]}`;
+                    }
                 },
                 { 
                     data: 'extensions',

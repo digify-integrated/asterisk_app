@@ -38,17 +38,17 @@
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_role_id">Role</label>
-                    <select id="filter_role_id" name="filter_role_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Role" data-allow-clear="true"></select>
+                    <select id="filter_role_id" name="filter_role_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select role" data-allow-clear="true"></select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_system_action_id">System Action</label>
-                    <select id="filter_system_action_id" name="filter_system_action_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select System Action" data-allow-clear="true"></select>
+                    <select id="filter_system_action_id" name="filter_system_action_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select system action" data-allow-clear="true"></select>
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_access">Access</label>
-                    <select id="filter_access" name="filter_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Access" data-allow-clear="true">
+                    <select id="filter_access" name="filter_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Access" data-allow-clear="true" data-placeholder="Select access">
                         <option value="1">True</option>
                         <option value="0">False</option>
                     </select>
@@ -74,14 +74,14 @@
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="role_id">Role</label>
-                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select roles"></select>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12">
                             <label class="form-label required mb-2" for="system_action_id">System Action</label>
-                            <select id="system_action_id" name="system_action_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false"></select>
+                            <select id="system_action_id" name="system_action_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select system actions"></select>
                         </div>
                     </div>
 
@@ -97,7 +97,7 @@
 
                         <div class="col-12">
                             <label class="form-label required mb-2" for="access">Access</label>
-                            <select id="access" name="access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select access">
+                            <select id="access" name="access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                                 <option value="1">True</option>
                                 <option value="0" selected>False</option>
                             </select>

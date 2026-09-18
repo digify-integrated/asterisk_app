@@ -239,7 +239,9 @@ export class AuditLogManager {
 
                         ${hasMore ? `
                             <div class="text-center pt-3">
-                                <button class="btn btn-sm btn-link text-primary fw-bold text-decoration-none py-1 fs-7 audit-expand-btn">
+                                <button class="btn btn-sm btn-link text-primary fw-bold text-decoration-none py-1 fs-7 audit-expand-btn"
+                                        data-show-text="Show ${changes.length - visibleLimit} more changes..."
+                                        data-hide-text="Show less">
                                     Show ${changes.length - visibleLimit} more changes...
                                 </button>
                             </div>
@@ -303,14 +305,32 @@ export class AuditLogManager {
     }
 
     static _attachExpandButtonListeners(container) {
-        const expandBtn = container.querySelector('.audit-expand-btn');
-        if (!expandBtn) return;
+        const expandBtns = container.querySelectorAll('.audit-expand-btn');
+        if (!expandBtns.length) return;
 
-        expandBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const hiddenChanges = container.querySelectorAll('.audit-hidden-change');
-            hiddenChanges.forEach(el => el.classList.remove('d-none'));
-            expandBtn.parentElement.remove(); 
+        expandBtns.forEach(expandBtn => {
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const wrapper = expandBtn.closest('.bg-light-soft');
+                if (!wrapper) return;
+
+                const hiddenChanges = wrapper.querySelectorAll('.audit-hidden-change');
+                if (!hiddenChanges.length) return;
+
+                // Determine if they are currently expanded by checking the first hidden item
+                const isExpanded = !hiddenChanges[0].classList.contains('d-none');
+
+                if (isExpanded) {
+                    // Collapse them back
+                    hiddenChanges.forEach(el => el.classList.add('d-none'));
+                    expandBtn.textContent = expandBtn.getAttribute('data-show-text');
+                } else {
+                    // Expand them
+                    hiddenChanges.forEach(el => el.classList.remove('d-none'));
+                    expandBtn.textContent = expandBtn.getAttribute('data-hide-text');
+                }
+            });
         });
     }
 

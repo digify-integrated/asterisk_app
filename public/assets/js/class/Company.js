@@ -72,14 +72,15 @@ export class Company {
     }
 
     init() {
-        //this.initTable();
-        //this.initForm();
+        this.initTable();
+        this.initForm();
         this.initDelete();
         this.initDropdownOption();
         this.initDateRangePicker();
+        this.initDatePicker();
         this.registerGlobalListeners();
         
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'users');
+        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'companies');
     }
 
     initTable() {
@@ -101,7 +102,7 @@ export class Company {
             },
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
-            exportColumns: [2, 3, 4],
+            exportColumns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
             addons: { 
                 controls: true, 
                 export: true,
@@ -110,7 +111,7 @@ export class Company {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '5%', bSortable: false, targets: 1 },
-                { width: '10%', bSortable: false, targets: 6 },
+                { width: '10%', bSortable: false, targets: 19 },
             ],
             columns: [
                 { 
@@ -121,8 +122,8 @@ export class Company {
                         </div>`
                 },
                 { 
-                    data: 'profile_picture',
-                    render: (data, type, row) => `<img src="${escapeHtml(row.profile_picture)}" alt="Company Profile Picture" width="45" onerror="this.src='/assets/media/default/default-avatar.jpg';" />`
+                    data: 'logo',
+                    render: (data, type, row) => `<img src="${escapeHtml(row.logo)}" alt="Company Logo" width="45" onerror="this.src='/assets/media/default/default-company-logo.png';" />`
                 },
                 { 
                     data: 'legal_name',
@@ -131,7 +132,6 @@ export class Company {
                 { 
                     data: 'trade_name',
                     title: 'Trade Name',
-                    visible: false
                 },
                 { 
                     data: 'address',
@@ -232,25 +232,17 @@ export class Company {
                 {
                     selector: CONFIG.selectors.form,
                     rules: {
-                        name: { required: true },
+                        legal_name: { required: true },
+                        trade_name: { required: true },
+                        entity_type: { required: true },
+                        vat_status: { required: true },
+                        street_1: { required: true },
+                        city_id: { required: true },
                         email: { 
-                            required: true,
                             typeEmail: true
                         },
-                        password: { 
-                            requiredIf: {
-                                selector: '[name="company_id"]',
-                                value: ''
-                            },
-                            passwordStrength: 'medium' 
-                        },
-                        status: { required: true }
                     },
-                    messages: {
-                        password: {
-                            requiredIf: 'Password is required when creating a new user.'
-                        }
-                    },
+
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
             ]
@@ -317,7 +309,13 @@ export class Company {
 
     initDateRangePicker() {
         ComponentRegistry.initializeDateRangePicker({
-            selector: [CONFIG.selectors.filterCreatedDate, CONFIG.selectors.filterDateRegistered, CONFIG.selectors.dateRegistered]
+            selector: [CONFIG.selectors.filterCreatedDate, CONFIG.selectors.filterDateRegistered]
+        });
+    }
+
+    initDatePicker() {
+        ComponentRegistry.initializeDatePicker({
+            selector: [CONFIG.selectors.dateRegistered]
         });
     }
 
@@ -381,9 +379,27 @@ export class Company {
 
                 const targetFields = {
                     'company_id': referenceId,
-                    'name': data.name,
+                    'legal_name': data.legal_name,
+                    'trade_name': data.trade_name,
+                    'tin': data.tin,
+                    'branch_code': data.branch_code,
+                    'rdo_code': data.rdo_code,
+                    'entity_type': data.entity_type,
+                    'sec_dti_registration_no': data.sec_dti_registration_no,
+                    'date_registered': data.date_registered,
+                    'psic_code': data.psic_code,
+                    'line_of_business': data.line_of_business,
+                    'vat_status': data.vat_status,
+                    'fiscal_year_start_month': data.fiscal_year_start_month,
+                    'street_1': data.street_1,
+                    'street_2': data.street_2,
+                    'barangay': data.barangay,
+                    'city_id': data.city_id,
+                    'currency_id': data.currency_id,
+                    'phone': data.phone,
                     'email': data.email,
-                    'status': data.status
+                    'website': data.website,
+                    'contact_person': data.contact_person
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

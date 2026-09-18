@@ -41,7 +41,7 @@ class UserController extends Controller
             report($e);
             
             return response()->json([
-                'message' => $e
+                'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

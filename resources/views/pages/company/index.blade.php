@@ -157,7 +157,7 @@
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label required mb-2" for="entity_type">Entity Type</label>
-                                <select id="entity_type" name="entity_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select entity type">
+                                <select id="entity_type" name="entity_type" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select entity type">
                                     <option value=""></option>
                                     <option value="Corporation">Corporation</option>
                                     <option value="Partnership">Partnership</option>
@@ -192,7 +192,7 @@
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label required mb-2" for="vat_status">VAT Status</label>
-                                <select id="vat_status" name="vat_status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select VAT status">
+                                <select id="vat_status" name="vat_status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select VAT status">
                                     <option value=""></option>
                                     <option value="VAT-Registered">VAT-Registered</option>
                                     <option value="Non-VAT">Non-VAT</option>
@@ -202,7 +202,7 @@
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label mb-2" for="fiscal_year_start_month">Fiscal Year Start Month</label>
-                                <select id="fiscal_year_start_month" name="fiscal_year_start_month" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-hide-search="true" data-placeholder="Select fiscal year start month">
+                                <select id="fiscal_year_start_month" name="fiscal_year_start_month" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select fiscal year start month">
                                     <option value=""></option>
                                     <option value="1">January</option>
                                     <option value="2">February</option>
@@ -233,7 +233,7 @@
 
                         <div class="row g-5">
                             <div class="col-12 col-md-6">
-                                <label class="form-label mb-2" for="street_1">Street 1</label>
+                                <label class="form-label required mb-2" for="street_1">Street 1</label>
                                 <input type="text" class="form-control form-control-sm" id="street_1" name="street_1" placeholder="Enter street 1" maxlength="100" autocomplete="off">
                             </div>
 
@@ -248,13 +248,13 @@
                             </div>
 
                             <div class="col-12 col-md-6">
-                                <label class="form-label mb-2" for="city_id">City</label>
-                                <select id="city_id" name="city_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-placeholder="Select city"></select>
+                                <label class="form-label required mb-2" for="city_id">City</label>
+                                <select id="city_id" name="city_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select city"></select>
                             </div>
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label mb-2" for="currency_id">Currency</label>
-                                <select id="currency_id" name="currency_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="false" data-placeholder="Select currency"></select>
+                                <select id="currency_id" name="currency_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select currency"></select>
                             </div>
                         </div>
                     </div>

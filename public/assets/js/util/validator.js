@@ -334,12 +334,18 @@ export class FormValidator {
 
     _resolveMessage({ field, fieldKey, ruleName, ruleValue }) {
         const custom = fieldKey ? this.config.messages?.[fieldKey]?.[ruleName] : null;
-        const name = this._getFieldLabelText(field) || field.getAttribute('aria-label') || field.name || 'Field';
+        const rawName = this._getFieldLabelText(field) || field.getAttribute('aria-label') || field.name || 'Field';
+        
+        // Fully lowercase for mid-sentence usage (e.g., "Current Password" -> "current password")
+        const name = rawName.toLowerCase();
+        
+        // Proper sentence case for start-of-sentence usage (e.g., "Current password")
+        const capitalizedName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
         const tag = field?.tagName;
         const type = field?.type;
 
-        let fallback = `${name} is invalid.`;
+        let fallback = `${capitalizedName} is invalid.`;
 
         switch (ruleName) {
             case 'required': {
@@ -363,25 +369,25 @@ export class FormValidator {
                 break;
             case 'number':
             case 'digits':
-                fallback = `${name} must be a valid number.`;
+                fallback = `${capitalizedName} must be a valid number.`;
                 break;
             case 'passwordStrength':
-                fallback = `${name} does not meet the security requirements.`;
+                fallback = `${capitalizedName} does not meet the security requirements.`;
                 break;
             case 'min':
-                fallback = `${name} must be greater than or equal to ${ruleValue}.`;
+                fallback = `${capitalizedName} must be greater than or equal to ${ruleValue}.`;
                 break;
             case 'max':
-                fallback = `${name} must be less than or equal to ${ruleValue}.`;
+                fallback = `${capitalizedName} must be less than or equal to ${ruleValue}.`;
                 break;
             case 'minlength':
-                fallback = `${name} must be at least ${ruleValue} characters.`;
+                fallback = `${capitalizedName} must be at least ${ruleValue} characters.`;
                 break;
             case 'maxlength':
-                fallback = `${name} cannot exceed ${ruleValue} characters.`;
+                fallback = `${capitalizedName} cannot exceed ${ruleValue} characters.`;
                 break;
             case 'equalTo':
-                fallback = `${name} values do not match.`;
+                fallback = `${capitalizedName} does not match.`; 
                 break;
         }
 

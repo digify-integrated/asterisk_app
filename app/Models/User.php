@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -99,5 +100,19 @@ class User extends Authenticatable
             'export' => (bool) ($permissions->export_access ?? false),
             'logs'   => (bool) ($permissions->logs_access ?? false),
         ];
+    }
+
+    protected function profilePictureUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $path = $this->profile_picture ?? '';
+                $defaultProfilePicture = asset('assets/media/default/default-avatar.jpg');
+
+                return ($path !== '' && Storage::disk('public')->exists($path))
+                    ? Storage::url($path)
+                    : $defaultProfilePicture;
+            }
+        );
     }
 }

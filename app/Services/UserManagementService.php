@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class UserManagementService
@@ -33,6 +34,42 @@ class UserManagementService
             if ($file && $file->isValid()) {
                 $this->handleProfilePictureUpload($user, $file);
             }
+
+            return $user;
+        });
+    }
+
+    public function saveUserProfile(array $data, ?UploadedFile $file, ?int $userId): User
+    {
+        return DB::transaction(function () use ($data, $file, $userId) {
+            $payload = [
+                'name'        => $data['name'],
+                'email'       => $data['email'],
+                'last_log_by' => $userId,
+            ];
+
+            $user = User::query()->updateOrCreate(
+                ['id' => Auth::id()],
+                $payload
+            );
+
+            if ($file && $file->isValid()) {
+                $this->handleProfilePictureUpload($user, $file);
+            }
+
+            return $user;
+        });
+    }
+
+    public function saveUserPassword(array $data, ?int $userId): User
+    {
+        return DB::transaction(function () use ($data, $userId) {
+            $user = User::query()->findOrFail($userId);
+
+            $user->update([
+                'password'    => Hash::make($data['new_password']),
+                'last_log_by' => $userId,
+            ]);
 
             return $user;
         });

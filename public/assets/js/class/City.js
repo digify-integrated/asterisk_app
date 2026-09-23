@@ -54,6 +54,14 @@ export class City {
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });
+
+        this.savedFilterManager = new SavedFilterManager({
+            filterManager: this.filterManager,
+            endpoints: {
+                index: '/admin/saved-filters',
+                store: '/admin/saved-filters'
+            }
+        });
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),

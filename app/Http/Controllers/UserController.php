@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveUserPasswordRequest;
+use App\Http\Requests\SaveUserProfileRequest;
 use App\Http\Resources\UserOptionResource;
 use App\Models\User;
 use App\Http\Resources\UserTableResource;
@@ -35,6 +37,49 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'The user has been saved successfully.',
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function saveProfile(SaveUserProfileRequest $request): JsonResponse
+    {
+        try {
+            $this->userService->saveUserProfile(
+                $request->validated(),
+                $request->file('profile_picture'),
+                Auth::id()
+            );
+
+            return response()->json([
+                'message' => 'The profile has been saved successfully.',
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function savePassword(SaveUserPasswordRequest $request): JsonResponse
+    {
+        try {
+            $this->userService->saveUserPassword(
+                $request->validated(),
+                Auth::id()
+            );
+
+            return response()->json([
+                'message' => 'The password has been updated successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class DeleteCityRequest extends FormRequest
+class FetchFilterDetailsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,9 @@ class DeleteCityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'city_id' => ['required', 'integer', 'min:1', 'exists:cities,id'],
+            'id'                 => ['nullable', 'integer', 'exists:filters,id'],
+            'navigation_menu_id' => ['nullable', 'exists:navigation_menus,id'],
+            'default'            => ['nullable', 'string'],
         ];
     }
 }

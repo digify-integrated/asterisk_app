@@ -97,3 +97,7 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="module" src="{{ asset('assets/js/pages/apps/index.js') }}"></script>
+@endpush

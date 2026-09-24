@@ -1,9 +1,9 @@
 'use strict';
 
+import { PageInitializer } from '../util/pageInitializer.js';
 import { initValidation } from '../util/validator.js';
 import { errorHandler } from '../util/errorHandler.js';
 import { ButtonStateManager } from '../util/buttonManager.js';
-import { DetailFetcher } from '../util/detailFetcher.js';
 import { PasswordToggle } from '../util/passwordToggle.js';
 import { ImagePreview } from '../util/imagePreview.js';
 
@@ -27,9 +27,11 @@ export class AccountSetting {
         this.passwordToggle = new PasswordToggle();
     }
 
-    init() {
-        this.initForm();
-        ImagePreview.autoInit();
+    async init() {
+        return PageInitializer.run(async () => {
+            this.initForm();
+            ImagePreview.autoInit();
+        });
     }
 
     initForm() {
@@ -91,35 +93,5 @@ export class AccountSetting {
             ButtonStateManager.enable(btn);
             await errorHandler.handle(error, 'network_failure', 'Transactional pipeline error.');
         }
-    }
-
-    async handleFetchWorkflow(referenceId) {
-        await DetailFetcher.fetch({
-            url: CONFIG.endpoints.fetch,
-            detailIdKey: CONFIG.selectors.detailId,
-            detailIdValue: referenceId,
-            formSelector: CONFIG.selectors.form,
-            submitBtnSelector: CONFIG.selectors.submitButton,
-            signal: this.abortController.signal,
-            onSuccess: (response) => {
-                const data = response?.data || response;
-                if (!this.dom.form) return;
-
-                const targetFields = {
-                    'user_id': referenceId,
-                    'name': data.name,
-                    'email': data.email,
-                    'status': data.status
-                };
-
-                Object.entries(targetFields).forEach(([name, val]) => {
-                    const field = this.dom.form.elements[name];
-                    if (field) {
-                        field.value = val ?? '';
-                        field.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                });
-            }
-        });
     }
 }

@@ -1,5 +1,6 @@
 'use strict';
 
+import { PageInitializer } from '../util/pageInitializer.js';
 import { initValidation } from '../util/validator.js';
 import { errorHandler } from '../util/errorHandler.js';
 import { PasswordToggle } from '../util/passwordToggle.js';
@@ -27,8 +28,10 @@ export class Login {
         this.passwordToggle = new PasswordToggle();
     }
 
-    init() {
-        this.initForm();
+    async init() {
+        return PageInitializer.run(async () => {
+            this.initForm();
+        });
     }
 
     initForm() {

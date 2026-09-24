@@ -100,7 +100,9 @@ export class DataTableOrchestrator {
                     return { ...d, ...extra, ...FormEnvironmentManager.getPageContext() };
                 },
                 dataSrc: 'data',
-                error: (xhr, status, err) => errorHandler.handle(xhr, status, err)
+                error: (xhr, status, err) => {                    
+                    errorHandler.handle(xhr, status, err);
+                }
             },
             language: {
                 emptyTable: 'No records found for the selected evaluation parameters.',
@@ -274,7 +276,14 @@ export class DataTableOrchestrator {
     reload(selectorOrNode, resetPaging = true) {
         const dt = DataTableOrchestrator.getAPI(selectorOrNode);
         if (dt) {
-            // Passing 'true' tells DataTables to jump back to Page 1
+            const settings = dt.settings()[0];
+            
+            // 👇 Prevent collision: If a request is already loading, do nothing 
+            // instead of abruptly killing/aborting it.
+            if (settings && settings.jqXHR && settings.jqXHR.readyState < 4) {
+                return; 
+            }
+            
             dt.ajax.reload(null, resetPaging);
         }
     }

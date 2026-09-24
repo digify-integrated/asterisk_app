@@ -8,16 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('saved_filters', function (Blueprint $table) {
+        Schema::create('filters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('page_key');
+            $table->foreignId('navigation_menu_id')->constrained('navigation_menus')->cascadeOnDelete();
             $table->string('name');
             $table->json('filters');
             $table->boolean('is_default')->default(false);
             $table->timestamps();
 
-            $table->index(['user_id', 'page_key']);
+            $table->index(['user_id', 'navigation_menu_id']);
         });
     }
 

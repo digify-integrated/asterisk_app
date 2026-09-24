@@ -14,6 +14,8 @@ export class TableFilterManager {
      * @param {Function} [options.onReset] - Optional callback triggered after resetting filters
      */
     constructor(options = {}) {
+        this.isInitialized = false;
+
         this.containerId = options.containerId;
         this.orchestrator = options.orchestrator;
         this.tableSelector = options.tableSelector || '#table';
@@ -42,6 +44,8 @@ export class TableFilterManager {
 
         this.currentFilters = {};
         this.initEvents();
+
+        this.isInitialized = true;
     }
 
     /**
@@ -246,7 +250,7 @@ export class TableFilterManager {
     /**
      * Apply active filters, hide collapsible drawer, and update UI
      */
-    apply() {
+    apply(isInitialLoad = false) {
         const { raw, formatted } = this.getFilterData();
         this.currentFilters = raw;
         const activeCount = formatted.length;
@@ -260,14 +264,23 @@ export class TableFilterManager {
         // 3. Hide Bootstrap Collapse container
         this.closeCollapse();
 
+        // If this is triggered during startup phase and the table hasn't bound yet, 
+        // avoid forcing an aggressive draw(false) that aborts the initial network pipe.
+        if (isInitialLoad && !this.isInitialized) {
+            return;
+        }
+
         // 4. Reload DataTables passing extracted filter payload
         if (this.orchestrator && typeof this.orchestrator.reload === 'function') {
-            // If your orchestrator accepts a resetPaging flag:
             this.orchestrator.reload(this.tableSelector, this.currentFilters, true);
         } else {
             // Direct DataTables API fallback:
-            const dt = $(this.tableSelector).DataTable();
-            dt.page('first').draw(false); 
+            const $table =$(this.tableSelector);
+            if ($.fn.DataTable.isDataTable($table)) {
+                const dt = $table.DataTable();
+                // Only redraw if it's fully initialized to prevent abort status 0
+                dt.page('first').draw(false); 
+            }
         }
 
         if (typeof this.onApply === 'function') {

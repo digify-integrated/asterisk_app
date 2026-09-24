@@ -1,5 +1,6 @@
 'use strict';
 
+import { PageInitializer } from '../util/pageInitializer.js';
 import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
 import { AuditLogManager } from '../util/auditLogManager.js';
 import { initValidation } from '../util/validator.js';
@@ -10,6 +11,7 @@ import { DetailFetcher } from '../util/detailFetcher.js';
 import { initConfirmAction } from '../util/confirmationAction.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
 import { TableFilterManager } from '../util/tableFilterManager.js';
+import { SaveFilterManager } from '../util/saveFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
 import { PasswordToggle } from '../util/passwordToggle.js';
 
@@ -49,6 +51,10 @@ export class User {
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });
+
+        this.saveFilterManager = new SaveFilterManager({
+            filterManager: this.filterManager
+        });
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
@@ -59,14 +65,20 @@ export class User {
         this.passwordToggle = new PasswordToggle();
     }
 
-    init() {
-        this.initTable();
-        this.initForm();
-        this.initDelete();
-        this.initDateRangePicker();
-        this.registerGlobalListeners();
-        
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'users');
+    async init() {
+        return PageInitializer.run(async () => {
+            await this.saveFilterManager.checkAndApplyDefaultFilter();
+            this.initTable();
+
+            await Promise.all([
+                this.initForm(),
+                this.initDelete(),
+                this.initDateRangePicker(),
+                this.registerGlobalListeners()
+            ]);
+                                                    
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'users');
+        });
     }
 
     initTable() {

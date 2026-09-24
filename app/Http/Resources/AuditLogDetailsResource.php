@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class AuditLogDetailsResource extends JsonResource
 {
@@ -12,9 +13,12 @@ class AuditLogDetailsResource extends JsonResource
         $user = $this->user;
         $userName = $user ? $user->name : 'System/Unknown';
         
-        $profilePic = $user && $user->profile_picture 
-            ? asset($user->profile_picture) 
-            : asset('assets/media/default/default-avatar.jpg');
+        $path = $user->profile_picture ?? '';
+        $defaultProfilePicture = asset('assets/media/default/default-avatar.jpg');
+
+        $profilePic = ($path !== '' && Storage::disk('public')->exists($path))
+            ? Storage::url($path)
+            : $defaultProfilePicture;
 
         return [
             'id'              => $this->id,

@@ -1,5 +1,6 @@
 'use strict';
 
+import { PageInitializer } from '../util/pageInitializer.js';
 import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
 import { AuditLogManager } from '../util/auditLogManager.js';
 import { initValidation } from '../util/validator.js';
@@ -9,6 +10,7 @@ import { ButtonStateManager } from '../util/buttonManager.js';
 import { initConfirmAction } from '../util/confirmationAction.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
 import { TableFilterManager } from '../util/tableFilterManager.js';
+import { SaveFilterManager } from '../util/saveFilterManager.js';
 import { escapeHtml } from '../util/sanitize.js';
 import { activateTriggers } from '../util/activateTriggers.js';
 
@@ -55,6 +57,10 @@ export class PagePermission {
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });
+
+        this.saveFilterManager = new SaveFilterManager({
+            filterManager: this.filterManager
+        });
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
@@ -63,27 +69,38 @@ export class PagePermission {
         };
     }
 
-    init() {
-        this.initTable();
-        this.initForm();
-        this.initDelete();
-        this.initDateRangePicker();
-        this.initDropdownOption();
-        this.registerGlobalListeners();
+    async init() {
+        return PageInitializer.run(async () => {
+            this.initDropdownOption();
 
-        activateTriggers({
-            trigger: CONFIG.selectors.updateTrigger,
-            url: CONFIG.endpoints.update,
-            payload: {
-                page_permission_id: (el) => el.dataset.id,
-                access_field: (el) => el.dataset.field,
-                access_value: (el) => (el.checked ? 1 : 0),
-            },
+            await this.saveFilterManager.checkAndApplyDefaultFilter();
+
+            this.initTable();
+
+            await Promise.all([
+                this.initForm(),
+                this.initDelete(),
+                this.initDateRangePicker(),
+                this.registerGlobalListeners()
+            ]);
+
+            activateTriggers({
+                trigger: CONFIG.selectors.updateTrigger,
+                url: CONFIG.endpoints.update,
+                payload: {
+                    page_permission_id: (el) => el.dataset.id,
+                    access_field: (el) => el.dataset.field,
+                    access_value: (el) => el.checked ? 1 : 0
+                }
+            });
+
+            AuditLogManager.attachLogNotesClassHandler(
+                CONFIG.selectors.logNotesTrigger,
+                'role_permissions'
+            );
         });
-        
-        AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'role_permissions');
     }
-
+    
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
@@ -272,7 +289,6 @@ export class PagePermission {
     }
 
     registerGlobalListeners() {
-        
         document.addEventListener('click', async (event) => {
             const { target } = event;
             

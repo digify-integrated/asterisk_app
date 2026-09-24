@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\UploadSetting;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\File;
 
 class SaveAppRequest extends FormRequest
@@ -12,7 +13,7 @@ class SaveAppRequest extends FormRequest
     
     public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     protected function prepareForValidation(): void

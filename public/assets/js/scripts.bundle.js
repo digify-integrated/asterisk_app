@@ -18,9 +18,6 @@ var KTComponents = {
           KTComponents.init();
       })
     : KTComponents.init(),
-    window.addEventListener("load", function () {
-        KTApp.hidePageLoading();
-    }),
     "undefined" != typeof module && void 0 !== module.exports && (window.KTComponents = module.exports = KTComponents);
 var KTApp = (function () {
     var e = !1,

@@ -47,4 +47,9 @@ class NavigationMenu extends Model
     {
         return $this->hasMany(RolePermission::class);
     }
+
+    public function filters(): HasMany
+    {
+        return $this->hasMany(Filter::class, 'navigation_menu_id');
+    }
 }

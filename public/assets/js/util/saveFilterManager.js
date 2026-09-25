@@ -2,17 +2,7 @@ import { FormEnvironmentManager } from './formEnvironmentManager.js';
 import { ButtonStateManager } from '../util/buttonManager.js';
 import { Toast } from './notifications.js';
 
-/**
- * SavedFilterManager
- * Manages fetching, saving, applying, and deleting user saved filter presets
- * completely decoupled from AbortControllers to prevent conflict with TableFilterManager.
- */
 export class SaveFilterManager {
-    /**
-     * @param {Object} options
-     * @param {TableFilterManager} options.filterManager - Instance of TableFilterManager
-     * @param {string} [options.pageKey] - Optional override for navigation menu ID
-     */
     constructor(options = {}) {
         this.filterManager = options.filterManager;
 
@@ -20,7 +10,7 @@ export class SaveFilterManager {
         this.pageKey = options.pageKey || ctx.navigationMenuId || '';
 
         this.endpoints = {
-            load: '/filter/load',
+            load: '/filter/fetch',
             save: '/filter/save',
             delete: '/filter/delete',
             setDefault: '/filter/set-default'
@@ -158,7 +148,7 @@ export class SaveFilterManager {
 
         const name = this.nameInput.value.trim();
         if (!name) {
-            Toast.show('Please provide a name for your saved filter preset.', 'warning');
+            Toast.show('Please provide a name for your saved filter preset.', 'error');
             return;
         }
 
@@ -426,7 +416,7 @@ export class SaveFilterManager {
             if (!response.ok) throw new Error('Failed to update default filter.');
 
             Toast.show('Default filter updated successfully.', 'success');
-            await this.loadSavedFilters(); // Refresh the list to show the badge update
+            await this.loadSavedFilters();
         } catch (error) {
             console.error('Set Default Error:', error);
             Toast.show('Failed to set default filter.', 'error');

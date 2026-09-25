@@ -19,9 +19,11 @@ const CONFIG = {
         table: '#city-table',
         tableColumn: '#city-table-column-dropdown',
         form: '#city_form',
+        formId: 'city_form',
         detailId: 'city_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -34,6 +36,11 @@ const CONFIG = {
         filterStateDropdown: '#filter_state_id',
         filterCollapse: 'city-filter-collapse',
         filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/city/generate-table',
@@ -64,7 +71,10 @@ export class City {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterCountry: document.querySelector(CONFIG.selectors.filterCountryDropdown),
+            filterState: document.querySelector(CONFIG.selectors.filterStateDropdown),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
     }
 
@@ -85,17 +95,19 @@ export class City {
         });
     }
 
+    destroy() {
+        this.abortController.abort();
+    }
+
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_country_id: $('#filter_country_id').val() || [],
-                    filter_state_id: $('#filter_state_id').val() || [],
-                    filter_created_date: $('#filter_created_date').val()
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_country_id: $(this.dom.filterCountry).val() || [],
+                filter_state_id: $(this.dom.filterState).val() || [],
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
             exportColumns: [2, 3, 4],
@@ -116,35 +128,22 @@ export class City {
                             <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
                         </div>`
                 },
-                { 
-                    data: 'name',
-                    title: 'City',
-                },
-                { 
-                    data: 'state',
-                    title: 'State',
-                },
-                { 
-                    data: 'country',
-                    title: 'Country',
-                },
-                { 
-                    data: 'created_at',
-                    title: 'Created At',
-                    visible: false
-                },
+                { data: 'name', title: 'City' },
+                { data: 'state', title: 'State' },
+                { data: 'country', title: 'Country' },
+                { data: 'created_at', title: 'Created At', visible: false },
                 { 
                     data: null, 
                     title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -240,7 +239,7 @@ export class City {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.stateOption,
             dropdownSelector: [CONFIG.selectors.stateDropdown, CONFIG.selectors.filterStateDropdown],
-            data: {type : 'state_country'}
+            data: { type: 'state_country' }
         });
 
         ComponentRegistry.generateDropdownOptions({
@@ -255,14 +254,14 @@ export class City {
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }
@@ -286,10 +285,9 @@ export class City {
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
-                    const $field = $(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
-                    if ($field.length) {
-                        $field.val(val ?? '').trigger('change');
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
                     }
                 });
             }

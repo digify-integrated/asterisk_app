@@ -19,35 +19,35 @@ class AppSeeder extends Seeder
         $apps = [
             [
                 'name'              => 'Settings',
-                'description'       => 'Centralized management hub for comprehensive organizational oversight and control.',
+                'description'       => 'Centralized management hub for comprehensive organizational oversight, system configurations, and security controls.',
                 'logo'              => 'app/1/settings.png',
                 'order_sequence'    => 100,
                 'last_log_by'       => 1
             ],
             [
-                'name'              => 'Employee',
-                'description'       => 'Centralize employee information.',
+                'name'              => 'Employees',
+                'description'       => 'Comprehensive human resources module designed to streamline personnel records, demographics, and workforce profiles.',
                 'logo'              => 'app/2/employees.png',
                 'order_sequence'    => 4,
                 'last_log_by'       => 1
             ],
             [
                 'name'              => 'Point of Sale',
-                'description'       => 'Handle checkouts and payments for shops and restaurants.',
+                'description'       => 'Intuitive checkout and transaction terminal designed to handle retail sales, payments, and customer invoicing seamlessly.',
                 'logo'              => 'app/3/pos.png',
                 'order_sequence'    => 6,
                 'last_log_by'       => 1
             ],
             [
                 'name'              => 'Inventory',
-                'description'       => 'Manage your products and stocks.',
+                'description'       => 'Advanced stock management system to track product levels, monitor asset distribution, and optimize supply chains.',
                 'logo'              => 'app/4/inventory.png',
                 'order_sequence'    => 5,
                 'last_log_by'       => 1
             ],
             [
                 'name'              => 'Kitchen Display',
-                'description'       => 'Displays incoming orders from your Point of Sale (POS) system directly to your kitchen staff in real time.',
+                'description'       => 'Real-time order synchronization tool that routes kitchen tickets instantly from the POS system to food preparation staff.',
                 'logo'              => 'app/5/kitchen-display.png',
                 'order_sequence'    => 7,
                 'last_log_by'       => 1

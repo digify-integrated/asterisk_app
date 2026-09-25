@@ -9,6 +9,7 @@ import { ButtonStateManager } from '../util/buttonManager.js';
 const CONFIG = {
     selectors: {
         form: '#login_form',
+        formId: 'login_form',
         submitButton: '#signin'
     },
     endpoints: {
@@ -32,6 +33,11 @@ export class Login {
         return PageInitializer.run(async () => {
             this.initForm();
         });
+    }
+
+    destroy() {
+        this.abortController.abort();
+        this.passwordToggle.destroy();
     }
 
     initForm() {
@@ -99,10 +105,5 @@ export class Login {
                 'Authentication request failed.'
             );
         }
-    }
-
-    destroy() {
-        this.abortController.abort();
-        this.passwordToggle.destroy();
     }
 }

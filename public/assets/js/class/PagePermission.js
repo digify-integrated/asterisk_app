@@ -19,9 +19,11 @@ const CONFIG = {
         table: '#page-permission-table',
         tableColumn: '#page-permission-table-column-dropdown',
         form: '#page_permission_form',
+        formId: 'page_permission_form',
         detailId: 'page_permission_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -33,7 +35,18 @@ const CONFIG = {
         filterCollapse: 'page-permission-filter-collapse',
         filterNavigationMenuDropdown: '#filter_navigation_menu_id',
         filterRoleDropdown: '#filter_role_id',
+        filterReadAccess: '#filter_read_access',
+        filterWriteAccess: '#filter_write_access',
+        filterCreateAccess: '#filter_create_access',
+        filterDeleteAccess: '#filter_delete_access',
+        filterExportAccess: '#filter_export_access',
+        filterLogsAccess: '#filter_logs_access',
         filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/page-permission/generate-table',
@@ -65,7 +78,16 @@ export class PagePermission {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterRole: document.querySelector(CONFIG.selectors.filterRoleDropdown),
+            filterNavigationMenu: document.querySelector(CONFIG.selectors.filterNavigationMenuDropdown),
+            filterRead: document.querySelector(CONFIG.selectors.filterReadAccess),
+            filterWrite: document.querySelector(CONFIG.selectors.filterWriteAccess),
+            filterCreate: document.querySelector(CONFIG.selectors.filterCreateAccess),
+            filterDelete: document.querySelector(CONFIG.selectors.filterDeleteAccess),
+            filterExport: document.querySelector(CONFIG.selectors.filterExportAccess),
+            filterLogs: document.querySelector(CONFIG.selectors.filterLogsAccess),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
     }
 
@@ -100,24 +122,26 @@ export class PagePermission {
             );
         });
     }
+
+    destroy() {
+        this.abortController.abort();
+    }
     
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_role_id: $('#filter_role_id').val() || [],
-                    filter_navigation_menu_id: $('#filter_navigation_menu_id').val() || [],
-                    filter_read_access: $('#filter_read_access').val() || [],
-                    filter_write_access: $('#filter_write_access').val() || [],
-                    filter_create_access: $('#filter_create_access').val() || [],
-                    filter_delete_access: $('#filter_delete_access').val() || [],
-                    filter_export_access: $('#filter_export_access').val() || [],
-                    filter_logs_access: $('#filter_logs_access').val() || [],
-                    filter_created_date: $('#filter_created_date').val()
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_role_id: $(this.dom.filterRole).val() || [],
+                filter_navigation_menu_id: $(this.dom.filterNavigationMenu).val() || [],
+                filter_read_access: $(this.dom.filterRead).val() || [],
+                filter_write_access: $(this.dom.filterWrite).val() || [],
+                filter_create_access: $(this.dom.filterCreate).val() || [],
+                filter_delete_access: $(this.dom.filterDelete).val() || [],
+                filter_export_access: $(this.dom.filterExport).val() || [],
+                filter_logs_access: $(this.dom.filterLogs).val() || [],
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
             exportColumns: [1, 2, 8],
@@ -150,7 +174,7 @@ export class PagePermission {
                         
                         return `
                         <div class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input update-details h-20px w-30px" 
+                            <input class="form-check-input ${CONFIG.classes.updateTrigger} h-20px w-30px" 
                                 type="checkbox" 
                                 value="1" 
                                 data-id="${safeId}" 
@@ -181,8 +205,8 @@ export class PagePermission {
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -284,7 +308,7 @@ export class PagePermission {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.navigationMenuOption,
             dropdownSelector: [CONFIG.selectors.navigationMenuDropdown, CONFIG.selectors.filterNavigationMenuDropdown],
-            data: {pageType : ['single_page', 'multi_page']}
+            data: { pageType: ['single_page', 'multi_page'] }
         });
     }
 
@@ -294,7 +318,7 @@ export class PagePermission {
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }

@@ -19,9 +19,11 @@ const CONFIG = {
         table: '#upload-setting-table',
         tableColumn: '#upload-setting-table-column-dropdown',
         form: '#upload_setting_form',
+        formId: 'upload_setting_form',
         detailId: 'upload_setting_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -31,6 +33,11 @@ const CONFIG = {
         extenstionTagify: '#extension',
         filterCollapse: 'upload-setting-filter-collapse',
         filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/upload-setting/generate-table',
@@ -59,7 +66,8 @@ export class UploadSetting {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
     }
 
@@ -67,7 +75,7 @@ export class UploadSetting {
         return PageInitializer.run(async () => {
             await this.saveFilterManager.checkAndApplyDefaultFilter();
             this.initTable();
-                                                
+                                        
             await Promise.all([
                 this.initForm(),
                 this.initDelete(),
@@ -75,20 +83,22 @@ export class UploadSetting {
                 this.initTagify(),
                 this.registerGlobalListeners()
             ]);
-                                                
+                                        
             AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'upload_settings');
         });
+    }
+
+    destroy() {
+        this.abortController.abort();
     }
 
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_created_date: $('#filter_created_date').val()
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
             exportColumns: [2, 3, 4],
@@ -98,8 +108,8 @@ export class UploadSetting {
                 columnVisibility: true
             },
             columnDefs: [
-                { width: '5%', bSortable: false, targets: 0 },
-                { width: '10%', bSortable: false, targets: 5 },
+                { width: '5%', orderable: false, targets: 0 },
+                { width: '10%', orderable: false, targets: 5 },
             ],
             columns: [
                 { 
@@ -135,7 +145,7 @@ export class UploadSetting {
                 { 
                     data: 'extensions',
                     title: 'Allowed Extensions',
-                    bSortable: false,
+                    orderable: false,
                     render: (extensions) => {
                         if (!Array.isArray(extensions) || extensions.length === 0) {
                             return `<span class="badge badge-light-secondary">No Extensions</span>`;
@@ -158,11 +168,15 @@ export class UploadSetting {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 
+                        const canWrite = perms.can_write || perms.write;
+                        const canLogs = perms.can_logs || perms.logs;
+                        const canDelete = perms.can_delete || perms.delete;
+
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.can_write || perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.can_logs || perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.can_delete || perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${canWrite ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -262,14 +276,14 @@ export class UploadSetting {
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }
@@ -294,7 +308,7 @@ export class UploadSetting {
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
-                    const $field = $(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
                     if ($field.length) {
                         const inputEl = $field[0];

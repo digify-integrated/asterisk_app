@@ -19,9 +19,11 @@ const CONFIG = {
         table: '#app-table',
         tableColumn: '#app-table-column-dropdown',
         form: '#app_form',
+        formId: 'app_form',
         detailId: 'app_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -30,6 +32,11 @@ const CONFIG = {
         checkboxes: '.datatable-checkbox-children:checked',
         filterCollapse: 'app-filter-collapse',
         filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/app/generate-table',
@@ -58,6 +65,7 @@ export class App {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate),
             modal: $(CONFIG.selectors.modal)
         };
     }
@@ -78,15 +86,17 @@ export class App {
         });
     }
 
+    destroy() {
+        this.abortController.abort();
+    }
+
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_created_date: $('#filter_created_date').val()
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
             exportColumns: [2, 3, 4],
@@ -111,37 +121,24 @@ export class App {
                 },
                 { 
                     data: 'logo',
-                    render: (data, type, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
+                    render: (_, __, row) => `<img src="${escapeHtml(row.logo_url)}" alt="App Logo" width="45" onerror="this.src='/assets/media/svg/brand-logos/abstract.svg';" />`
                 },
-                { 
-                    data: 'name',
-                    title: 'App',
-                },
-                { 
-                    data: 'description',
-                    title: 'Description',
-                },
-                { 
-                    data: 'order_sequence',
-                    title: 'Sequence',
-                },
-                { 
-                    data: 'created_at',
-                    title: 'Created At',
-                    visible: false
-                },
+                { data: 'name', title: 'App' },
+                { data: 'description', title: 'Description' },
+                { data: 'order_sequence', title: 'Sequence' },
+                { data: 'created_at', title: 'Created At', visible: false },
                 { 
                     data: null, 
                     title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -235,14 +232,14 @@ export class App {
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }

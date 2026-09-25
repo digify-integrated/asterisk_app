@@ -230,7 +230,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::post('/set-default', 'setDefault')->name('set.default');
             Route::delete('/delete', 'delete')->name('delete');
-            Route::get('/load', 'fetch')->name('fetch');
+            Route::get('/fetch', 'fetch')->name('fetch');
         });
 
     Route::prefix('audit-log')

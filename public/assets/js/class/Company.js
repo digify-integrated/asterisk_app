@@ -20,9 +20,11 @@ const CONFIG = {
         table: '#company-table',
         tableColumn: '#company-table-column-dropdown',
         form: '#company_form',
+        formId: 'company_form',
         detailId: 'company_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -39,6 +41,14 @@ const CONFIG = {
         filterCountryDropdown: '#filter_country_id',
         filterCurrencyDropdown: '#filter_currency_id',
         filterCreatedDate: '#filter_created_date',
+        filterEntityType: '#filter_entity_type',
+        filterVatStatus: '#filter_vat_status',
+        filterFiscalYearStartMonth: '#filter_fiscal_year_start_month'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/company/generate-table',
@@ -71,7 +81,16 @@ export class Company {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterEntityType: document.querySelector(CONFIG.selectors.filterEntityType),
+            filterVatStatus: document.querySelector(CONFIG.selectors.filterVatStatus),
+            filterCity: document.querySelector(CONFIG.selectors.filterCityDropdown),
+            filterState: document.querySelector(CONFIG.selectors.filterStateDropdown),
+            filterCountry: document.querySelector(CONFIG.selectors.filterCountryDropdown),
+            filterCurrency: document.querySelector(CONFIG.selectors.filterCurrencyDropdown),
+            filterFiscalMonth: document.querySelector(CONFIG.selectors.filterFiscalYearStartMonth),
+            filterDateRegistered: document.querySelector(CONFIG.selectors.filterDateRegistered),
+            filterCreatedDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
 
         this.passwordToggle = new PasswordToggle();
@@ -95,23 +114,25 @@ export class Company {
         });
     }
 
+    destroy() {
+        this.abortController.abort();
+    }
+
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_entity_type: $('#filter_entity_type').val() || [],
-                    filter_vat_status: $('#filter_vat_status').val() || [],
-                    filter_city_id: $('#filter_city_id').val() || [],
-                    filter_state_id: $('#filter_state_id').val() || [],
-                    filter_country_id: $('#filter_country_id').val() || [],
-                    filter_currency_id: $('#filter_currency_id').val() || [],
-                    filter_fiscal_year_start_month: $('#filter_fiscal_year_start_month').val() || [],
-                    filter_date_registered: $('#filter_date_registered').val(),
-                    filter_created_date: $('#filter_created_date').val(),
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_entity_type: $(this.dom.filterEntityType).val() || [],
+                filter_vat_status: $(this.dom.filterVatStatus).val() || [],
+                filter_city_id: $(this.dom.filterCity).val() || [],
+                filter_state_id: $(this.dom.filterState).val() || [],
+                filter_country_id: $(this.dom.filterCountry).val() || [],
+                filter_currency_id: $(this.dom.filterCurrency).val() || [],
+                filter_fiscal_year_start_month: $(this.dom.filterFiscalMonth).val() || [],
+                filter_date_registered: this.dom.filterDateRegistered?.value || '',
+                filter_created_date: this.dom.filterCreatedDate?.value || '',
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
             exportColumns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -137,88 +158,23 @@ export class Company {
                     data: 'logo',
                     render: (data, type, row) => `<img src="${escapeHtml(row.logo)}" alt="Company Logo" width="45" onerror="this.src='/assets/media/default/default-company-logo.png';" />`
                 },
-                { 
-                    data: 'legal_name',
-                    title: 'Legal Name',
-                },
-                { 
-                    data: 'trade_name',
-                    title: 'Trade Name',
-                },
-                { 
-                    data: 'address',
-                    title: 'Address'
-                },
-                { 
-                    data: 'tin',
-                    title: 'TIN',
-                    visible: false
-                },
-                { 
-                    data: 'branch_code',
-                    title: 'Branch Code',
-                    visible: false
-                },
-                { 
-                    data: 'entity_type',
-                    title: 'Entity Type',
-                    visible: false
-                },
-                { 
-                    data: 'sec_dti_registration_no',
-                    title: 'SEC/DTI Registration No.',
-                    visible: false
-                },
-                { 
-                    data: 'date_registered',
-                    title: 'Date Registered',
-                    visible: false
-                },
-                { 
-                    data: 'psic_code',
-                    title: 'PSIC Code',
-                    visible: false
-                },
-                { 
-                    data: 'line_of_business',
-                    title: 'Line of Business',
-                    visible: false
-                },
-                { 
-                    data: 'vat_status',
-                    title: 'VAT Status',
-                    visible: false
-                },
-                { 
-                    data: 'currency',
-                    title: 'Currency',
-                    visible: false
-                },
-                { 
-                    data: 'phone',
-                    title: 'Phone',
-                    visible: false
-                },
-                { 
-                    data: 'email',
-                    title: 'Email',
-                    visible: false
-                },
-                { 
-                    data: 'website',
-                    title: 'Website',
-                    visible: false
-                },
-                { 
-                    data: 'contact_person',
-                    title: 'Contact Person',
-                    visible: false
-                },
-                { 
-                    data: 'created_at',
-                    title: 'Created At',
-                    visible: false
-                },
+                { data: 'legal_name', title: 'Legal Name' },
+                { data: 'trade_name', title: 'Trade Name' },
+                { data: 'address', title: 'Address' },
+                { data: 'tin', title: 'TIN', visible: false },
+                { data: 'branch_code', title: 'Branch Code', visible: false },
+                { data: 'entity_type', title: 'Entity Type', visible: false },
+                { data: 'sec_dti_registration_no', title: 'SEC/DTI Registration No.', visible: false },
+                { data: 'date_registered', title: 'Date Registered', visible: false },
+                { data: 'psic_code', title: 'PSIC Code', visible: false },
+                { data: 'line_of_business', title: 'Line of Business', visible: false },
+                { data: 'vat_status', title: 'VAT Status', visible: false },
+                { data: 'currency', title: 'Currency', visible: false },
+                { data: 'phone', title: 'Phone', visible: false },
+                { data: 'email', title: 'Email', visible: false },
+                { data: 'website', title: 'Website', visible: false },
+                { data: 'contact_person', title: 'Contact Person', visible: false },
+                { data: 'created_at', title: 'Created At', visible: false },
                 { 
                     data: null, 
                     title: '&nbsp;',
@@ -228,9 +184,9 @@ export class Company {
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -250,11 +206,8 @@ export class Company {
                         vat_status: { required: true },
                         street_1: { required: true },
                         city_id: { required: true },
-                        email: { 
-                            typeEmail: true
-                        },
+                        email: { typeEmail: true },
                     },
-
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
             ]
@@ -340,7 +293,7 @@ export class Company {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.cityOption,
             dropdownSelector: [CONFIG.selectors.filterCityDropdown],
-            data: {type : 'city_only'}
+            data: { type: 'city_only' }
         });
 
         ComponentRegistry.generateDropdownOptions({
@@ -365,14 +318,14 @@ export class Company {
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }

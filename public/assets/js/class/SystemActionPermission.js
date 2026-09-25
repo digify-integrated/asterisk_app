@@ -19,9 +19,11 @@ const CONFIG = {
         table: '#system-action-permission-table',
         tableColumn: '#system-action-permission-table-column-dropdown',
         form: '#system_action_permission_form',
+        formId: 'system_action_permission_form',
         detailId: 'system_action_permission_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -33,7 +35,13 @@ const CONFIG = {
         filterCollapse: 'system-action-permission-filter-collapse',
         filterSystemActionDropdown: '#filter_system_action_id',
         filterRoleDropdown: '#filter_role_id',
+        filterAccess: '#filter_access',
         filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/system-action-permission/generate-table',
@@ -65,7 +73,11 @@ export class SystemActionPermission {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterRole: document.querySelector(CONFIG.selectors.filterRoleDropdown),
+            filterSystemAction: document.querySelector(CONFIG.selectors.filterSystemActionDropdown),
+            filterAccess: document.querySelector(CONFIG.selectors.filterAccess),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
     }
 
@@ -96,18 +108,20 @@ export class SystemActionPermission {
         });
     }
 
+    destroy() {
+        this.abortController.abort();
+    }
+
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_role_id: $('#filter_role_id').val() || [],
-                    filter_system_action_id: $('#filter_system_action_id').val() || [],
-                    filter_access: $('#filter_access').val() || [],
-                    filter_created_date: $('#filter_created_date').val()
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_role_id: $(this.dom.filterRole).val() || [],
+                filter_system_action_id: $(this.dom.filterSystemAction).val() || [],
+                filter_access: $(this.dom.filterAccess).val() || [],
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
             exportColumns: [1, 2, 4],
@@ -140,7 +154,7 @@ export class SystemActionPermission {
                         
                         return `
                         <div class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input update-details h-20px w-30px" 
+                            <input class="form-check-input ${CONFIG.classes.updateTrigger} h-20px w-30px" 
                                 type="checkbox" 
                                 value="1" 
                                 data-id="${safeId}" 
@@ -171,8 +185,8 @@ export class SystemActionPermission {
 
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -269,18 +283,17 @@ export class SystemActionPermission {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.systemActionOption,
             dropdownSelector: [CONFIG.selectors.systemActionDropdown, CONFIG.selectors.filterSystemActionDropdown],
-            data: {pageType : ['single_page', 'multi_page']}
+            data: { pageType: ['single_page', 'multi_page'] }
         });
     }
 
     registerGlobalListeners() {
-        
         document.addEventListener('click', async (event) => {
             const { target } = event;
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }

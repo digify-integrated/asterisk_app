@@ -25,6 +25,11 @@ export class AccountSetting {
     constructor() {
         this.abortController = new AbortController();        
         this.passwordToggle = new PasswordToggle();
+
+        this.dom = {
+            profileForm: document.querySelector(CONFIG.selectors.profileForm),
+            securityForm: document.querySelector(CONFIG.selectors.securityForm)
+        };
     }
 
     async init() {
@@ -32,6 +37,10 @@ export class AccountSetting {
             this.initForm();
             ImagePreview.autoInit();
         });
+    }
+
+    destroy() {
+        this.abortController.abort();
     }
 
     initForm() {
@@ -46,7 +55,11 @@ export class AccountSetting {
                             typeEmail: true
                         }
                     },
-                    submitHandler: async (formElement) => this.handleFormSubmission(formElement, CONFIG.selectors.submitProfileButton, CONFIG.endpoints.saveProfile)
+                    submitHandler: async (formElement) => this.handleFormSubmission(
+                        formElement, 
+                        CONFIG.selectors.submitProfileButton, 
+                        CONFIG.endpoints.saveProfile
+                    )
                 },
                 {
                     selector: CONFIG.selectors.securityForm,
@@ -66,7 +79,11 @@ export class AccountSetting {
                             equalTo: 'Your passwords do not match. Please check again.'
                         }
                     },
-                    submitHandler: async (formElement) => this.handleFormSubmission(formElement, CONFIG.selectors.submitPasswordButton, CONFIG.endpoints.savePassword)
+                    submitHandler: async (formElement) => this.handleFormSubmission(
+                        formElement, 
+                        CONFIG.selectors.submitPasswordButton, 
+                        CONFIG.endpoints.savePassword
+                    )
                 }
             ]
         });

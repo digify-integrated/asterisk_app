@@ -20,9 +20,11 @@ const CONFIG = {
         table: '#user-table',
         tableColumn: '#user-table-column-dropdown',
         form: '#user_form',
+        formId: 'user_form',
         detailId: 'user_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
         logNotesTrigger: '.view-log-notes',
         deleteMultipleTrigger: '#delete-data',
         deleteTrigger: '.delete-details',
@@ -30,7 +32,13 @@ const CONFIG = {
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         filterCollapse: 'user-filter-collapse',
-        filterCreatedDate: '#filter_created_date'
+        filterCreatedDate: '#filter_created_date',
+        filterStatus: '#filter_status'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
     },
     endpoints: {
         tableData: '/user/generate-table',
@@ -59,7 +67,9 @@ export class User {
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
-            modal: $(CONFIG.selectors.modal)
+            modal: $(CONFIG.selectors.modal),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate),
+            filterStatus: document.querySelector(CONFIG.selectors.filterStatus)
         };
 
         this.passwordToggle = new PasswordToggle();
@@ -81,16 +91,18 @@ export class User {
         });
     }
 
+    destroy() {
+        this.abortController.abort();
+    }
+
     initTable() {
         this.orchestrator.initialize({
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
-            ajaxData: (d) => {
-                return Object.assign({}, d, {
-                    filter_status: $('#filter_status').val() || [],
-                    filter_created_date: $('#filter_created_date').val(),
-                });
-            },
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_status: $(CONFIG.selectors.filterStatus).val() || [],
+                filter_created_date: this.dom.filterDate?.value || '',
+            }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
             exportColumns: [2, 3, 4],
@@ -100,9 +112,9 @@ export class User {
                 columnVisibility: true
             },
             columnDefs: [
-                { width: '5%', bSortable: false, targets: 0 },
-                { width: '5%', bSortable: false, targets: 1 },
-                { width: '10%', bSortable: false, targets: 6 },
+                { width: '5%', orderable: false, targets: 0 },
+                { width: '5%', orderable: false, targets: 1 },
+                { width: '10%', orderable: false, targets: 6 },
             ],
             columns: [
                 { 
@@ -147,11 +159,15 @@ export class User {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 
+                        const canWrite = perms.write;
+                        const canLogs = perms.logs;
+                        const canDelete = perms.delete;
+
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.selectors.updateTrigger.slice(1)}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.selectors.logNotesTrigger.slice(1)}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.selectors.deleteTrigger.slice(1)}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${canWrite ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -260,14 +276,14 @@ export class User {
             
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
                 this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
-                FormEnvironmentManager.resetForm(CONFIG.selectors.form.slice(1));
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
             }
         }, { signal: this.abortController.signal });
     }

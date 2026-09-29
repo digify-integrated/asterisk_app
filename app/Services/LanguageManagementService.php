@@ -33,7 +33,7 @@ class LanguageManagementService
         });
     }
 
-    public function deleteMultipleLanguage(array $languageIds): void
+    public function deleteMultipleLanguages(array $languageIds): void
     {
         DB::transaction(function () use ($languageIds) {
             Language::query()->whereIn('id', $languageIds)->delete();

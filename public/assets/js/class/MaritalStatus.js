@@ -82,7 +82,7 @@ export class MaritalStatus {
                 this.registerGlobalListeners()
             ]);
                                         
-            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'marital_status');
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'marital_statuses');
         });
     }
 

@@ -16,7 +16,7 @@ class BankAccountTypeManagementService
             ];
 
             $bankAccountType = BankAccountType::query()->updateOrCreate(
-                ['id' => $data['system_parameter_id'] ?? null],
+                ['id' => $data['bank_account_type_id'] ?? null],
                 $payload
             );
 

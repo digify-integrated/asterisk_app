@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('marital_status', function (Blueprint $table) {
+        Schema::create('marital_statuses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
@@ -19,12 +19,12 @@ return new class extends Migration
             TRIGGER
         ============================================================================================= */
 
-        DB::unprepared('DROP TRIGGER IF EXISTS trg_marital_status_update');
-        DB::unprepared('DROP TRIGGER IF EXISTS trg_marital_status_insert');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_marital_statuses_update');
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_marital_statuses_insert');
 
         DB::unprepared(<<<SQL
-            CREATE TRIGGER trg_marital_status_update
-            AFTER UPDATE ON marital_status
+            CREATE TRIGGER trg_marital_statuses_update
+            AFTER UPDATE ON marital_statuses
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT DEFAULT 'Marital status updated.<br/><br/>';
@@ -49,7 +49,7 @@ return new class extends Migration
                         created_at
                     )
                     VALUES (
-                        'marital_status',
+                        'marital_statuses',
                         NEW.id,
                         audit_log,
                         NEW.last_log_by,
@@ -60,15 +60,15 @@ return new class extends Migration
         SQL);
 
         DB::unprepared(<<<SQL
-            CREATE TRIGGER trg_marital_status_insert
-            AFTER INSERT ON marital_status
+            CREATE TRIGGER trg_marital_statuses_insert
+            AFTER INSERT ON marital_statuses
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT;
 
                 SET audit_log = CONCAT(
                     'Marital status created.<br/><br/>',
-                    'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
+                    'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>'
                 );
 
                 INSERT INTO audit_log (
@@ -79,7 +79,7 @@ return new class extends Migration
                     created_at
                 )
                 VALUES (
-                    'marital_status',
+                    'marital_statuses',
                     NEW.id,
                     audit_log,
                     NEW.last_log_by,
@@ -91,6 +91,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('marital_status');
+        Schema::dropIfExists('marital_statuses');
     }
 };

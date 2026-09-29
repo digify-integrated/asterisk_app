@@ -94,7 +94,7 @@ return new class extends Migration
                 IF NOT (NEW.parent_id <=> OLD.parent_id) THEN
                     SET audit_log = CONCAT(
                         audit_log,
-                        'Parent: "',
+                        'Parent Menu: "',
                         COALESCE(old_parent_name, 'Not set'),
                         '" → "',
                         COALESCE(new_parent_name, 'Not set'),
@@ -161,7 +161,7 @@ return new class extends Migration
                     'Navigation menu created.<br/><br/>',
                     'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
                     'Icon: "', COALESCE(NEW.icon, 'Not set'), '"<br/>',
-                    'Parent: "', COALESCE(parent_name, 'Not set'), '"<br/>',
+                    'Parent Menu: "', COALESCE(parent_name, 'Not set'), '"<br/>',
                     'Page Type: "', NEW.page_type, '"<br/>',
                     'Order Sequence: ', NEW.order_sequence
                 );

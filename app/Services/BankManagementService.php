@@ -33,7 +33,7 @@ class BankManagementService
         });
     }
 
-    public function deleteMultipleBank(array $bankIds): void
+    public function deleteMultipleBanks(array $bankIds): void
     {
         DB::transaction(function () use ($bankIds) {
             Bank::query()->whereIn('id', $bankIds)->delete();

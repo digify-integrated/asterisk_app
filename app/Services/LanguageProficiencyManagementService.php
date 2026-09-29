@@ -12,6 +12,7 @@ class LanguageProficiencyManagementService
         return DB::transaction(function () use ($data, $userId) {
             $payload = [
                 'name'          => $data['name'],
+                'description'   => $data['description'],
                 'last_log_by'   => $userId,
             ];
 
@@ -33,7 +34,7 @@ class LanguageProficiencyManagementService
         });
     }
 
-    public function deleteMultipleLanguageProficiencys(array $languageProficiencyIds): void
+    public function deleteMultipleLanguageProficiencies(array $languageProficiencyIds): void
     {
         DB::transaction(function () use ($languageProficiencyIds) {
             LanguageProficiency::query()->whereIn('id', $languageProficiencyIds)->delete();

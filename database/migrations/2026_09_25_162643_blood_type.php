@@ -68,7 +68,7 @@ return new class extends Migration
 
                 SET audit_log = CONCAT(
                     'Blood type created.<br/><br/>',
-                    'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
+                    'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>'
                 );
 
                 INSERT INTO audit_log (

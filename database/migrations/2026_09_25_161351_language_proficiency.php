@@ -81,7 +81,7 @@ return new class extends Migration
                 SET audit_log = CONCAT(
                     'Language proficiency created.<br/><br/>',
                     'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>',
-                    'Description: "', COALESCE(NEW.description, 'Not set'), '"<br/>',
+                    'Description: "', COALESCE(NEW.description, 'Not set'), '"<br/>'
                 );
 
                 INSERT INTO audit_log (

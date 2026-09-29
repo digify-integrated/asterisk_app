@@ -12,8 +12,6 @@ class MaritalStatusManagementService
         return DB::transaction(function () use ($data, $userId) {
             $payload = [
                 'name'          => $data['name'],
-                'description'   => $data['description'],
-                'value'         => $data['value'],
                 'last_log_by'   => $userId,
             ];
 
@@ -35,7 +33,7 @@ class MaritalStatusManagementService
         });
     }
 
-    public function deleteMultipleMaritalStatuss(array $maritalStatusIds): void
+    public function deleteMultipleMaritalStatus(array $maritalStatusIds): void
     {
         DB::transaction(function () use ($maritalStatusIds) {
             MaritalStatus::query()->whereIn('id', $maritalStatusIds)->delete();

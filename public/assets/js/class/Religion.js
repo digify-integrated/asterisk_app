@@ -82,7 +82,7 @@ export class Religion {
                 this.registerGlobalListeners()
             ]);
                 
-            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'religion');
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'religions');
         });
     }
 

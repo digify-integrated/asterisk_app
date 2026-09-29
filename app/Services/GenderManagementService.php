@@ -33,7 +33,7 @@ class GenderManagementService
         });
     }
 
-    public function deleteMultipleGender(array $genderIds): void
+    public function deleteMultipleGenders(array $genderIds): void
     {
         DB::transaction(function () use ($genderIds) {
             Gender::query()->whereIn('id', $genderIds)->delete();

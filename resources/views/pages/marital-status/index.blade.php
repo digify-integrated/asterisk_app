@@ -56,7 +56,7 @@
 
                 <div class="d-flex flex-column gap-7">
                     <div class="row g-5">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             <label class="form-label required mb-2" for="name">Name</label>
                             <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                         </div>

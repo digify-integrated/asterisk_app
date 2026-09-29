@@ -105,7 +105,7 @@ export class DataTableOrchestrator {
                 }
             },
             language: {
-                emptyTable: 'No records found for the selected evaluation parameters.',
+                emptyTable: 'No records found.',
                 info: 'Showing _START_ to _END_ of _TOTAL_ entries',
                 loadingRecords: 'Loading records...',
                 processing: 'Processing data...',

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BankAccountTypeOptionResource;
 use App\Models\BankAccountType;
-use App\Http\Resources\BankAccountTypeTableResource;
-use App\Http\Resources\BankAccountTypeDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveBankAccountTypeRequest;
 use App\Http\Requests\FetchBankAccountTypeDetailsRequest;
 use App\Http\Requests\DeleteBankAccountTypeRequest;
@@ -45,14 +45,14 @@ class BankAccountTypeController extends Controller
         }
     }
 
-    public function fetch(FetchBankAccountTypeDetailsRequest $request): JsonResponse|BankAccountTypeDetailsResource
+    public function fetch(FetchBankAccountTypeDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $bankAccountType = BankAccountType::findOrFail($validated['bank_account_type_id']);
 
-            return new BankAccountTypeDetailsResource($bankAccountType);
+            return new ConfigurationDetailsResource($bankAccountType);
 
         } catch (Exception $e) {
             report($e);
@@ -126,9 +126,9 @@ class BankAccountTypeController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $bankAccountTypes = $query->orderBy('name')->get();
 
-        return BankAccountTypeTableResource::collection($apps)
+        return ConfigurationTableResource::collection($bankAccountTypes)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class BankAccountTypeController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = BankAccountType::query()->orderBy('name')->get();
+        $bankAccountTypes = BankAccountType::query()->orderBy('name')->get();
 
-        return BankAccountTypeOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($bankAccountTypes)
             ->response();
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FetchAuditLogDetailsRequest;
-use App\Http\Resources\AuditLogCollectionResource;
 use App\Models\AuditLog;
+use App\Http\Resources\AuditLogCollectionResource;
+use App\Http\Requests\FetchAuditLogDetailsRequest;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;

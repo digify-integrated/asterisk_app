@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class NavigationMenuRouteSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $now = now();
@@ -230,6 +227,105 @@ class NavigationMenuRouteSeeder extends Seeder
                 'route_type'            => 'index',
                 'view_file'             => 'pages.upload-setting.index',
                 'js_file'               => 'upload-setting/index',
+            ],
+
+            // ==========================================
+            // EMPLOYEE MANAGEMENT MODULE ROUTES
+            // ==========================================
+
+            // Employees (ID: 35)
+            [
+                'navigation_menu_id'    => 35,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.employee.index',
+                'js_file'               => 'employee/index',
+            ],
+            
+            [
+                'navigation_menu_id'    => 35,
+                'route_type'            => 'manage',
+                'view_file'             => 'pages.employee.manage',
+                'js_file'               => 'employee/manage',
+            ],
+
+            // Directory (ID: 36)
+            [
+                'navigation_menu_id'    => 36,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.directory.index',
+                'js_file'               => 'directory/index',
+            ],
+
+            // Departments (ID: 37)
+            [
+                'navigation_menu_id'    => 37,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.department.index',
+                'js_file'               => 'department/index',
+            ],
+
+            // Employee Type (ID: 39)
+            [
+                'navigation_menu_id'    => 39,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.employee-type.index',
+                'js_file'               => 'employee-type/index',
+            ],
+
+            // Job Position (ID: 40)
+            [
+                'navigation_menu_id'    => 40,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.job-position.index',
+                'js_file'               => 'job-position/index',
+            ],
+
+            // Contract Template (ID: 41)
+            [
+                'navigation_menu_id'    => 41,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.contract-template.index',
+                'js_file'               => 'contract-template/index',
+            ],
+
+            // Work Location (ID: 43)
+            [
+                'navigation_menu_id'    => 43,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.work-location.index',
+                'js_file'               => 'work-location/index',
+            ],
+
+            // Working Schedule (ID: 44)
+            [
+                'navigation_menu_id'    => 44,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.working-schedule.index',
+                'js_file'               => 'working-schedule/index',
+            ],
+
+            // Skill Type (ID: 46)
+            [
+                'navigation_menu_id'    => 46,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.skill-type.index',
+                'js_file'               => 'skill-type/index',
+            ],
+
+            // Degree Type (ID: 47)
+            [
+                'navigation_menu_id'    => 47,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.degree-type.index',
+                'js_file'               => 'degree-type/index',
+            ],
+
+            // Departure Reason (ID: 49)
+            [
+                'navigation_menu_id'    => 49,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.departure-reason.index',
+                'js_file'               => 'departure-reason/index',
             ],
         ];
 

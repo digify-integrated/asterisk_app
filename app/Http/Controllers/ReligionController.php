@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ReligionOptionResource;
 use App\Models\Religion;
-use App\Http\Resources\ReligionTableResource;
-use App\Http\Resources\ReligionDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveReligionRequest;
 use App\Http\Requests\FetchReligionDetailsRequest;
 use App\Http\Requests\DeleteReligionRequest;
@@ -45,14 +45,14 @@ class ReligionController extends Controller
         }
     }
 
-    public function fetch(FetchReligionDetailsRequest $request): JsonResponse|ReligionDetailsResource
+    public function fetch(FetchReligionDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $religion = Religion::findOrFail($validated['religion_id']);
 
-            return new ReligionDetailsResource($religion);
+            return new ConfigurationDetailsResource($religion);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class ReligionController extends Controller
 
         $religions = $query->orderBy('name')->get();
 
-        return ReligionTableResource::collection($religions)
+        return ConfigurationTableResource::collection($religions)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class ReligionController extends Controller
 
         $religions = Religion::query()->orderBy('name')->get();
 
-        return ReligionOptionResource::collection($religions)
+        return ConfigurationOptionResource::collection($religions)
             ->response();
     }
 }

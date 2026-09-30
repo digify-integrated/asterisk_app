@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AppOptionResource;
 use App\Models\App;
+use App\Http\Resources\ConfigurationOptionResource;
 use App\Http\Resources\AppTableResource;
 use App\Http\Resources\AppDetailsResource;
 use App\Http\Requests\SaveAppRequest;
@@ -150,7 +150,7 @@ class AppController extends Controller
 
         $apps = App::query()->orderBy('name')->get();
 
-        return AppOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($apps)
             ->response();
     }
 }

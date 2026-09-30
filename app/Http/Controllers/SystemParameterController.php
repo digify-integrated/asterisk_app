@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SystemParameterOptionResource;
 use App\Models\SystemParameter;
 use App\Http\Resources\SystemParameterTableResource;
 use App\Http\Resources\SystemParameterDetailsResource;
@@ -126,28 +125,12 @@ class SystemParameterController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $systemParameters = $query->orderBy('name')->get();
 
-        return SystemParameterTableResource::collection($apps)
+        return SystemParameterTableResource::collection($systemParameters)
             ->additional([
                 'permissions'  => $permissions,
             ])
-            ->response();
-    }
-
-    public function generateOption(Request $request): JsonResponse
-    {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
-        $apps = SystemParameter::query()->orderBy('name')->get();
-
-        return SystemParameterOptionResource::collection($apps)
             ->response();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\StateOptionResource;
 use App\Models\State;
+use App\Http\Resources\StateOptionResource;
 use App\Http\Resources\StateTableResource;
 use App\Http\Resources\StateDetailsResource;
 use App\Http\Requests\SaveStateRequest;

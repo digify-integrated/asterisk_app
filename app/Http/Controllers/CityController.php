@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CityOptionResource;
 use App\Models\City;
+use App\Http\Resources\CityOptionResource;
 use App\Http\Resources\CityTableResource;
 use App\Http\Resources\CityDetailsResource;
 use App\Http\Requests\SaveCityRequest;

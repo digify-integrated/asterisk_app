@@ -124,9 +124,9 @@ class UploadSettingController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $uploadSettings = $query->orderBy('name')->get();
 
-        return UploadSettingTableResource::collection($apps)
+        return UploadSettingTableResource::collection($uploadSettings)
             ->additional([
                 'permissions' => $permissions,
             ])

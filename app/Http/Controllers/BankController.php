@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BankOptionResource;
 use App\Models\Bank;
-use App\Http\Resources\BankTableResource;
-use App\Http\Resources\BankDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveBankRequest;
 use App\Http\Requests\FetchBankDetailsRequest;
 use App\Http\Requests\DeleteBankRequest;
@@ -45,14 +45,14 @@ class BankController extends Controller
         }
     }
 
-    public function fetch(FetchBankDetailsRequest $request): JsonResponse|BankDetailsResource
+    public function fetch(FetchBankDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $bank = Bank::findOrFail($validated['bank_id']);
 
-            return new BankDetailsResource($bank);
+            return new ConfigurationDetailsResource($bank);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class BankController extends Controller
 
         $banks = $query->orderBy('name')->get();
 
-        return BankTableResource::collection($banks)
+        return ConfigurationTableResource::collection($banks)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class BankController extends Controller
 
         $banks = Bank::query()->orderBy('name')->get();
 
-        return BankOptionResource::collection($banks)
+        return ConfigurationOptionResource::collection($banks)
             ->response();
     }
 }

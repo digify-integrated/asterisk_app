@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RoleOptionResource;
 use App\Models\Role;
+use App\Http\Resources\ConfigurationOptionResource;
 use App\Http\Resources\RoleTableResource;
 use App\Http\Resources\RoleDetailsResource;
 use App\Http\Requests\SaveRoleRequest;
@@ -160,7 +160,7 @@ class RoleController extends Controller
             ->orderBy('name')
             ->get();
 
-        return RoleOptionResource::collection($roles)
+        return ConfigurationOptionResource::collection($roles)
             ->response();
     }
 }

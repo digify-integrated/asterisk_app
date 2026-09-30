@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\LanguageOptionResource;
 use App\Models\Language;
-use App\Http\Resources\LanguageTableResource;
-use App\Http\Resources\LanguageDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveLanguageRequest;
 use App\Http\Requests\FetchLanguageDetailsRequest;
 use App\Http\Requests\DeleteLanguageRequest;
@@ -45,14 +45,14 @@ class LanguageController extends Controller
         }
     }
 
-    public function fetch(FetchLanguageDetailsRequest $request): JsonResponse|LanguageDetailsResource
+    public function fetch(FetchLanguageDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $language = Language::findOrFail($validated['language_id']);
 
-            return new LanguageDetailsResource($language);
+            return new ConfigurationDetailsResource($language);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class LanguageController extends Controller
 
         $languages = $query->orderBy('name')->get();
 
-        return LanguageTableResource::collection($languages)
+        return ConfigurationTableResource::collection($languages)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class LanguageController extends Controller
 
         $languages = Language::query()->orderBy('name')->get();
 
-        return LanguageOptionResource::collection($languages)
+        return ConfigurationOptionResource::collection($languages)
             ->response();
     }
 }

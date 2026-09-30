@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\RelationOptionResource;
 use App\Models\Relation;
-use App\Http\Resources\RelationTableResource;
-use App\Http\Resources\RelationDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveRelationRequest;
 use App\Http\Requests\FetchRelationDetailsRequest;
 use App\Http\Requests\DeleteRelationRequest;
@@ -45,14 +45,14 @@ class RelationController extends Controller
         }
     }
 
-    public function fetch(FetchRelationDetailsRequest $request): JsonResponse|RelationDetailsResource
+    public function fetch(FetchRelationDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $relation = Relation::findOrFail($validated['relation_id']);
 
-            return new RelationDetailsResource($relation);
+            return new ConfigurationDetailsResource($relation);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class RelationController extends Controller
 
         $relations = $query->orderBy('name')->get();
 
-        return RelationTableResource::collection($relations)
+        return ConfigurationTableResource::collection($relations)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class RelationController extends Controller
 
         $relations = Relation::query()->orderBy('name')->get();
 
-        return RelationOptionResource::collection($relations)
+        return ConfigurationOptionResource::collection($relations)
             ->response();
     }
 }

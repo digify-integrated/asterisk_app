@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SystemActionOptionResource;
 use App\Models\SystemAction;
+use App\Http\Resources\ConfigurationOptionResource;
 use App\Http\Resources\SystemActionTableResource;
 use App\Http\Resources\SystemActionDetailsResource;
 use App\Http\Requests\SaveSystemActionRequest;
@@ -147,7 +147,7 @@ class SystemActionController extends Controller
 
         $systemActions = SystemAction::query()->orderBy('name')->get();
 
-        return SystemActionOptionResource::collection($systemActions)
+        return ConfigurationOptionResource::collection($systemActions)
             ->response();
     }
 }

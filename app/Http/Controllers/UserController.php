@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SaveUserPasswordRequest;
-use App\Http\Requests\SaveUserProfileRequest;
-use App\Http\Resources\UserOptionResource;
 use App\Models\User;
+use App\Http\Resources\UserOptionResource;
 use App\Http\Resources\UserTableResource;
 use App\Http\Resources\UserDetailsResource;
 use App\Http\Requests\SaveUserRequest;
+use App\Http\Requests\SaveUserPasswordRequest;
+use App\Http\Requests\SaveUserProfileRequest;
 use App\Http\Requests\FetchUserDetailsRequest;
 use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\DeleteMultipleUsersRequest;

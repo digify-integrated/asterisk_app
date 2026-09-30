@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AddressTypeOptionResource;
 use App\Models\AddressType;
-use App\Http\Resources\AddressTypeTableResource;
-use App\Http\Resources\AddressTypeDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveAddressTypeRequest;
 use App\Http\Requests\FetchAddressTypeDetailsRequest;
 use App\Http\Requests\DeleteAddressTypeRequest;
@@ -45,14 +45,14 @@ class AddressTypeController extends Controller
         }
     }
 
-    public function fetch(FetchAddressTypeDetailsRequest $request): JsonResponse|AddressTypeDetailsResource
+    public function fetch(FetchAddressTypeDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $addressType = AddressType::findOrFail($validated['address_type_id']);
 
-            return new AddressTypeDetailsResource($addressType);
+            return new ConfigurationDetailsResource($addressType);
 
         } catch (Exception $e) {
             report($e);
@@ -126,9 +126,9 @@ class AddressTypeController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $addressTypes = $query->orderBy('name')->get();
 
-        return AddressTypeTableResource::collection($apps)
+        return ConfigurationTableResource::collection($addressTypes)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class AddressTypeController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = AddressType::query()->orderBy('name')->get();
+        $addressTypes = AddressType::query()->orderBy('name')->get();
 
-        return AddressTypeOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($addressTypes)
             ->response();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CurrencyOptionResource;
 use App\Models\Currency;
+use App\Http\Resources\CurrencyOptionResource;
 use App\Http\Resources\CurrencyTableResource;
 use App\Http\Resources\CurrencyDetailsResource;
 use App\Http\Requests\SaveCurrencyRequest;

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MaritalStatusOptionResource;
 use App\Models\MaritalStatus;
-use App\Http\Resources\MaritalStatusTableResource;
-use App\Http\Resources\MaritalStatusDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveMaritalStatusRequest;
 use App\Http\Requests\FetchMaritalStatusDetailsRequest;
 use App\Http\Requests\DeleteMaritalStatusRequest;
@@ -45,14 +45,14 @@ class MaritalStatusController extends Controller
         }
     }
 
-    public function fetch(FetchMaritalStatusDetailsRequest $request): JsonResponse|MaritalStatusDetailsResource
+    public function fetch(FetchMaritalStatusDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $maritalStatus = MaritalStatus::findOrFail($validated['marital_status_id']);
 
-            return new MaritalStatusDetailsResource($maritalStatus);
+            return new ConfigurationDetailsResource($maritalStatus);
 
         } catch (Exception $e) {
             report($e);
@@ -126,9 +126,9 @@ class MaritalStatusController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $maritalStatus = $query->orderBy('name')->get();
 
-        return MaritalStatusTableResource::collection($apps)
+        return ConfigurationTableResource::collection($maritalStatus)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class MaritalStatusController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = MaritalStatus::query()->orderBy('name')->get();
+        $maritalStatus = MaritalStatus::query()->orderBy('name')->get();
 
-        return MaritalStatusOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($maritalStatus)
             ->response();
     }
 }

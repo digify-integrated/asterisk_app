@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BloodTypeOptionResource;
 use App\Models\BloodType;
-use App\Http\Resources\BloodTypeTableResource;
-use App\Http\Resources\BloodTypeDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveBloodTypeRequest;
 use App\Http\Requests\FetchBloodTypeDetailsRequest;
 use App\Http\Requests\DeleteBloodTypeRequest;
@@ -45,14 +45,14 @@ class BloodTypeController extends Controller
         }
     }
 
-    public function fetch(FetchBloodTypeDetailsRequest $request): JsonResponse|BloodTypeDetailsResource
+    public function fetch(FetchBloodTypeDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $bloodType = BloodType::findOrFail($validated['blood_type_id']);
 
-            return new BloodTypeDetailsResource($bloodType);
+            return new ConfigurationDetailsResource($bloodType);
 
         } catch (Exception $e) {
             report($e);
@@ -126,9 +126,9 @@ class BloodTypeController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $bloodTypes = $query->orderBy('name')->get();
 
-        return BloodTypeTableResource::collection($apps)
+        return ConfigurationTableResource::collection($bloodTypes)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class BloodTypeController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = BloodType::query()->orderBy('name')->get();
+        $bloodTypes = BloodType::query()->orderBy('name')->get();
 
-        return BloodTypeOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($bloodTypes)
             ->response();
     }
 }

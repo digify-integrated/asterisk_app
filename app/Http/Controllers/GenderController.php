@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GenderOptionResource;
 use App\Models\Gender;
-use App\Http\Resources\GenderTableResource;
-use App\Http\Resources\GenderDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveGenderRequest;
 use App\Http\Requests\FetchGenderDetailsRequest;
 use App\Http\Requests\DeleteGenderRequest;
@@ -45,14 +45,14 @@ class GenderController extends Controller
         }
     }
 
-    public function fetch(FetchGenderDetailsRequest $request): JsonResponse|GenderDetailsResource
+    public function fetch(FetchGenderDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $gender = Gender::findOrFail($validated['gender_id']);
 
-            return new GenderDetailsResource($gender);
+            return new ConfigurationDetailsResource($gender);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class GenderController extends Controller
 
         $genders = $query->orderBy('name')->get();
 
-        return GenderTableResource::collection($genders)
+        return ConfigurationTableResource::collection($genders)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class GenderController extends Controller
 
         $genders = Gender::query()->orderBy('name')->get();
 
-        return GenderOptionResource::collection($genders)
+        return ConfigurationOptionResource::collection($genders)
             ->response();
     }
 }

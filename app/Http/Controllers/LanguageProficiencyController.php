@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\LanguageProficiencyOptionResource;
 use App\Models\LanguageProficiency;
+use App\Http\Resources\LanguageProficiencyOptionResource;
 use App\Http\Resources\LanguageProficiencyTableResource;
 use App\Http\Resources\LanguageProficiencyDetailsResource;
 use App\Http\Requests\SaveLanguageProficiencyRequest;
@@ -126,9 +126,9 @@ class LanguageProficiencyController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $languageProficiencies = $query->orderBy('name')->get();
 
-        return LanguageProficiencyTableResource::collection($apps)
+        return LanguageProficiencyTableResource::collection($languageProficiencies)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class LanguageProficiencyController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = LanguageProficiency::query()->orderBy('name')->get();
+        $languageProficiencies = LanguageProficiency::query()->orderBy('name')->get();
 
-        return LanguageProficiencyOptionResource::collection($apps)
+        return LanguageProficiencyOptionResource::collection($languageProficiencies)
             ->response();
     }
 }

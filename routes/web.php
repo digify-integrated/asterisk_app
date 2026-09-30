@@ -56,10 +56,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/app/{appId}/module/{navigationMenuId}', [AppRenderController::class, 'renderModule'])
             ->defaults('route_type', 'index')
             ->name('apps.base');
-            
-        Route::get('/app/{appId}/module/{navigationMenuId}/manage', [AppRenderController::class, 'renderModule'])
-            ->defaults('route_type', 'manage')
-            ->name('apps.manage');
+
+            Route::get('/app/{appId}/module/{navigationMenuId}/manage/{detailsId?}', [AppRenderController::class, 'renderModule'])
+                ->defaults('route_type', 'manage')
+                ->defaults('detailsId', null)
+                ->name('apps.manage');
             
         Route::get('/app/{appId}/module/{navigationMenuId}/import', [AppRenderController::class, 'renderModule'])
             ->defaults('route_type', 'import')

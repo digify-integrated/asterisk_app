@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\HolidayTypeOptionResource;
 use App\Models\HolidayType;
-use App\Http\Resources\HolidayTypeTableResource;
-use App\Http\Resources\HolidayTypeDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveHolidayTypeRequest;
 use App\Http\Requests\FetchHolidayTypeDetailsRequest;
 use App\Http\Requests\DeleteHolidayTypeRequest;
@@ -45,14 +45,14 @@ class HolidayTypeController extends Controller
         }
     }
 
-    public function fetch(FetchHolidayTypeDetailsRequest $request): JsonResponse|HolidayTypeDetailsResource
+    public function fetch(FetchHolidayTypeDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $holidayType = HolidayType::findOrFail($validated['holiday_type_id']);
 
-            return new HolidayTypeDetailsResource($holidayType);
+            return new ConfigurationDetailsResource($holidayType);
 
         } catch (Exception $e) {
             report($e);
@@ -126,9 +126,9 @@ class HolidayTypeController extends Controller
             }
         });
 
-        $apps = $query->orderBy('name')->get();
+        $holidayTypes = $query->orderBy('name')->get();
 
-        return HolidayTypeTableResource::collection($apps)
+        return ConfigurationTableResource::collection($holidayTypes)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -145,9 +145,9 @@ class HolidayTypeController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $apps = HolidayType::query()->orderBy('name')->get();
+        $holidayTypes = HolidayType::query()->orderBy('name')->get();
 
-        return HolidayTypeOptionResource::collection($apps)
+        return ConfigurationOptionResource::collection($holidayTypes)
             ->response();
     }
 }

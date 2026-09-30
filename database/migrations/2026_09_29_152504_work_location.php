@@ -59,6 +59,7 @@ return new class extends Migration
 
                 IF NOT (NEW.location_type <=> OLD.location_type) THEN
                     SET audit_log = CONCAT(audit_log, 'Location Type: "', COALESCE(OLD.location_type, 'Not set'), '" → "', COALESCE(NEW.location_type, 'Not set'), '"<br/>');
+                END IF; -- <--- ADDED MISSING END IF HERE
 
                 IF NOT (NEW.street_1 <=> OLD.street_1) THEN
                     SET audit_log = CONCAT(audit_log, 'Street 1: "', COALESCE(OLD.street_1, 'Not set'), '" → "', COALESCE(NEW.street_1, 'Not set'), '"<br/>');

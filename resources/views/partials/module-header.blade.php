@@ -25,9 +25,9 @@
                 @include('partials.breadcrumbs')
             </div>
             <div class="d-flex align-items-center py-3 py-md-1">
-                @if(($createPermission ?? 0) > 0 && (request()->routeIs('apps.base') || request()->routeIs('apps.details')))
+                @if(($createPermission ?? 0) > 0 && (request()->routeIs('apps.base') || request()->routeIs('apps.manage')))
                     @if($pageType == 'multi_page')
-                        <a href="{{ route('apps.new', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-primary btn-sm d-inline-flex align-items-center">
+                        <a href="{{ route('apps.manage', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-primary btn-sm d-inline-flex align-items-center">
                             <i class="ki-outline ki-plus fs-5"></i>
                             <span>New</span>
                         </a>

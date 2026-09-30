@@ -2,15 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class RolePermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $now = now();
@@ -330,6 +326,142 @@ class RolePermissionSeeder extends Seeder
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 34,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // ==========================================
+            // EMPLOYEE MANAGEMENT MODULE PERMISSIONS
+            // ==========================================
+
+            // Employees ID: 35
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 35,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Directory ID: 36
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 36,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Departments ID: 37
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 37,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Employee Type ID: 39
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 39,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Job Position ID: 40
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 40,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Contract Template ID: 41
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 41,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Work Location ID: 43
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 43,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Working Schedule ID: 44
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 44,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Skill Type ID: 46
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 46,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Degree Type ID: 47
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 47,
+                'read_access' => true,
+                'write_access' => true,
+                'create_access' => true,
+                'delete_access' => true,
+                'export_access' => true,
+                'logs_access' => true,
+            ],
+
+            // Departure Reason ID: 49
+            [
+                'role_id' => 1,
+                'navigation_menu_id' => 49,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,

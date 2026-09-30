@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\NavigationMenuOptionResource;
 use App\Models\NavigationMenu;
+use App\Http\Resources\ConfigurationOptionResource;
 use App\Http\Resources\NavigationMenuTableResource;
 use App\Http\Resources\NavigationMenuDetailsResource;
 use App\Http\Requests\SaveNavigationMenuRequest;
@@ -187,7 +187,7 @@ class NavigationMenuController extends Controller
             ->orderBy('name')
             ->get();
 
-        return NavigationMenuOptionResource::collection($navigationMenus)
+        return ConfigurationOptionResource::collection($navigationMenus)
             ->response();
     }
 }

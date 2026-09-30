@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CountryOptionResource;
 use App\Models\Country;
-use App\Http\Resources\CountryTableResource;
-use App\Http\Resources\CountryDetailsResource;
+use App\Http\Resources\ConfigurationOptionResource;
+use App\Http\Resources\ConfigurationTableResource;
+use App\Http\Resources\ConfigurationDetailsResource;
 use App\Http\Requests\SaveCountryRequest;
 use App\Http\Requests\FetchCountryDetailsRequest;
 use App\Http\Requests\DeleteCountryRequest;
@@ -45,14 +45,14 @@ class CountryController extends Controller
         }
     }
 
-    public function fetch(FetchCountryDetailsRequest $request): JsonResponse|CountryDetailsResource
+    public function fetch(FetchCountryDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
     {
         try {
             $validated = $request->validated();
 
             $country = Country::findOrFail($validated['country_id']);
 
-            return new CountryDetailsResource($country);
+            return new ConfigurationDetailsResource($country);
 
         } catch (Exception $e) {
             report($e);
@@ -128,7 +128,7 @@ class CountryController extends Controller
 
         $countries = $query->orderBy('name')->get();
 
-        return CountryTableResource::collection($countries)
+        return ConfigurationTableResource::collection($countries)
             ->additional([
                 'permissions'  => $permissions,
             ])
@@ -147,7 +147,7 @@ class CountryController extends Controller
 
         $countries = Country::query()->orderBy('name')->get();
 
-        return CountryOptionResource::collection($countries)
+        return ConfigurationOptionResource::collection($countries)
             ->response();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CompanyOptionResource;
 use App\Models\Company;
+use App\Http\Resources\ConfigurationOptionResource;
 use App\Http\Resources\CompanyTableResource;
 use App\Http\Resources\CompanyDetailsResource;
 use App\Http\Requests\SaveCompanyRequest;
@@ -196,7 +196,7 @@ class CompanyController extends Controller
 
         $companies = Company::query()->orderBy('legal_name')->get();
 
-        return CompanyOptionResource::collection($companies)
+        return ConfigurationOptionResource::collection($companies)
             ->response();
     }
 }

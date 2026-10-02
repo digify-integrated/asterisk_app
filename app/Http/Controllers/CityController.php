@@ -146,14 +146,6 @@ class CityController extends Controller
 
     public function generateOption(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $cities = City::query()->orderBy('name')->get();
 
         return CityOptionResource::collection($cities)

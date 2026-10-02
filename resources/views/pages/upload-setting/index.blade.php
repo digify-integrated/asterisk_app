@@ -46,37 +46,37 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'Upload Setting Details')
-                @slot('formId', 'upload_setting_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'Upload Setting Details')
+            @slot('formId', 'upload_setting_form')
+            @slot('size', 'md')
                 
-                <input type="hidden" id="upload_setting_id" name="upload_setting_id" />
+            <input type="hidden" id="upload_setting_id" name="upload_setting_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row g-5">
-                        <div class="col-12 col-md-7">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <label class="form-label required mb-2" for="max_file_size">Max File Size</label>
-                            <div class="input-group input-group-sm">
-                                <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="1" step="1">
-                                <span class="input-group-text">kb</span>
-                            </div>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row g-5">
+                    <div class="col-12 col-md-7">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label mb-2" for="parent_id">Allowed Extensions</label>
-                            <input class="form-control form-control-sm" id="extension" name="extension" placeholder="Enter file extensions separated by (,)"/>
+
+                     <div class="col-12 col-md-5">
+                        <label class="form-label required mb-2" for="max_file_size">Max File Size</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" id="max_file_size" name="max_file_size" placeholder="0" min="1" step="1">
+                            <span class="input-group-text">kb</span>
                         </div>
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label mb-2" for="parent_id">Allowed Extensions</label>
+                        <input class="form-control form-control-sm" id="extension" name="extension" placeholder="Enter file extensions separated by (,)"/>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -84,9 +84,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

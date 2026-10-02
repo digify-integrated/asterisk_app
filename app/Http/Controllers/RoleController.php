@@ -144,16 +144,8 @@ class RoleController extends Controller
     }
 
     public function generateOption(Request $request): JsonResponse
-    {
-        $user = $request->user();
-        
+    {        
         $role_id = $request->input('roleId');
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
 
         $roles = Role::query()
             ->when($role_id, fn ($query) => $query->where('id', '!=', $role_id))

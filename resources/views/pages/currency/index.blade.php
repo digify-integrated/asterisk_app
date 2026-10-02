@@ -46,36 +46,34 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'Currency Details')
-                @slot('formId', 'currency_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'Currency Details')
+            @slot('formId', 'currency_form')
+            @slot('size', 'md')
 
-                <input type="hidden" id="currency_id" name="currency_id" />
+            <input type="hidden" id="currency_id" name="currency_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-                    
-                    <div class="row g-5">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="symbol">Symbol</label>
-                            <input type="text" class="form-control form-control-sm" id="symbol" name="symbol" placeholder="Enter symbol" maxlength="10" autocomplete="off">
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="shorthand">Shorthand</label>
-                            <input type="text" class="form-control form-control-sm" id="shorthand" name="shorthand" placeholder="Enter shorthand" maxlength="100" autocomplete="off">
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+                
+                <div class="row g-5">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="symbol">Symbol</label>
+                        <input type="text" class="form-control form-control-sm" id="symbol" name="symbol" placeholder="Enter symbol" maxlength="10" autocomplete="off">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="shorthand">Shorthand</label>
+                        <input type="text" class="form-control form-control-sm" id="shorthand" name="shorthand" placeholder="Enter shorthand" maxlength="100" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -83,9 +81,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

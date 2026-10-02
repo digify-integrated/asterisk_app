@@ -56,57 +56,55 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'User Account Details')
-                @slot('formId', 'user_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'User Account Details')
+            @slot('formId', 'user_form')
+            @slot('size', 'md')
                 
-                <input type="hidden" id="user_id" name="user_id" />
+            <input type="hidden" id="user_id" name="user_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label mb-2" for="profile_picture">Profile Picture</label>
-                            <input type="file" class="form-control form-control-sm" id="profile_picture" name="profile_picture" accept="image/*">
-                        </div>
-                    </div>
-
-                    <div class="row g-5">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="email">Email</label>
-                            <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="Enter email" maxlength="200" autocomplete="off">
-                        </div>
-                    </div>
-
-                    <div class="row g-5">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="password">Password</label>
-                            <div class="input-group input-group-sm">
-                                <input type="password" id="password" name="password" class="form-control bg-transparent" placeholder="Enter your password">
-
-                                <span class="input-group-text bg-transparent cursor-pointer password-addon" 
-                                    data-password-toggle 
-                                    data-target="#password">
-                                    <i class="fs-4 ki-outline ki-eye pe-none"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="status">Status</label>
-                            <select id="status" name="status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select status">
-                                <option value="Inactive">Inactive</option>
-                                <option value="Active">Active</option>
-                            </select>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label mb-2" for="profile_picture">Profile Picture</label>
+                        <input type="file" class="form-control form-control-sm" id="profile_picture" name="profile_picture" accept="image/*">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row g-5">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="email">Email</label>
+                        <input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="Enter email" maxlength="200" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="row g-5">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="password">Password</label>
+                        <div class="input-group input-group-sm">
+                            <input type="password" id="password" name="password" class="form-control bg-transparent" placeholder="Enter your password">
+
+                            <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#password">
+                                <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="status">Status</label>
+                        <select id="status" name="status" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select status">
+                            <option value="Inactive">Inactive</option>
+                            <option value="Active">Active</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -114,9 +112,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

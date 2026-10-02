@@ -47,7 +47,7 @@ const CONFIG = {
     }
 };
     
-export class DepartureReasonType {
+export class DepartureReason {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();

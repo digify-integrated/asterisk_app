@@ -64,48 +64,44 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'System Action Permission Details')
-                @slot('formId', 'system_action_permission_form')
-                @slot('size', 'lg')
+        @component('partials.form-modal')
+            @slot('formTitle', 'System Action Permission Details')
+            @slot('formId', 'system_action_permission_form')
+            @slot('size', 'lg')
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="role_id">Role</label>
-                            <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select roles"></select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="system_action_id">System Action</label>
-                            <select id="system_action_id" name="system_action_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select system actions"></select>
-                        </div>
-                    </div>
-
-                    <div class="separator separator-dashed"></div>
-
-                    <div class="row g-5">
-                        <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
-                            <i class="ki-duotone ki-check fs-4 me-2 text-primary">
-                                <span class="path1"></span><span class="path2"></span>
-                            </i>
-                            Access Configuration
-                        </h6>
-
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="access">Access</label>
-                            <select id="access" name="access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
-                                <option value="1">True</option>
-                                <option value="0" selected>False</option>
-                            </select>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="role_id">Role</label>
+                        <select id="role_id" name="role_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select roles"></select>
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="system_action_id">System Action</label>
+                        <select id="system_action_id" name="system_action_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select system actions"></select>
+                    </div>
+                </div>
+
+                <div class="separator separator-dashed"></div>
+
+                <div class="row g-5">
+                    <h6 class="fw-bold text-gray-800 mb-3 d-flex align-items-center">
+                        <i class="ki-duotone ki-check fs-4 me-2 text-primary"></i>
+                        Access Configuration
+                    </h6>
+
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="access">Access</label>
+                        <select id="access" name="access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
+                            <option value="1">True</option>
+                            <option value="0" selected>False</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -113,9 +109,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

@@ -15,8 +15,8 @@ class SaveDegreeTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_type_id'  => ['nullable', 'integer', 'exists:employee_types,id'],
-            'name'              => ['required', 'string', 'max:100'],
+            'degree_type_id' => ['nullable', 'integer', 'exists:degree_types,id'],
+            'name'           => ['required', 'string', 'max:100'],
         ];
     }
 }

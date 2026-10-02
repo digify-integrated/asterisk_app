@@ -95,9 +95,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
-@endpush
-

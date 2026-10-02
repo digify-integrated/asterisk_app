@@ -51,31 +51,29 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'State Details')
-                @slot('formId', 'state_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'State Details')
+            @slot('formId', 'state_form')
+            @slot('size', 'md')
 
-                <input type="hidden" id="state_id" name="state_id" />
+            <input type="hidden" id="state_id" name="state_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="country_id">Country</label>
-                            <select id="country_id" name="country_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select country">
-                            </select>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="country_id">Country</label>
+                        <select id="country_id" name="country_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select country"></select>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -83,9 +81,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

@@ -46,31 +46,29 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'Language Proficiency Details')
-                @slot('formId', 'language_proficiency_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'Language Proficiency Details')
+            @slot('formId', 'language_proficiency_form')
+            @slot('size', 'md')
 
-                <input type="hidden" id="language_proficiency_id" name="language_proficiency_id" />
+            <input type="hidden" id="language_proficiency_id" name="language_proficiency_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row g-5">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="description">Description</label>
-                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the system parameter..." maxlength="500"></textarea>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row g-5">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="description">Description</label>
+                        <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the system parameter..." maxlength="500"></textarea>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -78,9 +76,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

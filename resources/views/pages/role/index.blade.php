@@ -51,38 +51,36 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'Role Details')
-                @slot('formId', 'role_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'Role Details')
+            @slot('formId', 'role_form')
+            @slot('size', 'md')
                 
-                <input type="hidden" id="role_id" name="role_id" />
+            <input type="hidden" id="role_id" name="role_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label mb-2" for="user_id">User Accounts</label>
-                            <select id="user_id" name="user_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select user accounts"></select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="description">Description</label>
-                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the role..." maxlength="500"></textarea>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+                    
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label mb-2" for="user_id">User Accounts</label>
+                        <select id="user_id" name="user_id[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select user accounts"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="description">Description</label>
+                        <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the role..." maxlength="500"></textarea>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -90,9 +88,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

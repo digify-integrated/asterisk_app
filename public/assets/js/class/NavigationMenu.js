@@ -237,6 +237,7 @@ export class NavigationMenu {
             this.dom.modal.modal('hide');
             FormEnvironmentManager.resetForm(formElement);
             this.orchestrator.reload(CONFIG.selectors.table);
+            this.initDropdownOption();
         } catch (error) {
             if (error.name === 'AbortError') return; 
             ButtonStateManager.enable(btn);
@@ -294,9 +295,9 @@ export class NavigationMenu {
     }
 
     initParentDropdownOption(navigationMenuId) {
-        ComponentRegistry.generateDropdownOptions({
+        return ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.parentOption,
-            dropdownSelector: [CONFIG.selectors.parentDropdown, CONFIG.selectors.filterParentDropdown],
+            dropdownSelector: [CONFIG.selectors.parentDropdown],
             data: { navigationMenuId: navigationMenuId }
         });
     }
@@ -315,7 +316,7 @@ export class NavigationMenu {
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
-                this.initParentDropdownOption(null);
+                await this.initParentDropdownOption(null);
             }
         }, { signal: this.abortController.signal });
     }
@@ -332,9 +333,7 @@ export class NavigationMenu {
                 const data = response?.data || response;
                 if (!this.dom.form) return;
                 
-                await Promise.all([
-                    this.initParentDropdownOption(referenceId),
-                ]);
+                await this.initParentDropdownOption(referenceId);
 
                 const targetFields = {
                     'navigation_menu_id': referenceId,

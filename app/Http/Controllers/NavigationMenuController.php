@@ -133,7 +133,6 @@ class NavigationMenuController extends Controller
             $q->whereIn('page_type', $types);
         });
 
-        // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
             $dates = explode(' - ', $request->input('filter_created_date'));
 
@@ -156,19 +155,9 @@ class NavigationMenuController extends Controller
 
     public function generateOption(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $navigation_menu_id = $request->input('navigationMenuId') ?? $request->input('navigation_menu_id');
-
         $page_type = $request->input('pageType');
 
-        // Convert string or array into a clean array
         if (is_string($page_type)) {
             $page_type = explode(',', $page_type);
         }
@@ -179,8 +168,6 @@ class NavigationMenuController extends Controller
             ->when($navigation_menu_id, function ($query, $id) {
                 $query->where('id', '!=', $id);
             })
-            // Use whereIn to ONLY include these types
-            // (Or switch to whereNotIn if you want to exclude them)
             ->when(!empty($types), function ($query) use ($types) {
                 $query->whereIn('page_type', $types);
             })

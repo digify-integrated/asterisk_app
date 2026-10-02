@@ -137,14 +137,6 @@ class ReligionController extends Controller
 
     public function generateOption(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized or missing menu parameter.'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
         $religions = Religion::query()->orderBy('name')->get();
 
         return ConfigurationOptionResource::collection($religions)

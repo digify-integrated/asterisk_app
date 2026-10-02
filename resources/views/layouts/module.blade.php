@@ -49,5 +49,9 @@
         <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
         
         @stack('scripts')
+
+        @if (!empty($jsFile))
+            <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
+        @endif
     </body>
 </html>

@@ -1,0 +1,306 @@
+'use strict';
+
+import { PageInitializer } from '../util/pageInitializer.js';
+import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
+import { AuditLogManager } from '../util/auditLogManager.js';
+import { initValidation } from '../util/validator.js';
+import { FormEnvironmentManager } from '../util/formEnvironmentManager.js';
+import { errorHandler } from '../util/errorHandler.js';
+import { ButtonStateManager } from '../util/buttonManager.js';
+import { DetailFetcher } from '../util/detailFetcher.js';
+import { initConfirmAction } from '../util/confirmationAction.js';
+import { ComponentRegistry } from '../util/componentRegistry.js';
+import { TableFilterManager } from '../util/tableFilterManager.js';
+import { SaveFilterManager } from '../util/saveFilterManager.js';
+import { escapeHtml } from '../util/sanitize.js';
+
+const CONFIG = {
+    selectors: {
+        table: '#department-table',
+        tableColumn: '#department-table-column-dropdown',
+        form: '#department_form',
+        formId: 'department_form',
+        detailId: 'department_id',
+        submitButton: '#submit-data',
+        modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
+        logNotesTrigger: '.view-log-notes',
+        deleteMultipleTrigger: '#delete-data',
+        deleteTrigger: '.delete-details',
+        updateTrigger: '.update-details',
+        createTrigger: '.new-button',
+        checkboxes: '.datatable-checkbox-children:checked',
+        parentDropdown: '#parent_id',
+        filterCollapse: 'department-filter-collapse',
+        filterParentDropdown: '#filter_parent_id',
+        filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
+    },
+    endpoints: {
+        tableData: '/department/generate-table',
+        save: '/department/save',
+        delete: '/department/delete',
+        deleteMultiple: '/department/delete-multiple',
+        fetch: '/department/fetch',
+        parentOption: '/department/generate-option',
+    }
+};
+    
+export class Department {
+    constructor() {
+        this.orchestrator = new DataTableOrchestrator();
+        this.abortController = new AbortController();
+
+        this.filterManager = new TableFilterManager({
+            containerId: CONFIG.selectors.filterCollapse,
+            orchestrator: this.orchestrator,
+            tableSelector: CONFIG.selectors.table
+        });
+
+        this.saveFilterManager = new SaveFilterManager({
+            filterManager: this.filterManager
+        });
+        
+        this.dom = {
+            table: document.querySelector(CONFIG.selectors.table),
+            form: document.querySelector(CONFIG.selectors.form),
+            modal: $(CONFIG.selectors.modal),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate),
+            filterParent: document.querySelector(CONFIG.selectors.filterParentDropdown)
+        };
+    }
+
+    async init() {
+        return PageInitializer.run(async () => {
+            this.initDropdownOption();
+            await this.saveFilterManager.checkAndApplyDefaultFilter();
+            this.initTable();
+                
+            await Promise.all([
+                this.initForm(),
+                this.initDelete(),
+                this.initDateRangePicker(),
+                this.registerGlobalListeners()
+            ]);
+                
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'departments');
+        });
+    }
+
+    destroy() {
+        this.abortController.abort();
+    }
+
+    initTable() {
+        this.orchestrator.initialize({
+            selector: CONFIG.selectors.table,
+            url: CONFIG.endpoints.tableData,
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_parent_id: $(this.dom.filterParent).val() || [],
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
+            colVisContainer: CONFIG.selectors.tableColumn,
+            order: [[1, 'asc']],
+            exportColumns: [1, 2, 3],
+            addons: { 
+                controls: true, 
+                export: true,
+                columnVisibility: true
+            },
+            columnDefs: [
+                { width: '5%', bSortable: false, targets: 0 },
+                { width: '10%', bSortable: false, targets: 4 },
+            ],
+            columns: [
+                { 
+                    data: 'id',
+                    render: (id) => `
+                        <div class="form-check form-check-sm ms-5">
+                            <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
+                        </div>`
+                },
+                { 
+                    data: 'name',
+                    title: 'Department',
+                },
+                { 
+                    data: 'parent',
+                    title: 'Parent',
+                },
+                { 
+                    data: 'created_at',
+                    title: 'Created At',
+                    visible: false
+                },
+                { 
+                    data: null, 
+                    title: '&nbsp;',
+                    render: (data, type, row, meta) => {
+                        const perms = meta.settings.json?.permissions || row.permissions || {};
+                        const safeId = escapeHtml(row.id);
+
+                        return `
+                        <div class="d-flex justify-content-end gap-2 me-5">
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                        </div>`;
+                    }
+                }
+            ]
+        });
+    }
+
+    initForm() {
+        initValidation({
+            forms: [
+                {
+                    selector: CONFIG.selectors.form,
+                    rules: {
+                        name: { required: true },
+                    },
+                    submitHandler: async (formElement) => this.handleFormSubmission(formElement)
+                }
+            ]
+        });
+    }
+
+    async handleFormSubmission(formElement) {
+        const btn = CONFIG.selectors.submitButton;
+        ButtonStateManager.disable(btn, { loadingText: 'Saving...' });
+
+        try {
+            const response = await fetch(CONFIG.endpoints.save, {
+                method: 'POST',
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest', 
+                    'Accept': 'application/json' 
+                },
+                body: new FormData(formElement),
+                signal: this.abortController.signal
+            });
+
+            if (await errorHandler.handleResponse(response, btn)) return;
+
+            this.dom.modal.modal('hide');
+            FormEnvironmentManager.resetForm(formElement);
+            this.orchestrator.reload(CONFIG.selectors.table);
+            this.initDropdownOption();
+        } catch (error) {
+            if (error.name === 'AbortError') return; 
+            ButtonStateManager.enable(btn);
+            await errorHandler.handle(error, 'network_failure', 'Transactional pipeline error.');
+        }
+    }
+
+    initDelete() {
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteTrigger,
+            url: CONFIG.endpoints.delete,
+            method: 'DELETE',
+            payload: { department_id: (el) => el.dataset.referenceId },
+            swalTitle: 'Delete Record?',
+            swalText: 'This action will permanently delete this record and cannot be undone.',
+            confirmButtonText: 'Delete Record',
+            confirmButtonClass: 'danger',
+            onSuccess: () => {
+                this.orchestrator.reload(CONFIG.selectors.table); 
+                this.initDropdownOption();
+            }
+        });
+
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteMultipleTrigger,
+            url: CONFIG.endpoints.deleteMultiple,
+            method: 'DELETE',
+            payload: { 
+                'department_id': () => {
+                    const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
+                    return Array.from(checked, cb => Number(cb.value)).join(',');
+                }
+            },
+            swalTitle: 'Delete Multiple Records?',
+            swalText: 'This action will permanently delete the selected records and cannot be undone.',
+            confirmButtonText: 'Delete Records',
+            confirmButtonClass: 'danger',
+            onSuccess: () => {
+                this.orchestrator.reload(CONFIG.selectors.table); 
+                this.initDropdownOption();
+            }
+        });
+    }
+
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
+        });
+    }
+
+    initDropdownOption() {    
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.parentOption,
+            dropdownSelector: [CONFIG.selectors.filterParentDropdown]
+        });
+    }
+
+    initParentDropdownOption(departmentId) {
+        return ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.parentOption,
+            dropdownSelector: [CONFIG.selectors.parentDropdown],
+            data: { departmentId: departmentId }
+        });
+    }
+
+    registerGlobalListeners() {
+        document.addEventListener('click', async (event) => {
+            const { target } = event;
+            
+            const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
+            if (updateTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+                this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
+                return;
+            }
+            
+            const createTrigger = target.closest(CONFIG.selectors.createTrigger);
+            if (createTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+                await this.initParentDropdownOption(null);
+            }
+        }, { signal: this.abortController.signal });
+    }
+
+    async handleFetchWorkflow(referenceId) {
+        await DetailFetcher.fetch({
+            url: CONFIG.endpoints.fetch,
+            detailIdKey: CONFIG.selectors.detailId,
+            detailIdValue: referenceId,
+            formSelector: CONFIG.selectors.form,
+            submitBtnSelector: CONFIG.selectors.submitButton,
+            signal: this.abortController.signal,
+            onSuccess: async (response) => {
+                const data = response?.data || response;
+                if (!this.dom.form) return;
+
+                await this.initParentDropdownOption(referenceId);
+
+                const targetFields = {
+                    'department_id': referenceId,
+                    'name': data.name,
+                    'parent_id': data.parent_id,
+                };
+
+                Object.entries(targetFields).forEach(([name, val]) => {
+                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
+                    }
+                });
+            }
+        });
+    }
+}

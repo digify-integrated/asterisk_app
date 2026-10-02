@@ -48,43 +48,41 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'App Details')
-                @slot('formId', 'app_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'App Details')
+            @slot('formId', 'app_form')
+            @slot('size', 'md')
                 
-                <input type="hidden" id="app_id" name="app_id" />
+            <input type="hidden" id="app_id" name="app_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label mb-2" for="logo">Logo</label>
-                            <input type="file" class="form-control form-control-sm" id="logo" name="logo" accept="image/*">
-                        </div>
-                    </div>
-
-                    <div class="row g-5">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
-                        
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="order_sequence">Order Sequence</label>
-                            <input type="number" class="form-control form-control-sm" id="order_sequence" name="order_sequence" placeholder="0" min="0" max="100">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="description">Description</label>
-                            <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the app..." maxlength="500"></textarea>
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label mb-2" for="logo">Logo</label>
+                        <input type="file" class="form-control form-control-sm" id="logo" name="logo" accept="image/*">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+
+                <div class="row g-5">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
+                    </div>
+                        
+                    <div class="col-12 col-md-6">
+                        <label class="form-label required mb-2" for="order_sequence">Order Sequence</label>
+                        <input type="number" class="form-control form-control-sm" id="order_sequence" name="order_sequence" placeholder="0" min="0" max="100">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="description">Description</label>
+                        <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Briefly describe the app..." maxlength="500"></textarea>
+                    </div>
+                </div>
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -92,9 +90,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

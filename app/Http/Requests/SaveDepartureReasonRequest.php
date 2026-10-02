@@ -15,8 +15,8 @@ class SaveDepartureReasonRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'blood_type_id' => ['nullable', 'integer', 'exists:blood_types,id'],
-            'name'          => ['required', 'string', 'max:100'],
+            'departure_reason_id' => ['nullable', 'integer', 'exists:departure_reasons,id'],
+            'name'                => ['required', 'string', 'max:100'],
         ];
     }
 }

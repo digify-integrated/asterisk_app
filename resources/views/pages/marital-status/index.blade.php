@@ -46,24 +46,22 @@
             @endcomponent
         </div>
 
-        @if($pageType == 'single_page')
-            @component('partials.form-modal')
-                @slot('formTitle', 'Marital Status Details')
-                @slot('formId', 'marital_status_form')
-                @slot('size', 'md')
+        @component('partials.form-modal')
+            @slot('formTitle', 'Marital Status Details')
+            @slot('formId', 'marital_status_form')
+            @slot('size', 'md')
 
-                <input type="hidden" id="marital_status_id" name="marital_status_id" />
+            <input type="hidden" id="marital_status_id" name="marital_status_id" />
 
-                <div class="d-flex flex-column gap-7">
-                    <div class="row g-5">
-                        <div class="col-12">
-                            <label class="form-label required mb-2" for="name">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
-                        </div>
+            <div class="d-flex flex-column gap-7">
+                <div class="row g-5">
+                    <div class="col-12">
+                        <label class="form-label required mb-2" for="name">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" placeholder="Enter name" maxlength="100" autocomplete="off">
                     </div>
                 </div>
-            @endcomponent
-        @endif
+            </div>
+        @endcomponent
     </div>
 
     @include('partials.log-notes-modal')
@@ -71,9 +69,5 @@
 
 @push('scripts')
     <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
-
-    @if (!empty($jsFile))
-        <script type="module" src="{{ asset('assets/js/pages/' . $jsFile . '.js') }}"></script>
-    @endif
 @endpush
 

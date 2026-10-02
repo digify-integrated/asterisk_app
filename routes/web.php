@@ -12,6 +12,10 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\DegreeTypeController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DepartureReasonController;
+use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HolidayTypeController;
@@ -366,6 +370,54 @@ Route::middleware('auth')->group(function () {
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
+    
+    Route::prefix('employee-type')
+        ->name('employee-type')
+        ->controller(EmployeeTypeController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('degree-type')
+        ->name('degree-type')
+        ->controller(DegreeTypeController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('departure-reason')
+        ->name('departure-reason')
+        ->controller(DepartureReasonController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('department')
+        ->name('department.')
+        ->controller(DepartmentController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
 
     Route::prefix('filter')
         ->name('filter.')
@@ -382,18 +434,6 @@ Route::middleware('auth')->group(function () {
         ->controller(AuditLogController::class)
         ->group(function () {
             Route::get('/fetch', 'fetch')->name('fetch');
-        });
-
-        Route::get('/test-n1', function () {
-            // 1. Fetch companies WITHOUT eager loading
-            $companies = Company::all();
-
-            // 2. Loop through them and access a relationship (This will trigger the exception)
-            foreach ($companies as $company) {
-                $ownerName = $company->owner->name; 
-            }
-
-            return 'Done';
         });
 
     Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout');

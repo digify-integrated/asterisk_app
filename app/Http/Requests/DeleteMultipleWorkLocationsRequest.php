@@ -14,9 +14,9 @@ class DeleteMultipleWorkLocationsRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('work_location_idid') && is_string($this->work_location_idid)) {
+        if ($this->has('work_location_id') && is_string($this->work_location_id)) {
             $this->merge([
-                'work_location_idid' => array_map('intval', explode(',', $this->work_location_idid)),
+                'work_location_id' => array_map('intval', explode(',', $this->work_location_id)),
             ]);
         }
     }
@@ -24,8 +24,8 @@ class DeleteMultipleWorkLocationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'work_location_idid'   => ['required', 'array', 'min:1'],
-            'work_location_idid.*' => ['integer', 'distinct', 'exists:work_locations,id'],
+            'work_location_id'   => ['required', 'array', 'min:1'],
+            'work_location_id.*' => ['integer', 'distinct', 'exists:work_locations,id'],
         ];
     }
 }

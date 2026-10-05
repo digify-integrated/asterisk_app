@@ -9,7 +9,7 @@ use App\Http\Resources\WorkLocationDetailsResource;
 use App\Http\Requests\SaveWorkLocationRequest;
 use App\Http\Requests\FetchWorkLocationDetailsRequest;
 use App\Http\Requests\DeleteWorkLocationRequest;
-use App\Http\Requests\DeleteMultipleCompaniesRequest;
+use App\Http\Requests\DeleteMultipleWorkLocationsRequest;
 use App\Services\WorkLocationManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -81,7 +81,7 @@ class WorkLocationController extends Controller
         }
     }
 
-    public function deleteMultiple(DeleteMultipleCompaniesRequest $request): JsonResponse
+    public function deleteMultiple(DeleteMultipleWorkLocationsRequest $request): JsonResponse
     {
         try {
             $this->workLocationService->deleteMultipleWorkLocations($request->validated()['work_location_id']);
@@ -112,7 +112,7 @@ class WorkLocationController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = WorkLocation::query();
+        $query = WorkLocation::with(['city', 'state', 'country']);
 
         $query->when($request->filled('filter_location_type'), function ($q) use ($request) {
             $filterEntityType = (array) $request->input('filter_location_type');

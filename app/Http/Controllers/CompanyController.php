@@ -114,7 +114,7 @@ class CompanyController extends Controller
         $permissions = $user->getMenuPermissions($menuId);
         $defaultLogo = asset('assets/media/default/default-company-logo.png');
 
-        $query = Company::query();
+        $query = Company::with(['city', 'state', 'country']);
 
         $query->when($request->filled('filter_entity_type'), function ($q) use ($request) {
             $filterEntityType = (array) $request->input('filter_entity_type');

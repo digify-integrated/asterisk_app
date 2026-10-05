@@ -30,4 +30,9 @@ class State extends Model
     {
         return $this->hasMany(Company::class, 'state_id');
     }
+
+    public function workLocations(): HasMany
+    {
+        return $this->hasMany(WorkLocation::class, 'state_id');
+    }
 }

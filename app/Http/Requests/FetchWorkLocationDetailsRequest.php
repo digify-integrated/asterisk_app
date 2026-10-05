@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class FetchCompanyDetailsRequest extends FormRequest
+class FetchWorkLocationDetailsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class FetchCompanyDetailsRequest extends FormRequest
     public function rules(): bool|array
     {
         return [
-            'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'work_location_id' => ['required', 'integer', 'exists:work_locations,id'],
         ];
     }
 }

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use App\Models\WorkLocation;
 use App\Http\Resources\ConfigurationOptionResource;
-use App\Http\Resources\CompanyTableResource;
-use App\Http\Resources\CompanyDetailsResource;
-use App\Http\Requests\SaveCompanyRequest;
-use App\Http\Requests\FetchCompanyDetailsRequest;
-use App\Http\Requests\DeleteCompanyRequest;
+use App\Http\Resources\WorkLocationTableResource;
+use App\Http\Resources\WorkLocationDetailsResource;
+use App\Http\Requests\SaveWorkLocationRequest;
+use App\Http\Requests\FetchWorkLocationDetailsRequest;
+use App\Http\Requests\DeleteWorkLocationRequest;
 use App\Http\Requests\DeleteMultipleCompaniesRequest;
-use App\Services\CompanyManagementService;
+use App\Services\WorkLocationManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,23 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
 
-class CompanyController extends Controller
+class WorkLocationController extends Controller
 {
     public function __construct(
-        protected CompanyManagementService $companyService
+        protected WorkLocationManagementService $workLocationService
     ) {}
 
-    public function save(SaveCompanyRequest $request): JsonResponse
+    public function save(SaveWorkLocationRequest $request): JsonResponse
     {
         try {
-            $this->companyService->saveCompany(
+            $this->workLocationService->saveWorkLocation(
                 $request->validated(),
-                $request->file('logo'),
                 Auth::id()
             );
 
             return response()->json([
-                'message' => 'The company has been saved successfully.',
+                'message' => 'The work location has been saved successfully.',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -46,14 +45,14 @@ class CompanyController extends Controller
         }
     }
 
-    public function fetch(FetchCompanyDetailsRequest $request): JsonResponse|CompanyDetailsResource
+    public function fetch(FetchWorkLocationDetailsRequest $request): JsonResponse|WorkLocationDetailsResource
     {
         try {
             $validated = $request->validated();
 
-            $company = Company::find($validated['company_id']);
+            $company = WorkLocation::find($validated['work_location_id']);
 
-            return new CompanyDetailsResource($company);
+            return new WorkLocationDetailsResource($company);
 
         } catch (Exception $e) {
             report($e);
@@ -64,13 +63,13 @@ class CompanyController extends Controller
         }
     }
 
-    public function delete(DeleteCompanyRequest $request): JsonResponse
+    public function delete(DeleteWorkLocationRequest $request): JsonResponse
     {
         try {
-            $this->companyService->deleteCompany((int) $request->validated()['company_id']);
+            $this->workLocationService->deleteWorkLocation((int) $request->validated()['work_location_id']);
 
             return response()->json([
-                'message' => 'The company has been deleted successfully',
+                'message' => 'The work location has been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -85,10 +84,10 @@ class CompanyController extends Controller
     public function deleteMultiple(DeleteMultipleCompaniesRequest $request): JsonResponse
     {
         try {
-            $this->companyService->deleteMultipleCompanies($request->validated()['company_id']);
+            $this->workLocationService->deleteMultipleWorkLocations($request->validated()['work_location_id']);
 
             return response()->json([
-                'message' => 'The selected companies have been deleted successfully',
+                'message' => 'The selected work locations have been deleted successfully',
             ], Response::HTTP_OK);
 
         } catch (Exception $e) {
@@ -112,18 +111,12 @@ class CompanyController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $defaultLogo = asset('assets/media/default/default-company-logo.png');
 
-        $query = Company::query();
+        $query = WorkLocation::query();
 
-        $query->when($request->filled('filter_entity_type'), function ($q) use ($request) {
-            $filterEntityType = (array) $request->input('filter_entity_type');
-            $q->whereIn('entity_type', $filterEntityType);
-        });
-
-        $query->when($request->filled('filter_vat_status'), function ($q) use ($request) {
-            $filterVATStatus = (array) $request->input('filter_vat_status');
-            $q->whereIn('vat_status', $filterVATStatus);
+        $query->when($request->filled('filter_location_type'), function ($q) use ($request) {
+            $filterEntityType = (array) $request->input('filter_location_type');
+            $q->whereIn('location_type', $filterEntityType);
         });
 
         $query->when($request->filled('filter_city_id'), function ($q) use ($request) {
@@ -141,27 +134,6 @@ class CompanyController extends Controller
             $q->whereIn('country_id', $filterCountryId);
         });
 
-        $query->when($request->filled('filter_currency_id'), function ($q) use ($request) {
-            $filterCurrencyId = (array) $request->input('filter_currency_id');
-            $q->whereIn('currency_id', $filterCurrencyId);
-        });
-
-        $query->when($request->filled('filter_fiscal_year_start_month'), function ($q) use ($request) {
-            $filterFiscalYearStartMonth = (array) $request->input('filter_fiscal_year_start_month');
-            $q->whereIn('fiscal_year_start_month', $filterFiscalYearStartMonth);
-        });
-        
-        $query->when($request->filled('filter_date_registered'), function ($q) use ($request) {
-            $dates = explode(' - ', $request->input('filter_date_registered'));
-
-            if (count($dates) === 2) {
-                $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
-                $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
-
-                $q->whereBetween('date_registered', [$startDate, $endDate]);
-            }
-        });
-
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
             $dates = explode(' - ', $request->input('filter_created_date'));
@@ -174,21 +146,20 @@ class CompanyController extends Controller
             }
         });
 
-        $companies = $query->orderBy('legal_name')->get();
+        $workLocations = $query->orderBy('name')->get();
 
-        return CompanyTableResource::collection($companies)
+        return WorkLocationTableResource::collection($workLocations)
             ->additional([
-                'permissions'  => $permissions,
-                'default_logo' => $defaultLogo,
+                'permissions' => $permissions,
             ])
             ->response();
     }
 
     public function generateOption(Request $request): JsonResponse
     {
-        $companies = Company::query()->orderBy('legal_name')->get();
+        $workLocations = WorkLocation::query()->orderBy('name')->get();
 
-        return ConfigurationOptionResource::collection($companies)
+        return ConfigurationOptionResource::collection($workLocations)
             ->response();
     }
 }

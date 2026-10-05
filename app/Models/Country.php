@@ -28,4 +28,9 @@ class Country extends Model
     {
         return $this->hasMany(Company::class, 'country_id');
     }
+
+    public function workLocations(): HasMany
+    {
+        return $this->hasMany(WorkLocation::class, 'country_id');
+    }
 }

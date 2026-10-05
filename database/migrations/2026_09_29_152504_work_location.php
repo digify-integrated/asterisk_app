@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('work_locations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('location_type', ['Home', 'Office', 'Others'])->default('Office');
+            $table->enum('location_type', ['Home', 'Office', 'Warehouse', 'Others'])->default('Office');
             
             $table->string('street_1')->nullable();
             $table->string('street_2')->nullable();

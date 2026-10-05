@@ -17,11 +17,11 @@ import { PasswordToggle } from '../util/passwordToggle.js';
 
 const CONFIG = {
     selectors: {
-        table: '#company-table',
-        tableColumn: '#company-table-column-dropdown',
-        form: '#company_form',
-        formId: 'company_form',
-        detailId: 'company_id',
+        table: '#work-location-table',
+        tableColumn: '#work-location-table-column-dropdown',
+        form: '#work_location_form',
+        formId: 'work_location_form',
+        detailId: 'work_location_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesModal: '#log-notes-modal',
@@ -34,16 +34,12 @@ const CONFIG = {
         cityDropdown: '#city_id',
         currencyDropdown: '#currency_id',
         dateRegistered: '#date_registered',
-        filterDateRegistered: '#filter_date_registered',
-        filterCollapse: 'company-filter-collapse',
+        filterCollapse: 'work-location-filter-collapse',
         filterCityDropdown: '#filter_city_id',
         filterStateDropdown: '#filter_state_id',
         filterCountryDropdown: '#filter_country_id',
-        filterCurrencyDropdown: '#filter_currency_id',
         filterCreatedDate: '#filter_created_date',
-        filterEntityType: '#filter_entity_type',
-        filterVatStatus: '#filter_vat_status',
-        filterFiscalYearStartMonth: '#filter_fiscal_year_start_month'
+        filterLocationType: '#filter_location_type',
     },
     classes: {
         logNotesTrigger: 'view-log-notes',
@@ -51,15 +47,14 @@ const CONFIG = {
         updateTrigger: 'update-details'
     },
     endpoints: {
-        tableData: '/company/generate-table',
-        save: '/company/save',
-        delete: '/company/delete',
-        deleteMultiple: '/company/delete-multiple',
-        fetch: '/company/fetch',
+        tableData: '/work-location/generate-table',
+        save: '/work-location/save',
+        delete: '/work-location/delete',
+        deleteMultiple: '/work-location/delete-multiple',
+        fetch: '/work-location/fetch',
         cityOption: '/city/generate-option',
         stateOption: '/state/generate-option',
         countryOption: '/country/generate-option',
-        currencyOption: '/currency/generate-option',
     }
 };
     
@@ -82,14 +77,10 @@ export class WorkLocation {
             table: document.querySelector(CONFIG.selectors.table),
             form: document.querySelector(CONFIG.selectors.form),
             modal: $(CONFIG.selectors.modal),
-            filterEntityType: document.querySelector(CONFIG.selectors.filterEntityType),
-            filterVatStatus: document.querySelector(CONFIG.selectors.filterVatStatus),
+            filterLocationType: document.querySelector(CONFIG.selectors.filterLocationType),
             filterCity: document.querySelector(CONFIG.selectors.filterCityDropdown),
             filterState: document.querySelector(CONFIG.selectors.filterStateDropdown),
             filterCountry: document.querySelector(CONFIG.selectors.filterCountryDropdown),
-            filterCurrency: document.querySelector(CONFIG.selectors.filterCurrencyDropdown),
-            filterFiscalMonth: document.querySelector(CONFIG.selectors.filterFiscalYearStartMonth),
-            filterDateRegistered: document.querySelector(CONFIG.selectors.filterDateRegistered),
             filterCreatedDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
         };
 
@@ -106,11 +97,10 @@ export class WorkLocation {
                 this.initForm(),
                 this.initDelete(),
                 this.initDateRangePicker(),
-                this.initDatePicker(),
                 this.registerGlobalListeners()
             ]);
             
-            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'companies');
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'work_locations');
         });
     }
 
@@ -123,19 +113,15 @@ export class WorkLocation {
             selector: CONFIG.selectors.table,
             url: CONFIG.endpoints.tableData,
             ajaxData: (d) => Object.assign({}, d, {
-                filter_entity_type: $(this.dom.filterEntityType).val() || [],
-                filter_vat_status: $(this.dom.filterVatStatus).val() || [],
+                filter_location_type: $(this.dom.filterLocationType).val() || [],
                 filter_city_id: $(this.dom.filterCity).val() || [],
                 filter_state_id: $(this.dom.filterState).val() || [],
                 filter_country_id: $(this.dom.filterCountry).val() || [],
-                filter_currency_id: $(this.dom.filterCurrency).val() || [],
-                filter_fiscal_year_start_month: $(this.dom.filterFiscalMonth).val() || [],
-                filter_date_registered: this.dom.filterDateRegistered?.value || '',
                 filter_created_date: this.dom.filterCreatedDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
-            exportColumns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            exportColumns: [1, 2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -143,8 +129,7 @@ export class WorkLocation {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '5%', bSortable: false, targets: 1 },
-                { width: '10%', bSortable: false, targets: 19 },
+                { width: '10%', bSortable: false, targets: 5 },
             ],
             columns: [
                 { 
@@ -155,8 +140,8 @@ export class WorkLocation {
                         </div>`
                 },
                 { data: 'name', title: 'Name' },
+                { data: 'location_type', title: 'Location Type' },
                 { data: 'address', title: 'Address' },
-                { data: 'location_type', title: 'Location Type', visible: false },
                 { data: 'created_at', title: 'Created At', visible: false },
                 { 
                     data: null, 
@@ -183,13 +168,10 @@ export class WorkLocation {
                 {
                     selector: CONFIG.selectors.form,
                     rules: {
-                        legal_name: { required: true },
-                        trade_name: { required: true },
-                        entity_type: { required: true },
-                        vat_status: { required: true },
+                        name: { required: true },
+                        location_type: { required: true },
                         street_1: { required: true },
                         city_id: { required: true },
-                        email: { typeEmail: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -229,7 +211,7 @@ export class WorkLocation {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { company_id: (el) => el.dataset.referenceId },
+            payload: { work_location_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -242,7 +224,7 @@ export class WorkLocation {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'company_id': () => {
+                'work_location_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -257,13 +239,7 @@ export class WorkLocation {
 
     initDateRangePicker() {
         ComponentRegistry.initializeDateRangePicker({
-            selector: [CONFIG.selectors.filterCreatedDate, CONFIG.selectors.filterDateRegistered]
-        });
-    }
-
-    initDatePicker() {
-        ComponentRegistry.initializeDatePicker({
-            selector: [CONFIG.selectors.dateRegistered]
+            selector: [CONFIG.selectors.filterCreatedDate]
         });
     }
 
@@ -287,11 +263,6 @@ export class WorkLocation {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.countryOption,
             dropdownSelector: [CONFIG.selectors.filterCountryDropdown]
-        });
-
-        ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.currencyOption,
-            dropdownSelector: [CONFIG.selectors.currencyDropdown, CONFIG.selectors.filterCurrencyDropdown]
         });
     }
 
@@ -326,28 +297,13 @@ export class WorkLocation {
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'company_id': referenceId,
-                    'legal_name': data.legal_name,
-                    'trade_name': data.trade_name,
-                    'tin': data.tin,
-                    'branch_code': data.branch_code,
-                    'rdo_code': data.rdo_code,
-                    'entity_type': data.entity_type,
-                    'sec_dti_registration_no': data.sec_dti_registration_no,
-                    'date_registered': data.date_registered,
-                    'psic_code': data.psic_code,
-                    'line_of_business': data.line_of_business,
-                    'vat_status': data.vat_status,
-                    'fiscal_year_start_month': data.fiscal_year_start_month,
+                    'work_location_id': referenceId,
+                    'name': data.name,
+                    'location_type': data.location_type,
                     'street_1': data.street_1,
                     'street_2': data.street_2,
                     'barangay': data.barangay,
                     'city_id': data.city_id,
-                    'currency_id': data.currency_id,
-                    'phone': data.phone,
-                    'email': data.email,
-                    'website': data.website,
-                    'contact_person': data.contact_person
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {

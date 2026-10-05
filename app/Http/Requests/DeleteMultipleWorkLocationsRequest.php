@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class DeleteMultipleCompaniesRequest extends FormRequest
+class DeleteMultipleWorkLocationsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,9 +14,9 @@ class DeleteMultipleCompaniesRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->has('company_id') && is_string($this->company_id)) {
+        if ($this->has('work_location_idid') && is_string($this->work_location_idid)) {
             $this->merge([
-                'company_id' => array_map('intval', explode(',', $this->company_id)),
+                'work_location_idid' => array_map('intval', explode(',', $this->work_location_idid)),
             ]);
         }
     }
@@ -24,8 +24,8 @@ class DeleteMultipleCompaniesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id'   => ['required', 'array', 'min:1'],
-            'company_id.*' => ['integer', 'distinct', 'exists:companies,id'],
+            'work_location_idid'   => ['required', 'array', 'min:1'],
+            'work_location_idid.*' => ['integer', 'distinct', 'exists:work_locations,id'],
         ];
     }
 }

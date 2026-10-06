@@ -280,49 +280,33 @@ class NavigationMenuRouteSeeder extends Seeder
                 'js_file'               => 'job-position/index',
             ],
 
-            // Contract Template (ID: 41)
+            // Work Location (ID: 42)
             [
-                'navigation_menu_id'    => 41,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.contract-template.index',
-                'js_file'               => 'contract-template/index',
-            ],
-
-            // Work Location (ID: 43)
-            [
-                'navigation_menu_id'    => 43,
+                'navigation_menu_id'    => 42,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.work-location.index',
                 'js_file'               => 'work-location/index',
             ],
 
-            // Working Schedule (ID: 44)
+            // Work Schedule (ID: 43)
             [
-                'navigation_menu_id'    => 44,
+                'navigation_menu_id'    => 43,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.working-schedule.index',
-                'js_file'               => 'working-schedule/index',
+                'view_file'             => 'pages.work-schedule.index',
+                'js_file'               => 'work-schedule/index',
             ],
 
-            // Skill Type (ID: 46)
+            // Degree Type (ID: 45)
             [
-                'navigation_menu_id'    => 46,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.skill-type.index',
-                'js_file'               => 'skill-type/index',
-            ],
-
-            // Degree Type (ID: 47)
-            [
-                'navigation_menu_id'    => 47,
+                'navigation_menu_id'    => 45,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.degree-type.index',
                 'js_file'               => 'degree-type/index',
             ],
 
-            // Departure Reason (ID: 49)
+            // Departure Reason (ID: 47)
             [
-                'navigation_menu_id'    => 49,
+                'navigation_menu_id'    => 47,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.departure-reason.index',
                 'js_file'               => 'departure-reason/index',

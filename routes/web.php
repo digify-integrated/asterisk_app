@@ -19,6 +19,7 @@ use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HolidayTypeController;
+use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LanguageProficiencyController;
 use App\Http\Controllers\MaritalStatusController;
@@ -423,6 +424,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('work-location')
         ->name('work-location')
         ->controller(WorkLocationController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('job-position')
+        ->name('job-position')
+        ->controller(JobPositionController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

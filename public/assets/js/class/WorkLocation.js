@@ -120,8 +120,7 @@ export class WorkLocation {
                 filter_created_date: this.dom.filterCreatedDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
-            order: [[2, 'asc']],
-            exportColumns: [1, 2, 3, 4],
+            order: [[1, 'asc']],
             addons: { 
                 controls: true, 
                 export: true,

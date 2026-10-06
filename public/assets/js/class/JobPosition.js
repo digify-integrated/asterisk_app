@@ -16,11 +16,11 @@ import { escapeHtml } from '../util/sanitize.js';
 
 const CONFIG = {
     selectors: {
-        table: '#upload-setting-table',
-        tableColumn: '#upload-setting-table-column-dropdown',
-        form: '#upload_setting_form',
-        formId: 'upload_setting_form',
-        detailId: 'upload_setting_id',
+        table: '#job-position-table',
+        tableColumn: '#job-position-table-column-dropdown',
+        form: '#job_position_form',
+        formId: 'job_position_form',
+        detailId: 'job_position_id',
         submitButton: '#submit-data',
         modal: '#form-modal',
         logNotesModal: '#log-notes-modal',
@@ -30,8 +30,7 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        extenstionTagify: '#extension',
-        filterCollapse: 'upload-setting-filter-collapse',
+        filterCollapse: 'job-position-filter-collapse',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -40,15 +39,15 @@ const CONFIG = {
         updateTrigger: 'update-details'
     },
     endpoints: {
-        tableData: '/upload-setting/generate-table',
-        save: '/upload-setting/save',
-        delete: '/upload-setting/delete',
-        deleteMultiple: '/upload-setting/delete-multiple',
-        fetch: '/upload-setting/fetch',
+        tableData: '/job-position/generate-table',
+        save: '/job-position/save',
+        delete: '/job-position/delete',
+        deleteMultiple: '/job-position/delete-multiple',
+        fetch: '/job-position/fetch',
     }
 };
     
-export class UploadSetting {
+export class JobPosition {
     constructor() {
         this.orchestrator = new DataTableOrchestrator();
         this.abortController = new AbortController();
@@ -80,11 +79,10 @@ export class UploadSetting {
                 this.initForm(),
                 this.initDelete(),
                 this.initDateRangePicker(),
-                this.initTagify(),
                 this.registerGlobalListeners()
             ]);
                                         
-            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'upload_settings');
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'job_positions');
         });
     }
 
@@ -101,6 +99,7 @@ export class UploadSetting {
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
+            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -108,7 +107,7 @@ export class UploadSetting {
             },
             columnDefs: [
                 { width: '5%', orderable: false, targets: 0 },
-                { width: '10%', orderable: false, targets: 5 },
+                { width: '10%', orderable: false, targets: 3 },
             ],
             columns: [
                 { 
@@ -120,40 +119,7 @@ export class UploadSetting {
                 },
                 { 
                     data: 'name',
-                    title: 'System Parameter',
-                },
-                { 
-                    data: 'max_file_size',
-                    title: 'Max File Size',
-                    render: (size) => {
-                        const kb = size ?? 0;
-                        if (kb === 0) return '0 Kb';
-
-                        const units = ['Kb', 'Mb', 'Gb', 'Tb', 'Pb'];
-                        let i = 0;
-                        let val = kb;
-
-                        while (val >= 1024 && i < units.length - 1) {
-                            val /= 1024;
-                            i++;
-                        }
-
-                        return `${parseFloat(val.toFixed(2))} ${units[i]}`;
-                    }
-                },
-                { 
-                    data: 'extensions',
-                    title: 'Allowed Extensions',
-                    orderable: false,
-                    render: (extensions) => {
-                        if (!Array.isArray(extensions) || extensions.length === 0) {
-                            return `<span class="badge badge-light-secondary">No Extensions</span>`;
-                        }
-
-                        return extensions.map(ext => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(ext.name)}</span>`
-                        ).join('');
-                    }
+                    title: 'Job Position',
                 },
                 { 
                     data: 'created_at',
@@ -167,15 +133,11 @@ export class UploadSetting {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 
-                        const canWrite = perms.can_write || perms.write;
-                        const canLogs = perms.can_logs || perms.logs;
-                        const canDelete = perms.can_delete || perms.delete;
-
                         return `
                         <div class="d-flex justify-content-end gap-2 me-5">
-                            ${canWrite ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
                         </div>`;
                     }
                 }
@@ -190,8 +152,6 @@ export class UploadSetting {
                     selector: CONFIG.selectors.form,
                     rules: {
                         name: { required: true },
-                        max_file_size: { required: true },
-                        extension: { required: true },
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -231,7 +191,7 @@ export class UploadSetting {
             trigger: CONFIG.selectors.deleteTrigger,
             url: CONFIG.endpoints.delete,
             method: 'DELETE',
-            payload: { upload_setting_id: (el) => el.dataset.referenceId },
+            payload: { job_position_id: (el) => el.dataset.referenceId },
             swalTitle: 'Delete Record?',
             swalText: 'This action will permanently delete this record and cannot be undone.',
             confirmButtonText: 'Delete Record',
@@ -244,7 +204,7 @@ export class UploadSetting {
             url: CONFIG.endpoints.deleteMultiple,
             method: 'DELETE',
             payload: { 
-                'upload_setting_id': () => {
+                'job_position_id': () => {
                     const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
                     return Array.from(checked, cb => Number(cb.value)).join(',');
                 }
@@ -260,12 +220,6 @@ export class UploadSetting {
     initDateRangePicker() {
         ComponentRegistry.initializeDateRangePicker({
             selector: CONFIG.selectors.filterCreatedDate
-        });
-    }
-
-    initTagify() {
-        ComponentRegistry.initializeTagify({
-            selector: CONFIG.selectors.extenstionTagify
         });
     }
 
@@ -300,28 +254,14 @@ export class UploadSetting {
                 if (!this.dom.form) return;
 
                 const targetFields = {
-                    'upload_setting_id': referenceId,
+                    'job_position_id': referenceId,
                     'name': data.name,
-                    'max_file_size': data.max_file_size,
-                    'extension': data.extensions ?? data.extension ?? '',
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
                     const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
-                    if ($field.length) {
-                        const inputEl = $field[0];
-
-                        if (inputEl.__tagify) {
-                            const tagify = inputEl.__tagify;
-                            tagify.removeAllTags();
-
-                            if (val) {
-                                tagify.addTags(val);
-                            }
-                        } else {
-                            $field.val(val ?? '').trigger('change');
-                        }
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
                     }
                 });
             }

@@ -1,0 +1,10 @@
+Schema::create('employee_schedule_assignments', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('employee_id')->constrained('users')->cascadeOnDelete();
+    $table->foreignId('work_schedule_id')->constrained('work_schedules')->cascadeOnDelete();
+    
+    $table->date('effective_date'); // When this schedule starts taking effect
+    $table->date('end_date')->nullable(); // Null means current active schedule
+    
+    $table->timestamps();
+});

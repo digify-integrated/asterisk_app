@@ -41,8 +41,8 @@ class NavigationMenuAppSeeder extends Seeder
             'app_id'             => 2,
         ];
 
-        // 4. Assign Employee Configuration Sub-menus & Groupings (IDs 38 to 49) to App ID 2
-        for ($i = 38; $i <= 49; $i++) {
+        // 4. Assign Employee Configuration Sub-menus & Groupings (IDs 38 to 47) to App ID 2
+        for ($i = 38; $i <= 47; $i++) {
             $apps[] = [
                 'navigation_menu_id' => $i,
                 'app_id'             => 2,

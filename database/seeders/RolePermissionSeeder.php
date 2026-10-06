@@ -398,10 +398,10 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Contract Template ID: 41
+            // Work Location ID: 42
             [
                 'role_id' => 1,
-                'navigation_menu_id' => 41,
+                'navigation_menu_id' => 42,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,
@@ -410,7 +410,7 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Work Location ID: 43
+            // Working Schedule ID: 43
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 43,
@@ -422,10 +422,10 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Working Schedule ID: 44
+            // Degree Type ID: 45
             [
                 'role_id' => 1,
-                'navigation_menu_id' => 44,
+                'navigation_menu_id' => 45,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,
@@ -434,34 +434,10 @@ class RolePermissionSeeder extends Seeder
                 'logs_access' => true,
             ],
 
-            // Skill Type ID: 46
-            [
-                'role_id' => 1,
-                'navigation_menu_id' => 46,
-                'read_access' => true,
-                'write_access' => true,
-                'create_access' => true,
-                'delete_access' => true,
-                'export_access' => true,
-                'logs_access' => true,
-            ],
-
-            // Degree Type ID: 47
+            // Departure Reason ID: 47
             [
                 'role_id' => 1,
                 'navigation_menu_id' => 47,
-                'read_access' => true,
-                'write_access' => true,
-                'create_access' => true,
-                'delete_access' => true,
-                'export_access' => true,
-                'logs_access' => true,
-            ],
-
-            // Departure Reason ID: 49
-            [
-                'role_id' => 1,
-                'navigation_menu_id' => 49,
                 'read_access' => true,
                 'write_access' => true,
                 'create_access' => true,

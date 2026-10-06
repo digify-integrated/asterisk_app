@@ -21,7 +21,7 @@ class NavigationMenuSeeder extends Seeder
 
         $navigationMenus = [
             // ==========================================
-            // SETTINGS APP MENUS (IDs 1 - 34)
+            // SETTINGS APP MENUS
             // ==========================================
             
             // Account Setting ID: 1
@@ -42,7 +42,7 @@ class NavigationMenuSeeder extends Seeder
                 'order_sequence'    => 100,
             ],
 
-            // --- Settings Configuration Sub-Menus (IDs 3 - 21) ---
+            // --- Settings Configuration Sub-Menus ---
             // 1. Localization & Region ID: 3
             [
                 'name'              => 'Localization',
@@ -306,7 +306,7 @@ class NavigationMenuSeeder extends Seeder
             ],
 
             // ==========================================
-            // EMPLOYEE MANAGEMENT MODULE (IDs 35 - 49)
+            // EMPLOYEE MANAGEMENT MODULE
             // ==========================================
 
             // Employees ID: 35
@@ -360,16 +360,9 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
-            // Contract Template ID: 41
-            [
-                'name'              => 'Contract Template',
-                'icon'              => null,
-                'parent_id'         => 38,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 3,
-            ],
+            // (Contract Template removed)
 
-            // 2. Operations & Schedule ID: 42
+            // 2. Operations & Schedule ID: 41
             [
                 'name'              => 'Operations & Schedule',
                 'icon'              => null,
@@ -377,24 +370,24 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 6,
             ],
-            // Work Location ID: 43
+            // Work Location ID: 42
             [
                 'name'              => 'Work Location',
                 'icon'              => null,
-                'parent_id'         => 42,
+                'parent_id'         => 41,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // Working Schedule ID: 44
+            // Work Schedule ID: 43
             [
-                'name'              => 'Working Schedule',
+                'name'              => 'Work Schedule',
                 'icon'              => null,
-                'parent_id'         => 42,
+                'parent_id'         => 41,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
 
-            // 3. Qualifications & Skills ID: 45
+            // 3. Qualifications & Skills ID: 44
             [
                 'name'              => 'Qualifications & Skills',
                 'icon'              => null,
@@ -402,24 +395,17 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 7,
             ],
-            // Skill Type ID: 46
-            [
-                'name'              => 'Skill Type',
-                'icon'              => null,
-                'parent_id'         => 45,
-                'page_type'         => 'single_page',
-                'order_sequence'    => 1,
-            ],
-            // Degree Type ID: 47
+            // (Skill Type removed)
+            // Degree Type ID: 45
             [
                 'name'              => 'Degree Type',
                 'icon'              => null,
-                'parent_id'         => 45,
+                'parent_id'         => 44,
                 'page_type'         => 'single_page',
-                'order_sequence'    => 2,
+                'order_sequence'    => 1,
             ],
 
-            // 4. Offboarding ID: 48
+            // 4. Offboarding ID: 46
             [
                 'name'              => 'Offboarding',
                 'icon'              => null,
@@ -427,11 +413,11 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 8,
             ],
-            // Departure Reason ID: 49
+            // Departure Reason ID: 47
             [
                 'name'              => 'Departure Reason',
                 'icon'              => null,
-                'parent_id'         => 48,
+                'parent_id'         => 46,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],

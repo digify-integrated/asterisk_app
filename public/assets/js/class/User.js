@@ -105,7 +105,6 @@ export class User {
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[2, 'asc']],
-            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,

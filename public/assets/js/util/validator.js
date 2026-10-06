@@ -187,7 +187,8 @@ export class FormValidator {
 
             case 'requiredIf': {
                 if (!this._evaluateCondition(ruleValue, field)) return true;
-                return value !== null && String(value).trim() !== '';
+                
+                return this._runRule('required', true, field);
             }
             case 'typeEmail':
                 return value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value));

@@ -167,10 +167,22 @@ export class WorkLocation {
                 {
                     selector: CONFIG.selectors.form,
                     rules: {
-                        name: { required: true },
+                    name: { required: true },
                         location_type: { required: true },
-                        street_1: { required: true },
-                        city_id: { required: true },
+                        street_1: {
+                            requiredIf: (form, field) => {
+                                const locationTypeEl = form.querySelector('[name="location_type"]');
+                                const locationValue = locationTypeEl ? locationTypeEl.value : '';
+                                return locationValue !== '' && locationValue !== 'Home';
+                            }
+                        },
+                        city_id: {
+                            requiredIf: (form, field) => {
+                                const locationTypeEl = form.querySelector('[name="location_type"]');
+                                const locationValue = locationTypeEl ? locationTypeEl.value : '';
+                                return locationValue !== '' && locationValue !== 'Home';
+                            }
+                        }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }
@@ -272,15 +284,54 @@ export class WorkLocation {
             const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
             if (updateTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
-                this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
+                await this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
+                this.toggleAddressVisibility();
                 return;
             }
             
             const createTrigger = target.closest(CONFIG.selectors.createTrigger);
             if (createTrigger) {
                 FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+                this.toggleAddressVisibility();
             }
         }, { signal: this.abortController.signal });
+
+        const locationTypeEl = document.querySelector('#location_type');
+        if (locationTypeEl) {
+            if (window.jQuery) {
+                window.jQuery(locationTypeEl).on('change select2:select select2:clear', () => {
+                    this.toggleAddressVisibility();
+                });
+            } else {
+                locationTypeEl.addEventListener('change', () => this.toggleAddressVisibility(), { signal: this.abortController.signal });
+            }
+        }
+    }
+
+    toggleAddressVisibility() {
+        const locationType = document.querySelector('#location_type')?.value;
+        const addressContainer = document.querySelector('#address-section-container');
+        
+        if (!addressContainer) return;
+
+        const isHomeOrEmpty = !locationType || locationType === 'Home';
+
+        if (isHomeOrEmpty) {
+            addressContainer.classList.add('d-none');
+            
+            addressContainer.querySelectorAll('input').forEach(input => {
+                input.value = '';
+                input.classList.remove('is-invalid');
+            });
+
+            const $city = window.jQuery ? window.jQuery('#city_id') : null;
+            if ($city) {
+                $city.val(null).trigger('change.select2');
+                $city.next('.select2-container').find('.is-invalid').removeClass('is-invalid');
+            }
+        } else {
+            addressContainer.classList.remove('d-none');
+        }
     }
 
     async handleFetchWorkflow(referenceId) {

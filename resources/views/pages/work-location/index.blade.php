@@ -102,33 +102,35 @@
                     </div>
                 </div>
 
-                <div class="separator separator-dashed my-2"></div>
+                <div id="address-section-container" class="d-flex flex-column gap-5">
+                    <div class="separator separator-dashed my-2"></div>
 
-                <div class="d-flex flex-column gap-5">
-                    <h6 class="fw-bold text-gray-800 m-0 d-flex align-items-center">
-                        <i class="ki-duotone ki-geolocation fs-4 me-2 text-primary"></i>
-                        Work Location Address
-                    </h6>
+                    <div class="d-flex flex-column gap-5">
+                        <h6 class="fw-bold text-gray-800 m-0 d-flex align-items-center">
+                            <i class="ki-duotone ki-geolocation fs-4 me-2 text-primary"></i>
+                            Work Location Address
+                        </h6>
 
-                    <div class="row g-5">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="street_1">Street 1</label>
-                            <input type="text" class="form-control form-control-sm" id="street_1" name="street_1" placeholder="Enter street 1" maxlength="100" autocomplete="off">
-                        </div>
+                        <div class="row g-5">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label required mb-2" for="street_1">Street 1</label>
+                                <input type="text" class="form-control form-control-sm" id="street_1" name="street_1" placeholder="Enter street 1" maxlength="100" autocomplete="off">
+                            </div>
 
-                        <div class="col-12 col-md-6">
-                            <label class="form-label mb-2" for="street_2">Street 2</label>
-                            <input type="text" class="form-control form-control-sm" id="street_2" name="street_2" placeholder="Enter street 2" maxlength="100" autocomplete="off">
-                        </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label mb-2" for="street_2">Street 2</label>
+                                <input type="text" class="form-control form-control-sm" id="street_2" name="street_2" placeholder="Enter street 2" maxlength="100" autocomplete="off">
+                            </div>
 
-                        <div class="col-12 col-md-6">
-                            <label class="form-label mb-2" for="barangay">Barangay</label>
-                            <input type="text" class="form-control form-control-sm" id="barangay" name="barangay" placeholder="Enter barangay" maxlength="100" autocomplete="off">
-                        </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label mb-2" for="barangay">Barangay</label>
+                                <input type="text" class="form-control form-control-sm" id="barangay" name="barangay" placeholder="Enter barangay" maxlength="100" autocomplete="off">
+                            </div>
 
-                        <div class="col-12 col-md-6">
-                            <label class="form-label required mb-2" for="city_id">City</label>
-                            <select id="city_id" name="city_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select city"></select>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label required mb-2" for="city_id">City</label>
+                                <select id="city_id" name="city_id" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select city"></select>
+                            </div>
                         </div>
                     </div>
                 </div>

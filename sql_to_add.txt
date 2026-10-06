@@ -8,3 +8,11 @@ Schema::create('employee_schedule_assignments', function (Blueprint $table) {
     
     $table->timestamps();
 });
+
+
+To change:
+1. Sa role table, gawing side by side ang names ng users instead na naka stack
+2. add ng import access
+3. sa exportation ng data lagyan ng condition na if may check selected lang ang ma eexport pag wala import all
+4. sa emportation tangalin ang header
+5. Add ng custom export.

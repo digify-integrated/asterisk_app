@@ -18,10 +18,10 @@ class SaveWorkLocationRequest extends FormRequest
             'work_location_id'  => ['nullable', 'integer', 'exists:work_locations,id'],
             'name'              => ['required', 'string', 'max:255'],
             'location_type'     => ['required', 'string', 'max:255'],
-            'street_1'          => ['required', 'string', 'max:255'],
+            'street_1'          => ['nullable', 'string', 'max:255'],
             'street_2'          => ['nullable', 'string', 'max:255'],
             'barangay'          => ['nullable', 'string', 'max:255'],
-            'city_id'           => ['required', 'integer', 'exists:cities,id'],
+            'city_id'           => ['nullable', 'integer', 'exists:cities,id'],
         ];
     }
 }

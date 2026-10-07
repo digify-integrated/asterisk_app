@@ -162,6 +162,11 @@ export class WorkLocation {
     }
 
     initForm() {
+        const isNotHome = (form) => {
+            const locationType = form.querySelector('[name="location_type"]')?.value;
+            return Boolean(locationType !== 'Home');
+        };
+
         initValidation({
             forms: [
                 {
@@ -169,20 +174,8 @@ export class WorkLocation {
                     rules: {
                     name: { required: true },
                         location_type: { required: true },
-                        street_1: {
-                            requiredIf: (form, field) => {
-                                const locationTypeEl = form.querySelector('[name="location_type"]');
-                                const locationValue = locationTypeEl ? locationTypeEl.value : '';
-                                return locationValue !== '' && locationValue !== 'Home';
-                            }
-                        },
-                        city_id: {
-                            requiredIf: (form, field) => {
-                                const locationTypeEl = form.querySelector('[name="location_type"]');
-                                const locationValue = locationTypeEl ? locationTypeEl.value : '';
-                                return locationValue !== '' && locationValue !== 'Home';
-                            }
-                        }
+                        street_1: { requiredIf: isNotHome },
+                        city_id: { requiredIf: isNotHome }
                     },
                     submitHandler: async (formElement) => this.handleFormSubmission(formElement)
                 }

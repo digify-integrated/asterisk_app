@@ -12,6 +12,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\DatabaseTableController;
 use App\Http\Controllers\DegreeTypeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartureReasonController;
@@ -442,6 +443,13 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('database-table')
+        ->name('database-table')
+        ->controller(DatabaseTableController::class)
+        ->group(function () {
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 

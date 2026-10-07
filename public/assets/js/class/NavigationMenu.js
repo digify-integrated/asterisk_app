@@ -30,12 +30,13 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        extenstionTagify: '#database_table',
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
+        databaseTableDropdown: '#database_table',
         filterCollapse: 'navigation-menu-filter-collapse',
         filterAppDropdown: '#filter_app_id',
         filterParentDropdown: '#filter_parent_id',
+        filterDatabaseTableDropdown: '#filter_database_table',
         filterPageType: '#filter_page_type',
         filterCreatedDate: '#filter_created_date'
     },
@@ -52,6 +53,7 @@ const CONFIG = {
         fetch: '/navigation-menu/fetch',
         appOption: '/app/generate-option',
         parentOption: '/navigation-menu/generate-option',
+        databaseTableOption: '/database-table/generate-option'
     }
 };
     
@@ -77,6 +79,7 @@ export class NavigationMenu {
             filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate),
             filterApp: document.querySelector(CONFIG.selectors.filterAppDropdown),
             filterParent: document.querySelector(CONFIG.selectors.filterParentDropdown),
+            filterDatabaseTable: document.querySelector(CONFIG.selectors.filterDatabaseTableDropdown),
             filterPageType: document.querySelector(CONFIG.selectors.filterPageType)
         };
     }
@@ -91,7 +94,6 @@ export class NavigationMenu {
                 this.initForm(),
                 this.initDelete(),
                 this.initDateRangePicker(),
-                this.initTagify(),
                 this.registerGlobalListeners()
             ]);
                     
@@ -111,6 +113,7 @@ export class NavigationMenu {
                 filter_parent_id: $(this.dom.filterParent).val() || [],
                 filter_app_id: $(this.dom.filterApp).val() || [],
                 filter_page_type: $(this.dom.filterPageType).val() || [],
+                filter_database_table: $(this.dom.filterDatabaseTable).val() || [],
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
@@ -161,16 +164,16 @@ export class NavigationMenu {
                     title: 'Page Type',
                 },
                 { 
-                    data: 'database_table',
+                    data: 'database_tables',
                     title: 'Import/Export Table',
                     orderable: false,
-                    render: (tables) => {
-                        if (!Array.isArray(tables) || tables.length === 0) {
-                            return `<span class="badge badge-light-secondary">No Tables</span>`;
+                    render: (database_tables) => {
+                        if (!Array.isArray(database_tables) || database_tables.length === 0) {
+                            return `<span class="badge badge-light-secondary">No Import/Export Tables</span>`;
                         }
 
-                        return tables.map(table => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(table)}</span>`
+                        return database_tables.map(table => 
+                            `<span class="badge badge-light-warning me-1 mb-1">${escapeHtml(table.name)}</span>`
                         ).join('');
                     }
                 },
@@ -298,16 +301,15 @@ export class NavigationMenu {
         });
     }
 
-    initTagify() {
-        ComponentRegistry.initializeTagify({
-            selector: CONFIG.selectors.extenstionTagify
-        });
-    }
-
     initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.appOption,
             dropdownSelector: [CONFIG.selectors.appDropdown, CONFIG.selectors.filterAppDropdown]
+        });
+
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.databaseTableOption,
+            dropdownSelector: [CONFIG.selectors.databaseTableDropdown, CONFIG.selectors.filterDatabaseTableDropdown]
         });
 
         ComponentRegistry.generateDropdownOptions({
@@ -365,29 +367,17 @@ export class NavigationMenu {
                     'parent_id': data.parent_id,
                     'order_sequence': data.order_sequence,
                     'app_id': data.app_ids || [],
+                    'database_table': data.database_tables || [],
                     'index_view_file': data.index_view_file,
                     'index_js_file': data.index_js_file,
                     'manage_view_file': data.manage_view_file,
                     'manage_js_file': data.manage_js_file,
-                    'database_table': data.database_table ?? data.database_table ?? '',
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
                     const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
-                    if ($field.length) {
-                        const inputEl = $field[0];
-
-                        if (inputEl.__tagify) {
-                            const tagify = inputEl.__tagify;
-                            tagify.removeAllTags();
-
-                            if (val) {
-                                tagify.addTags(val);
-                            }
-                        } else {
-                            $field.val(val ?? '').trigger('change');
-                        }
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
                     }
                 });
             }

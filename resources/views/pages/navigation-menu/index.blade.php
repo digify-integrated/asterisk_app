@@ -118,7 +118,7 @@
                 <div class="row g-5">
                     <div class="col-12">
                         <label class="form-label mb-2" for="database_table">Import/Export Table</label>
-                        <input class="form-control form-control-sm" id="database_table" name="database_table" placeholder="Enter import/export tables separated by (,)"/>
+                        <select id="database_table" name="database_table[]" multiple class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-placeholder="Select import/export table"></select>
                     </div>
                 </div>
 

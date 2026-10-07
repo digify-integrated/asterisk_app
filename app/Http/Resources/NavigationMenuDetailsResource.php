@@ -12,12 +12,6 @@ class NavigationMenuDetailsResource extends JsonResource
         $indexRoute  = $this->routes->firstWhere('route_type', 'index');
         $manageRoute = $this->routes->firstWhere('route_type', 'manage');
 
-        $databaseTablesArray = $this->databaseTables
-            ->pluck('database_table')
-            ->map(fn ($dbTable) => ltrim(strtolower($dbTable), '.'))
-            ->values()
-            ->toArray();
-
         return [
             'id'                => $this->id,
             'name'              => $this->name,
@@ -26,11 +20,11 @@ class NavigationMenuDetailsResource extends JsonResource
             'page_type'         => $this->page_type,
             'order_sequence'    => $this->order_sequence,
             'app_ids'           => $this->apps->pluck('id')->toArray(),
+            'database_tables'   => $this->databaseTables->pluck('database_table')->toArray(),
             'index_view_file'   => $indexRoute?->view_file ?? '',
             'index_js_file'     => $indexRoute?->js_file ?? '',
             'manage_view_file'  => $manageRoute?->view_file ?? '',
             'manage_js_file'    => $manageRoute?->js_file ?? '',
-            'database_tables'   => implode(', ', $databaseTablesArray),
         ];
     }
 }

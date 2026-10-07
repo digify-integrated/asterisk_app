@@ -79,6 +79,14 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_import_access">Import Access</label>
+                    <select id="filter_import_access" name="filter_import_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Import Access" data-allow-clear="true">
+                        <option value="1">True</option>
+                        <option value="0">False</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_export_access">Export Access</label>
                     <select id="filter_export_access" name="filter_export_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Export Access" data-allow-clear="true">
                         <option value="1">True</option>
@@ -161,6 +169,22 @@
                     <div class="col-12 col-md-4">
                         <label class="form-label required mb-2" for="delete_access">Delete Access</label>
                         <select id="delete_access" name="delete_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
+                            <option value="1">True</option>
+                            <option value="0" selected>False</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label required mb-2" for="export_access">Export Access</label>
+                        <select id="export_access" name="export_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
+                            <option value="1">True</option>
+                            <option value="0" selected>False</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label required mb-2" for="import_access">Import Access</label>
+                        <select id="import_access" name="import_access" class="form-select form-select-sm" data-dropdown-parent="#form-modal" data-control="select2" data-allow-clear="true" data-hide-search="true" data-placeholder="Select access">
                             <option value="1">True</option>
                             <option value="0" selected>False</option>
                         </select>

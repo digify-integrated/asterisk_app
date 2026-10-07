@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('write_access')->default(false);
             $table->boolean('create_access')->default(false);
             $table->boolean('delete_access')->default(false);
+            $table->boolean('import_access')->default(false);
             $table->boolean('export_access')->default(false);
             $table->boolean('logs_access')->default(false);            
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
@@ -198,6 +199,17 @@ return new class extends Migration
                 );
             END IF;
 
+            IF NEW.import_access <> OLD.import_access THEN
+                SET audit_log = CONCAT(
+                    audit_log,
+                    'Import Access: ',
+                    IF(OLD.import_access, 'Granted', 'Revoked'),
+                    ' → ',
+                    IF(NEW.import_access, 'Granted', 'Revoked'),
+                    '<br/>'
+                );
+            END IF;
+
             IF NEW.export_access <> OLD.export_access THEN
                 SET audit_log = CONCAT(
                     audit_log,
@@ -267,6 +279,7 @@ return new class extends Migration
                 'Write Access: ', IF(NEW.write_access, 'Granted', 'Revoked'), '<br/>',
                 'Create Access: ', IF(NEW.create_access, 'Granted', 'Revoked'), '<br/>',
                 'Delete Access: ', IF(NEW.delete_access, 'Granted', 'Revoked'), '<br/>',
+                'Import Access: ', IF(NEW.import_access, 'Granted', 'Revoked'), '<br/>',
                 'Export Access: ', IF(NEW.export_access, 'Granted', 'Revoked'), '<br/>',
                 'Logs Access: ', IF(NEW.logs_access, 'Granted', 'Revoked')
             );

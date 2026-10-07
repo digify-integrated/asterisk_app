@@ -90,7 +90,7 @@ export class DataTableOrchestrator {
             columns: config.columns,
             columnDefs: config.columnDefs,
             lengthMenu: config.lengthMenu,
-            buttons: enableExport ? this._buildExportConfig() : [],
+            buttons: enableExport ? this._buildExportConfig(tableNode) : [],
             ajax: {
                 url: config.url,
                 type: 'GET',
@@ -170,9 +170,6 @@ export class DataTableOrchestrator {
         return dt;
     }
 
-    /**
-     * Toggles column visibility by index or name
-     */
     toggleColumnVisibility(selectorOrNode, colIdx, forceState = null) {
         let dt = DataTableOrchestrator.getAPI(selectorOrNode);
         if (dt && typeof dt.api === 'function') dt = dt.api();
@@ -182,11 +179,8 @@ export class DataTableOrchestrator {
         if (!column) return;
 
         const newState = forceState !== null ? forceState : !column.visible();
-        
-        // Pass 'false' as 2nd param so DataTables doesn't do an immediate un-adjusted redraw
         column.visible(newState, false);
 
-        // Recalculate column widths and redraw without resetting paging
         dt.columns.adjust();
         if (dt.responsive) {
             dt.responsive.recalc();
@@ -194,9 +188,6 @@ export class DataTableOrchestrator {
         dt.draw(false);
     }
 
-    /**
-     * Renders an interactive dynamic column show/hide UI menu
-     */
     renderColumnVisibilityControl(selectorOrNode, containerSelector) {
         const node = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
         const container = document.querySelector(containerSelector);
@@ -208,7 +199,6 @@ export class DataTableOrchestrator {
         const tableUid = node.id || `dt_${Math.random().toString(36).substr(2, 6)}`;
         const columns = dt.settings()[0].aoColumns;
 
-        // Inject ONLY the inner items (no outer menu wrapper)
         let html = `
             <div class="menu-item px-3">
                 <div class="px-3 pb-1">
@@ -216,9 +206,7 @@ export class DataTableOrchestrator {
                     <div class="text-muted fs-7">Show or hide table columns</div>
                 </div>
             </div>
-
             <div class="separator my-2 border-gray-200"></div>
-
             <div class="menu-item-list px-3" style="max-height: 260px; overflow-y: auto;">
         `;
 
@@ -228,7 +216,6 @@ export class DataTableOrchestrator {
             const rawTitle = col.sTitle || '';
             const colTitle = rawTitle.replace(/&nbsp;/g, '').trim();
 
-            // Exclude only if colVis is explicitly false or title is blank
             if (col.colVis === false || !colTitle) {
                 return;
             }
@@ -253,17 +240,15 @@ export class DataTableOrchestrator {
             `;
         });
 
-        html += `</div>`; // Close .menu-item-list
+        html += `</div>`;
 
         if (visibleCount > 0) {
             container.innerHTML = html;
 
-            // Re-initialize Metronic KTMenu so events bind cleanly
             if (typeof KTMenu !== 'undefined' && KTMenu.createInstances) {
                 KTMenu.createInstances();
             }
 
-            // Bind switch change events
             window.jQuery(container).off('change.colVis').on('change.colVis', '.col-vis-toggle', (e) => {
                 const idx = Number.parseInt(e.target.dataset.column, 10);
                 this.toggleColumnVisibility(node, idx, e.target.checked);
@@ -277,13 +262,9 @@ export class DataTableOrchestrator {
         const dt = DataTableOrchestrator.getAPI(selectorOrNode);
         if (dt) {
             const settings = dt.settings()[0];
-            
-            // 👇 Prevent collision: If a request is already loading, do nothing 
-            // instead of abruptly killing/aborting it.
             if (settings && settings.jqXHR && settings.jqXHR.readyState < 4) {
                 return; 
             }
-            
             dt.ajax.reload(null, resetPaging);
         }
     }
@@ -349,7 +330,6 @@ export class DataTableOrchestrator {
 
             if (isSelect2 && window.jQuery) {
                 window.jQuery(lengthEl).on('change.select2', lengthHandler);
-                
                 handlers.push({ 
                     element: lengthEl, 
                     event: 'change.select2', 
@@ -491,15 +471,68 @@ export class DataTableOrchestrator {
             .on(`click${ns}`, '.export-print', (e) => { e.preventDefault(); dt.button('.buttons-print').trigger(); });
     }
 
-    _buildExportConfig() {
+    _buildExportConfig(tableNode) {
         const titleStrategy = () => `${document.title} Export ${new Date().toISOString().split('T')[0]}`;
-        const opts = { columns: ':visible' };
+        
+        const baseOpts = {
+            columns: ':visible',
+            rows: function(idx, data, node) {
+                const allChecked = document.querySelectorAll('.datatable-checkbox-children:checked');
+                if (allChecked.length === 0) {
+                    return true;
+                }
+                const cb = node ? node.querySelector('.datatable-checkbox-children') : null;
+                return cb ? cb.checked : false;
+            }
+        };
+
+        const getDynamicOrientation = (dt) => {
+            const visibleColsCount = dt.columns(':visible').indexes().length;
+            return visibleColsCount > 5 ? 'landscape' : 'portrait';
+        };
 
         return [
-            { extend: 'csvHtml5', title: titleStrategy, exportOptions: opts, className: 'd-none buttons-csv' },
-            { extend: 'pdfHtml5', title: titleStrategy, exportOptions: opts, className: 'd-none buttons-pdf', orientation: 'landscape', pageSize: 'A4' },
-            { extend: 'excelHtml5', title: titleStrategy, exportOptions: opts, className: 'd-none buttons-excel' },
-            { extend: 'print', title: titleStrategy, exportOptions: opts, className: 'd-none buttons-print' }
+            { 
+                extend: 'csvHtml5', 
+                title: titleStrategy, 
+                exportOptions: { ...baseOpts, header: false },
+                className: 'd-none buttons-csv' 
+            },
+            { 
+                extend: 'pdfHtml5', 
+                title: titleStrategy, 
+                exportOptions: baseOpts, 
+                className: 'd-none buttons-pdf', 
+                orientation: (dt) => getDynamicOrientation(dt), 
+                pageSize: 'A4' 
+            },
+            { 
+                extend: 'excelHtml5', 
+                title: titleStrategy, 
+                exportOptions: { ...baseOpts, header: false },
+                className: 'd-none buttons-excel' 
+            },
+            { 
+                extend: 'print', 
+                title: titleStrategy, 
+                exportOptions: baseOpts, 
+                className: 'd-none buttons-print',
+                customize: function (win) {
+                    const dtInstance = window.jQuery(tableNode).DataTable();
+                    const orientation = getDynamicOrientation(dtInstance);
+                    const css = `@page { size: A4 ${orientation}; }`;
+                    const head = win.document.head || win.document.getElementsByTagName('head')[0];
+                    const style = win.document.createElement('style');
+                    style.type = 'text/css';
+                    style.media = 'print';
+                    if (style.styleSheet) {
+                        style.styleSheet.cssText = css;
+                    } else {
+                        style.appendChild(win.document.createTextNode(css));
+                    }
+                    head.appendChild(style);
+                }
+            }
         ];
     }
 

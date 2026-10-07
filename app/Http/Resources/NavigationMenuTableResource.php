@@ -11,11 +11,18 @@ class NavigationMenuTableResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $databaseTablessCollection = $this->relationLoaded('databaseTables')
+            ? $this->databaseTables
+            : $this->databaseTables()->get();
+
         return [
             'id'             => $this->id,
             'name'           => $this->name,
             'parent'         => $this->parent?->name ?? '',
             'page_type'      => $this->page_type,
+            'database_tables' => $databaseTablessCollection->map(fn ($dbTable) => [
+                'name' => $dbTable->database_table,
+            ])->values()->toArray(),
             'order_sequence' => $this->order_sequence,
             'apps'           => $this->apps->map(fn ($app) => [
                 'name' => $app->name,

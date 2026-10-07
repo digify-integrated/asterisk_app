@@ -115,6 +115,13 @@
                     </div>
                 </div>
 
+                <div class="row g-5">
+                    <div class="col-12">
+                        <label class="form-label mb-2" for="database_table">Import/Export Table</label>
+                        <input class="form-control form-control-sm" id="database_table" name="database_table" placeholder="Enter import/export tables separated by (,)"/>
+                    </div>
+                </div>
+
                 <div class="separator separator-dashed"></div>
 
                 <div class="row g-5">

@@ -52,4 +52,9 @@ class NavigationMenu extends Model
     {
         return $this->hasMany(Filter::class, 'navigation_menu_id');
     }
+
+    public function databaseTables(): HasMany
+    {
+        return $this->hasMany(NavigationMenuDatabaseTable::class, 'navigation_menu_id');
+    }
 }

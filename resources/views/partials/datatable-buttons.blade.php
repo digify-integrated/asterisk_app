@@ -39,6 +39,13 @@
                 Export as PDF
             </a>
         </div>
+        
+        <div class="menu-item px-3">
+            <a href="javascript:void(0);" class="menu-link px-3 export-import-file text-hover-warning" data-bs-toggle="modal" data-bs-target="#export-import-file-modal">
+                <i class="ki-outline ki-file-down fs-5 me-3 text-warning"></i>
+                Export Import File
+            </a>
+        </div>
 
         <div class="separator my-2 border-gray-200"></div>
 

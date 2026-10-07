@@ -39,6 +39,7 @@ const CONFIG = {
         filterWriteAccess: '#filter_write_access',
         filterCreateAccess: '#filter_create_access',
         filterDeleteAccess: '#filter_delete_access',
+        filterImportAccess: '#filter_import_access',
         filterExportAccess: '#filter_export_access',
         filterLogsAccess: '#filter_logs_access',
         filterCreatedDate: '#filter_created_date'
@@ -85,6 +86,7 @@ export class PagePermission {
             filterWrite: document.querySelector(CONFIG.selectors.filterWriteAccess),
             filterCreate: document.querySelector(CONFIG.selectors.filterCreateAccess),
             filterDelete: document.querySelector(CONFIG.selectors.filterDeleteAccess),
+            filterImport: document.querySelector(CONFIG.selectors.filterImportAccess),
             filterExport: document.querySelector(CONFIG.selectors.filterExportAccess),
             filterLogs: document.querySelector(CONFIG.selectors.filterLogsAccess),
             filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
@@ -138,6 +140,7 @@ export class PagePermission {
                 filter_write_access: $(this.dom.filterWrite).val() || [],
                 filter_create_access: $(this.dom.filterCreate).val() || [],
                 filter_delete_access: $(this.dom.filterDelete).val() || [],
+                import_access: $(this.dom.filterImport).val() || [],
                 filter_export_access: $(this.dom.filterExport).val() || [],
                 filter_logs_access: $(this.dom.filterLogs).val() || [],
                 filter_created_date: this.dom.filterDate?.value || ''
@@ -165,9 +168,9 @@ export class PagePermission {
                 },
                 { data: 'role', title: 'Role' },
                 { data: 'page', title: 'Page' },
-                ...['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'].map(field => ({
+                ...['read_access', 'write_access', 'create_access', 'delete_access', 'import_access', 'export_access', 'logs_access'].map(field => ({
                     data: field,
-                    title: field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    title: field.replace('_access', ' ').replace(/\b\w/g, l => l.toUpperCase()),
                     render: (data, type, row) => {
                         const isChecked = Boolean(data);
                         const safeId = escapeHtml(row.id);
@@ -226,6 +229,7 @@ export class PagePermission {
                         'write_access': { required: true },
                         'create_access': { required: true },
                         'delete_access': { required: true },
+                        'import_access': { required: true },
                         'export_access': { required: true },
                         'logs_access': { required: true }
                     },

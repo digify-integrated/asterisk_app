@@ -27,6 +27,7 @@ class MenuReadMiddleware
             'writePermission'  => $permissions['write'],
             'createPermission' => $permissions['create'],
             'deletePermission' => $permissions['delete'],
+            'importPermission' => $permissions['import'],
             'exportPermission' => $permissions['export'],
             'logsPermission'   => $permissions['logs'],
         ]);

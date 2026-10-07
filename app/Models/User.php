@@ -72,6 +72,7 @@ class User extends Authenticatable
                 'write'  => false,
                 'create' => false,
                 'delete' => false,
+                'import' => false,
                 'export' => false,
                 'logs'   => false,
             ];
@@ -86,6 +87,7 @@ class User extends Authenticatable
                 MAX(write_access) as write_access,
                 MAX(create_access) as create_access,
                 MAX(delete_access) as delete_access,
+                MAX(import_access) as import_access,
                 MAX(export_access) as export_access,
                 MAX(logs_access) as logs_access
             ')
@@ -97,6 +99,7 @@ class User extends Authenticatable
             'write'  => (bool) ($permissions->write_access ?? false),
             'create' => (bool) ($permissions->create_access ?? false),
             'delete' => (bool) ($permissions->delete_access ?? false),
+            'import' => (bool) ($permissions->import_access ?? false),
             'export' => (bool) ($permissions->export_access ?? false),
             'logs'   => (bool) ($permissions->logs_access ?? false),
         ];

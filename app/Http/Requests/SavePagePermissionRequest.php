@@ -24,6 +24,7 @@ class SavePagePermissionRequest extends FormRequest
             'write_access'          => ['required', 'boolean'],
             'create_access'         => ['required', 'boolean'],
             'delete_access'         => ['required', 'boolean'],
+            'import_access'         => ['required', 'boolean'],
             'export_access'         => ['required', 'boolean'],
             'logs_access'           => ['required', 'boolean'],
         ];

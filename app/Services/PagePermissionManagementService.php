@@ -16,6 +16,7 @@ class PagePermissionManagementService
                 'write_access'  => (bool) ($data['write_access'] ?? false),
                 'create_access' => (bool) ($data['create_access'] ?? false),
                 'delete_access' => (bool) ($data['delete_access'] ?? false),
+                'import_access' => (bool) ($data['import_access'] ?? false),
                 'export_access' => (bool) ($data['export_access'] ?? false),
                 'logs_access'   => (bool) ($data['logs_access'] ?? false),
                 'last_log_by'   => $userId,

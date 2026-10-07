@@ -41,7 +41,7 @@
                 @endif
 
                 @if(($importPermission ?? 0) > 0)
-                    <a href="{{ route('apps.import', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-flex btn-sm btn-outline btn-active-color-primary btn-custom ms-3 px-4">
+                    <a href="{{ route('apps.import', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-warning btn-sm d-inline-flex align-items-center ms-3">
                         <i class="ki-outline ki-exit-down fs-4 me-2"></i> Import
                     </a>
                 @endif

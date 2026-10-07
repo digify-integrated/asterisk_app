@@ -23,6 +23,7 @@ class SaveNavigationMenuRequest extends FormRequest
             'page_type'          => ['required', 'string'],
             'icon'               => ['nullable', 'string', 'max:255'],
             'parent_id'          => ['nullable', 'integer', 'exists:navigation_menus,id'],
+            'database_table'     => ['nullable', 'string'],
             'order_sequence'     => ['required', 'integer', 'min:0'],
             'index_view_file'    => ['nullable', 'string', 'max:150'],
             'index_js_file'      => ['nullable', 'string', 'max:100'],

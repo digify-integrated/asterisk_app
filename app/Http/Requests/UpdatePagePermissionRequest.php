@@ -34,6 +34,7 @@ class UpdatePagePermissionRequest extends FormRequest
                     'write_access',
                     'create_access',
                     'delete_access',
+                    'import_access',
                     'export_access',
                     'logs_access',
                 ]),

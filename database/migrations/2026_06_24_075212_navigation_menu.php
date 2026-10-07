@@ -34,13 +34,21 @@ return new class extends Migration
         Schema::create('navigation_menu_routes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('navigation_menu_id')->constrained('navigation_menus')->cascadeOnDelete();
-            $table->enum('route_type', ['index', 'manage'])->default('index');            
+            $table->enum('route_type', ['index', 'manage'])->default('index');
             $table->string('view_file')->nullable();
             $table->string('js_file')->nullable();
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
             
             $table->unique(['navigation_menu_id', 'route_type']);
+        });
+
+        Schema::create('navigation_menu_database_tables', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('navigation_menu_id')->constrained('navigation_menus')->cascadeOnDelete();
+            $table->string('database_table', 50);
+            $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
+            $table->timestamps();
         });
 
         /* =============================================================================================
@@ -282,11 +290,43 @@ return new class extends Migration
                 );
             END
         SQL);
+
+        DB::unprepared('DROP TRIGGER IF EXISTS trg_navigation_menu_database_table_insert');
+
+        DB::unprepared(<<<SQL
+            CREATE TRIGGER trg_navigation_menu_database_table_insert
+            AFTER INSERT ON navigation_menu_database_tables
+            FOR EACH ROW
+            BEGIN
+                DECLARE audit_log TEXT;
+
+                SET audit_log = CONCAT(
+                    'Navigation menu database table created.<br/><br/>',
+                    'Database Table: "', COALESCE(NEW.database_table, 'Not set'), '"'
+                );
+
+                INSERT INTO audit_log (
+                    table_name,
+                    reference_id,
+                    log,
+                    changed_by,
+                    created_at
+                )
+                VALUES (
+                    'navigation_menu_database_tables',
+                    NEW.id,
+                    audit_log,
+                    NEW.last_log_by,
+                    NOW()
+                );
+            END
+        SQL);
     }
 
     public function down(): void
     {
         Schema::dropIfExists('navigation_menus');
         Schema::dropIfExists('navigation_menu_routes');
+        Schema::dropIfExists('navigation_menu_database_table');
     }
 };

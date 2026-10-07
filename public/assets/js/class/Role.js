@@ -142,9 +142,12 @@ export class Role {
                             return `<span class="badge badge-light-warning">No User Accounts</span>`;
                         }
 
-                        return users.map(user => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(user.name)}</span><br/>`
-                        ).join('');
+                        return users.map((user, index) => {
+                            const isLast = index === users.length - 1;
+                            const spacingClass = isLast ? 'mb-1' : 'me-1 mb-1';
+                            
+                            return `<span class="badge badge-light-primary ${spacingClass}">${escapeHtml(user.name)}</span>`;
+                        }).join('');
                     }
                 },
                 { 

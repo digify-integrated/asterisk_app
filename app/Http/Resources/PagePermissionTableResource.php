@@ -17,6 +17,7 @@ class PagePermissionTableResource extends JsonResource
             'write_access'  => (bool) $this->write_access,
             'create_access' => (bool) $this->create_access,
             'delete_access' => (bool) $this->delete_access,
+            'import_access' => (bool) $this->import_access,
             'export_access' => (bool) $this->export_access,
             'logs_access'   => (bool) $this->logs_access,
             'created_at'    => $this->created_at?->format('M d, Y h:i:s a') ?? '',

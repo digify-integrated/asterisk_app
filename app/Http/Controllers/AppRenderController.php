@@ -33,6 +33,7 @@ class AppRenderController extends Controller
             'writePermission'  => false,
             'createPermission' => false,
             'deletePermission' => false,
+            'importPermission' => false,
             'exportPermission' => false,
             'logsPermission'   => false,
         ]);

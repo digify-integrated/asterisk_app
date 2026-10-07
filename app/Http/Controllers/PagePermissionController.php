@@ -118,7 +118,7 @@ class PagePermissionController extends Controller
         $query->when($request->filled('filter_role_id'), fn($q) => $q->filterBy('role_id', $request->input('filter_role_id')));
         $query->when($request->filled('filter_navigation_menu_id'), fn($q) => $q->filterBy('navigation_menu_id', $request->input('filter_navigation_menu_id')));
 
-        $accessFlags = ['read_access', 'write_access', 'create_access', 'delete_access', 'export_access', 'logs_access'];
+        $accessFlags = ['read_access', 'write_access', 'create_access', 'delete_access', 'import_access', 'export_access', 'logs_access'];
         foreach ($accessFlags as $flag) {
             if ($request->filled("filter_{$flag}")) {
                 $query->filterBy($flag, $request->input("filter_{$flag}"));

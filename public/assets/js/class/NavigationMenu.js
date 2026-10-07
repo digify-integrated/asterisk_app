@@ -30,6 +30,7 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
+        extenstionTagify: '#database_table',
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
         filterCollapse: 'navigation-menu-filter-collapse',
@@ -90,6 +91,7 @@ export class NavigationMenu {
                 this.initForm(),
                 this.initDelete(),
                 this.initDateRangePicker(),
+                this.initTagify(),
                 this.registerGlobalListeners()
             ]);
                     
@@ -157,6 +159,20 @@ export class NavigationMenu {
                 { 
                     data: 'page_type',
                     title: 'Page Type',
+                },
+                { 
+                    data: 'database_table',
+                    title: 'Import/Export Table',
+                    orderable: false,
+                    render: (tables) => {
+                        if (!Array.isArray(tables) || tables.length === 0) {
+                            return `<span class="badge badge-light-secondary">No Tables</span>`;
+                        }
+
+                        return tables.map(table => 
+                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(table)}</span>`
+                        ).join('');
+                    }
                 },
                 { 
                     data: 'order_sequence',
@@ -282,6 +298,12 @@ export class NavigationMenu {
         });
     }
 
+    initTagify() {
+        ComponentRegistry.initializeTagify({
+            selector: CONFIG.selectors.extenstionTagify
+        });
+    }
+
     initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.appOption,
@@ -347,12 +369,25 @@ export class NavigationMenu {
                     'index_js_file': data.index_js_file,
                     'manage_view_file': data.manage_view_file,
                     'manage_js_file': data.manage_js_file,
+                    'database_table': data.database_table ?? data.database_table ?? '',
                 };
 
                 Object.entries(targetFields).forEach(([name, val]) => {
                     const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
                     
-                    if ($field.length) {$field.val(val ?? '').trigger('change');
+                    if ($field.length) {
+                        const inputEl = $field[0];
+
+                        if (inputEl.__tagify) {
+                            const tagify = inputEl.__tagify;
+                            tagify.removeAllTags();
+
+                            if (val) {
+                                tagify.addTags(val);
+                            }
+                        } else {
+                            $field.val(val ?? '').trigger('change');
+                        }
                     }
                 });
             }

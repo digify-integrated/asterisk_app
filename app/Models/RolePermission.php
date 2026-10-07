@@ -17,6 +17,7 @@ class RolePermission extends Model
         'write_access',
         'create_access',
         'delete_access',
+        'import_access',
         'export_access',
         'logs_access',
     ];
@@ -26,6 +27,7 @@ class RolePermission extends Model
         'write_access'  => 'boolean',
         'create_access' => 'boolean',
         'delete_access' => 'boolean',
+        'import_access' => 'boolean',
         'export_access' => 'boolean',
         'logs_access'   => 'boolean',
     ];

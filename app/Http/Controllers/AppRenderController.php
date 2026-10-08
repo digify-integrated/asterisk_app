@@ -18,14 +18,30 @@ class AppRenderController extends Controller
         return view('apps.index', compact('apps', 'pageTitle'));
     }
 
-    public function renderModule(Request $request, $appId, $navigationMenuId, $routeType = 'index', $detailsId = null)
+    public function renderModule(Request $request, $appId, $navigationMenuId, $detailsId = null)
     {
+        // Retrieve route_type from route defaults, fallback to 'index'
+        $routeType = $request->route('route_type') ?? $request->route()->defaults['route_type'] ?? 'index';
+
         $menu = NavigationMenu::with(['routes' => function($q) use ($routeType) {
             $q->where('route_type', $routeType);
         }])->findOrFail($navigationMenuId);
 
         $routeInfo = $menu->routes->first();
-        if (!$routeInfo || !$routeInfo->view_file) {
+
+        if ($routeType === 'import') {
+            $viewFile  = $routeInfo?->view_file ?? 'pages.import.index';
+            $jsFile    = $routeInfo?->js_file   ?? 'import/index';
+            $pageTitle = 'Import';
+            $pageType  = 'single_page';
+        } else {
+            $viewFile  = $routeInfo?->view_file;
+            $jsFile    = $routeInfo?->js_file;
+            $pageTitle = $menu->name;
+            $pageType  = $menu->page_type;
+        }
+
+        if (!$viewFile) {
             abort(404);
         }
 
@@ -38,11 +54,11 @@ class AppRenderController extends Controller
             'logsPermission'   => false,
         ]);
 
-        return view($routeInfo->view_file, array_merge($perms, [
-            'pageTitle'        => $menu->name,
-            'pageType'         => $menu->page_type,
+        return view($viewFile, array_merge($perms, [
+            'pageTitle'        => $pageTitle,
+            'pageType'         => $pageType,
             'iconClass'        => $menu->icon ?? 'ki-outline ki-abstract-26',
-            'jsFile'           => $routeInfo->js_file,
+            'jsFile'           => $jsFile,
             'appId'            => $appId,
             'navigationMenuId' => $navigationMenuId,
             'detailsId'        => $detailsId,

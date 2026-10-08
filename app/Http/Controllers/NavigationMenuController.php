@@ -114,7 +114,7 @@ class NavigationMenuController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
         $query = NavigationMenu::query()
-            ->with(['apps', 'parent']);
+            ->with(['apps', 'parent', 'databaseTables']);
 
         $query->when($request->filled('filter_parent_id'), function ($q) use ($request) {
             $parents = (array) $request->input('filter_parent_id');
@@ -125,6 +125,13 @@ class NavigationMenuController extends Controller
             $navigationMenus = (array) $request->input('filter_app_id');
             $q->whereHas('apps', function ($appQuery) use ($navigationMenus) {
                 $appQuery->whereIn('apps.id', $navigationMenus);
+            });
+        });
+
+        $query->when($request->filled('filter_database_table'), function ($q) use ($request) {
+            $databaseTables = (array) $request->input('filter_database_table');
+            $q->whereHas('databaseTables', function ($tableQuery) use ($databaseTables) {
+                $tableQuery->whereIn('database_table', $databaseTables);
             });
         });
 

@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class UploadSettingSeeder extends Seeder
+class GenderSeeder extends Seeder
 {
     public function run(): void
     {
@@ -16,15 +16,20 @@ class UploadSettingSeeder extends Seeder
             'updated_at' => $now,
         ];
 
-        $uploadSettings = [
+        $genders = [
             [
-                'name' => 'Logo',
-                'max_file_size' => '500',
+                'name' => 'Male',
+            ],
+            [
+                'name' => 'Female',
+            ],
+            [
+                'name' => 'Other',
             ],
         ];
 
-        DB::table('upload_settings')->insert(
-            array_map(fn ($row) => $row + $defaults, $uploadSettings)
+        DB::table('genders')->insert(
+            array_map(fn ($row) => $row + $defaults, $genders)
         );
     }
 }

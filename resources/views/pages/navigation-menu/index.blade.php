@@ -54,6 +54,11 @@
                         <option value="multi_page">Multi Page</option>
                     </select>
                 </div>
+
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_database_table">Import/Export Table</label>
+                    <select id="filter_database_table" name="filter_database_table[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Database Table" data-allow-clear="true"></select>
+                </div>
             @endcomponent
         </div>
     </div>

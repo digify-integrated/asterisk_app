@@ -118,7 +118,6 @@ export class NavigationMenu {
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
-            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -126,7 +125,6 @@ export class NavigationMenu {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
-                { width: '15%', targets: 4 },
                 { width: '10%', bSortable: false, targets: 7 },
             ],
             columns: [
@@ -144,15 +142,17 @@ export class NavigationMenu {
                 { 
                     data: 'apps',
                     title: 'Apps',
-                    bSortable: false,
                     render: (apps) => {
                         if (!Array.isArray(apps) || apps.length === 0) {
                             return `<span class="badge badge-light-secondary">No Apps</span>`;
                         }
 
-                        return apps.map(app => 
-                            `<span class="badge badge-light-primary me-1 mb-1">${escapeHtml(app.name)}</span>`
-                        ).join('');
+                        const badges = apps.map((app, index) => {
+                            const margin = index === apps.length - 1 ? '' : 'me-1';
+                            return `<span class="badge badge-light-primary ${margin}">${escapeHtml(app.name)}</span>`;
+                        }).join('');
+
+                        return `<div class="d-flex flex-wrap align-items-center">${badges}</div>`;
                     }
                 },
                 { 
@@ -166,15 +166,17 @@ export class NavigationMenu {
                 { 
                     data: 'database_tables',
                     title: 'Import/Export Table',
-                    orderable: false,
                     render: (database_tables) => {
                         if (!Array.isArray(database_tables) || database_tables.length === 0) {
                             return `<span class="badge badge-light-secondary">No Import/Export Tables</span>`;
                         }
 
-                        return database_tables.map(table => 
-                            `<span class="badge badge-light-warning me-1 mb-1">${escapeHtml(table.name)}</span>`
-                        ).join('');
+                        const badges = database_tables.map((table, index) => {
+                            const margin = index === database_tables.length - 1 ? '' : 'me-1';
+                            return `<span class="badge badge-light-warning ${margin}">${escapeHtml(table.name)}</span>`;
+                        }).join('');
+
+                        return `<div class="d-flex flex-wrap align-items-center">${badges}</div>`;
                     }
                 },
                 { 

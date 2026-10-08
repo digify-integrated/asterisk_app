@@ -8,19 +8,25 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
+    
     public function run(): void
     {
         $this->call([
             UserSeeder::class,
+            AddressTypeSeeder::class,
             AppSeeder::class,
+            BloodTypeSeeder::class,
+            DegreeTypeSeeder::class,
+            DepartureReasonSeeder::class,
+            GenderSeeder::class,
+            HolidayTypeSeeder::class,
+            MaritalStatusSeeder::class,
             NavigationMenuSeeder::class,
             NavigationMenuAppSeeder::class,
             NavigationMenuRouteSeeder::class,
+            NavigationMenuDatabaseTableSeeder::class,
             SystemActionSeeder::class,
+            RelationSeeder::class,
             RoleSeeder::class,
             RolePermissionSeeder::class,
             RoleSystemActionPermissionSeeder::class,

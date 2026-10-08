@@ -40,7 +40,7 @@
                     @endif
                 @endif
 
-                @if(($importPermission ?? 0) > 0)
+                @if(($importPermission ?? 0) > 0 && !request()->routeIs('apps.import'))
                     <a href="{{ route('apps.import', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-warning btn-sm d-inline-flex align-items-center ms-3">
                         <i class="ki-outline ki-exit-down fs-4 me-2"></i> Import
                     </a>

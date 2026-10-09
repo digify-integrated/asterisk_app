@@ -1,25 +1,40 @@
-<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 pt-1">
-    <li class="breadcrumb-item text-muted">
+@php
+    $isManageRoute = request()->routeIs('apps.manage');
+    $isImportRoute = request()->routeIs('apps.import');
+
+    $routeSuffix = $isManageRoute
+        ? 'Manage'
+        : ($isImportRoute ? 'Import' : '');
+
+    $isManageOrImport = $isManageRoute || $isImportRoute;
+@endphp
+
+<ol class="breadcrumb breadcrumb-dot text-muted fs-8 fw-semibold">
+    <li class="breadcrumb-item">
         <a href="{{ route('apps.main') }}" class="text-muted text-hover-primary">
             Home {{ $routeName ?? '' }}
         </a>
     </li>
 
-    @foreach(($bc_items ?? []) as $index => $item)
-        <li class="breadcrumb-item">
-            <span class="bullet bg-gray-300 w-5px h-2px"></span>
-        </li>
-
+    @foreach(($bc_items ?? []) as $item)
         @php
-            $isNavCrumb = !is_null($item['id']);
+            $isNavCrumb = !is_null($item['id'] ?? null);
             $isLast = $loop->last;
-            // The item is clickable only if it isn't last, has an ID, and exists in navigation_menu_route
-            $isClickable = !$isLast && $isNavCrumb && ($item['has_route'] ?? false);
+
+            $isClickable = $isNavCrumb
+                && ($item['has_route'] ?? false)
+                && (!$isLast || $isManageOrImport);
         @endphp
 
-        <li class="breadcrumb-item {{ $isLast ? 'text-gray-900' : 'text-muted' }}">
+        <li class="breadcrumb-item {{ $isLast && !$isManageOrImport ? 'text-muted' : '' }}">
             @if($isClickable)
-                <a href="{{ route('apps.base', ['appId' => $bc_app_id, 'navigationMenuId' => $item['id']]) }}" class="text-muted text-hover-primary">
+                <a
+                    href="{{ route('apps.base', [
+                        'appId' => $bc_app_id,
+                        'navigationMenuId' => $item['id']
+                    ]) }}"
+                    class="text-muted text-hover-primary"
+                >
                     {{ $item['label'] }}
                 </a>
             @else
@@ -27,4 +42,10 @@
             @endif
         </li>
     @endforeach
-</ul>
+
+    @if($routeSuffix !== '')
+        <li class="breadcrumb-item text-muted">
+            {{ $routeSuffix }}
+        </li>
+    @endif
+</ol>

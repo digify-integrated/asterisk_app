@@ -20,7 +20,6 @@ class AppRenderController extends Controller
 
     public function renderModule(Request $request, $appId, $navigationMenuId, $detailsId = null)
     {
-        // Retrieve route_type from route defaults, fallback to 'index'
         $routeType = $request->route('route_type') ?? $request->route()->defaults['route_type'] ?? 'index';
 
         $menu = NavigationMenu::with(['routes' => function($q) use ($routeType) {
@@ -28,6 +27,23 @@ class AppRenderController extends Controller
         }])->findOrFail($navigationMenuId);
 
         $routeInfo = $menu->routes->first();
+
+        $bcItems = [];
+        $currentMenu = $menu;
+
+        while ($currentMenu) {
+            $hasRoute = $currentMenu->routes()
+                ->where('route_type', 'index')
+                ->exists();
+
+            array_unshift($bcItems, [
+                'id'        => $currentMenu->id,
+                'label'     => $currentMenu->name,
+                'has_route' => $hasRoute,
+            ]);
+
+            $currentMenu = $currentMenu->parent;
+        }
 
         if ($routeType === 'import') {
             $viewFile  = $routeInfo?->view_file ?? 'pages.import.index';
@@ -62,6 +78,10 @@ class AppRenderController extends Controller
             'appId'            => $appId,
             'navigationMenuId' => $navigationMenuId,
             'detailsId'        => $detailsId,
+
+            // Breadcrumb data
+            'bc_items'         => $bcItems,
+            'bc_app_id'        => $appId,
         ]));
     }
 }

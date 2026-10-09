@@ -18,7 +18,7 @@
     <div class="toolbar d-flex align-items-stretch">
         <div class="container-xxl d-flex flex-stack flex-wrap">
             <div class="page-title d-flex flex-column me-3 mt-2">
-                <h1 class="d-flex flex-column text-gray-900 fw-bold fs-3 mb-0">
+                <h1 class="d-flex flex-column text-gray-900 fw-bold fs-3 mb-1">
                     {{ $pageTitle ?? '' }}
                 </h1>
 

@@ -6,31 +6,63 @@
 
 @section('content')
     <div class="d-flex flex-column gap-7 max-w-1000px mx-auto pb-10">
-
-        <!-- Instructions Notice Card -->
         <div class="card shadow-sm bg-light-primary border-primary border border-dashed">
-            <div class="card-body py-6">
+            <div class="card-body p-6">
                 <div class="d-flex align-items-center">
-                    <i class="ki-duotone ki-information fs-2tx text-primary me-4">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                    </i>
+                    <i class="ki-duotone ki-information fs-2tx text-primary me-4"></i>
                     <div class="d-flex flex-stack flex-grow-1">
                         <div class="fw-semibold">
                             <h4 class="text-gray-900 fw-bold fs-6 mb-1">Getting Started</h4>
-                            <div class="fs-7 text-gray-700">Select your destination table and upload your properly formatted CSV file to begin mapping columns. Need a reference? <a href="#" class="fw-bold text-primary">Download sample template</a>.</div>
+                            <div class="fs-7 text-gray-700">Select your destination table and upload your properly formatted CSV file to begin mapping columns.</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Refined Collapsible Trigger & Drawer -->
+                <div class="border-top border-primary border-opacity-20 mt-5 pt-4">
+                    <button type="button" 
+                            class="btn btn-active-light-primary btn-sm w-100 p-0 text-start d-flex align-items-center justify-content-between cursor-pointer border-0 bg-transparent" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#templateCollapse" 
+                            aria-expanded="false" 
+                            aria-controls="templateCollapse"
+                            id="template-collapse-trigger">
+                        <span class="text-gray-900 fw-semibold fs-7 d-flex align-items-center gap-2">
+                            <span class="symbol symbol-25px symbol-circle">
+                                <span class="symbol-label bg-primary bg-opacity-10 text-primary">
+                                    <i class="ki-duotone ki-file-down fs-6"><span class="path1"></span><span class="path2"></span></i>
+                                </span>
+                            </span>
+                            Need an import template? Browse available table schemas
+                        </span>
+                        <span class="d-flex align-items-center text-gray-500 fs-8 fw-bold text-uppercase me-1 gap-2">
+                            <span class="badge badge-light-primary fs-8 fw-semibold py-1 px-2">CSV</span>
+                            <i class="ki-duotone ki-down fs-5 text-gray-500 transition-all transform-rotate">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </span>
+                    </button>
+
+                    <div id="templateCollapse" class="collapse mt-3">
+                        <div class="bg-body border border-gray-200 rounded-3 p-4 shadow-xs">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="text-gray-800 fw-bold fs-8 text-uppercase tracking-wider">Available Schema Downloads</span>
+                                <span class="text-gray-500 fs-8">Includes all database fields excluding timestamps</span>
+                            </div>
+                            
+                            <div id="dynamic-template-list" class="d-flex flex-column gap-2">
+                                <!-- Populated dynamically via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Main Form Wrapper -->
-        <form action="#" method="POST" enctype="multipart/form-data" id="universal-import-form">
+        <form action="#" method="POST" enctype="multipart/form-data" id="import_form">
             @csrf
-
-            <!-- STEP 1 CARD: Target Table & File Selection -->
             <div class="card shadow-sm mb-7" id="config-card">
                 <div class="card-header">
                     <h3 class="card-title fw-bold">
@@ -43,34 +75,26 @@
                 </div>
                 <div class="card-body d-flex flex-column gap-7">
                     <div class="row g-7">
-                        <!-- Target Table Selector -->
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-bold required fs-6">Target Table / Module</label>
-                            <select name="target_table" id="target-table-select" class="form-select form-select-sm" data-control="select2" data-placeholder="Select target table...">
-                                <option></option>
-                                <option value="users">Users</option>
-                                <option value="products">Products</option>
-                                <option value="customers">Customers</option>
-                            </select>
+                            <label class="form-label fw-bold required fs-6">Target Table</label>
+                            <select name="database_table" id="database_table" class="form-select form-select-sm" data-control="select2" data-placeholder="Select target table..." data-allow-clear="true"></select>
                             <div class="form-text">Choose the database table where data will be imported.</div>
                         </div>
 
-                        <!-- File Input Section -->
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-bold required fs-6">Import File</label>
-                            <input type="file" name="csv_file" id="file-input" class="form-control form-control-sm" accept=".csv, text/csv">
+                            <input type="file" name="import_file" id="import_file" class="form-control form-control-sm" accept=".csv, text/csv">
                             <div class="form-text">Max file size: 10MB. Only .csv formats are accepted.</div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-end py-4">
-                    <button type="button" class="btn btn-primary btn-sm px-6" id="proceed-btn">
+                    <button type="button" class="btn btn-primary btn-sm px-6" id="configure-mapping">
                         <span class="indicator-label">Next: Configure Mapping</span>
                     </button>
                 </div>
             </div>
 
-            <!-- STEP 2 CARD: Odoo-Style Field Mapping & Preview Container (Initially Hidden) -->
             <div class="card shadow-sm d-none" id="mapping-card">
                 <div class="card-header d-flex align-items-center">
                     <h3 class="card-title fw-bold m-0">
@@ -94,7 +118,6 @@
                 <div class="card-body d-flex flex-column gap-5">
                     <span class="text-muted fs-7">Match your CSV header columns with the respective database attributes below.</span>
 
-                    <!-- Odoo-style Mapping Table -->
                     <div class="table-responsive border rounded">
                         <table class="table table-row-bordered table-row-gray-300 align-middle gs-4 gy-3 rounded shadow-sm m-0">
                             <thead>
@@ -105,7 +128,6 @@
                                 </tr>
                             </thead>
                             <tbody id="mapping-table-body">
-                                <!-- Dynamic rows will be inserted here via your custom JS -->
                                 <tr>
                                     <td class="ps-4">
                                         <span class="fw-bold text-gray-800">First Name</span>
@@ -127,7 +149,6 @@
                     </div>
                 </div>
 
-                <!-- Footer Actions for Mapping Step -->
                 <div class="card-footer d-flex justify-content-end gap-3 py-4">
                     <button type="button" class="btn btn-light-danger btn-sm" id="test-import-btn">
                         Test Import
@@ -141,7 +162,3 @@
         </form>
     </div>
 @endsection
-
-@push('js')
-    <!-- Left intentionally blank for your custom script implementation -->
-@endpush

@@ -20,11 +20,13 @@ use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HolidayTypeController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LanguageProficiencyController;
 use App\Http\Controllers\MaritalStatusController;
 use App\Http\Controllers\NavigationMenuController;
+use App\Http\Controllers\NavigationMenuDatabaseTableController;
 use App\Http\Controllers\PagePermissionController;
 use App\Http\Controllers\RelationController;
 use App\Http\Controllers\ReligionController;
@@ -95,6 +97,13 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('navigation-menu-database-table')
+        ->name('navigation-menu-database-table.')
+        ->controller(NavigationMenuDatabaseTableController::class)
+        ->group(function () {
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
 
@@ -444,6 +453,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('import')
+        ->name('import.')
+        ->controller(ImportController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::post('/parse-csv', 'parseCsv')->name('parse.csv');
+            Route::post('/test-import', 'testImport')->name('test.import');
+            Route::post('/commit', 'commit')->name('commit');
+            Route::get('/template/{table}', 'downloadTemplate')->name('download.template');
+            Route::get('/table-fields', 'tableFields')->name('table.fields');
         });
     
     Route::prefix('database-table')

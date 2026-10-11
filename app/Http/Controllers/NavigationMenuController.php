@@ -184,4 +184,19 @@ class NavigationMenuController extends Controller
         return ConfigurationOptionResource::collection($navigationMenus)
             ->response();
     }
+
+    public function generateImportOption(Request $request): JsonResponse
+    {
+        $navigation_menu_id = $request->input('navigationMenuId');
+
+        $navigationMenus = NavigationMenu::query()
+            ->when($navigation_menu_id, function ($query, $id) {
+                $query->where('id', '!=', $id);
+            })
+            ->orderBy('name')
+            ->get();
+
+        return ConfigurationOptionResource::collection($navigationMenus)
+            ->response();
+    }
 }

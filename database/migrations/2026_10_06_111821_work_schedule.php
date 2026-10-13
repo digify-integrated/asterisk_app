@@ -26,6 +26,8 @@ return new class extends Migration
             $table->time('break_end')->nullable();
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();            
             $table->timestamps();
+
+            $table->unique(['work_schedule_id', 'day_of_week']);
         });
 
         /* =============================================================================================

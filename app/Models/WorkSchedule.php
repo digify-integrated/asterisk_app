@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WorkSchedule extends Model
 {
@@ -10,6 +11,11 @@ class WorkSchedule extends Model
 
     protected $fillable = [
         'name',
-        'last_log_by'
+        'last_log_by',
     ];
+
+    public function days(): HasMany
+    {
+        return $this->hasMany(WorkScheduleDays::class, 'work_schedule_id');
+    }
 }

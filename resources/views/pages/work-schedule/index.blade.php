@@ -66,18 +66,16 @@
             @endphp
 
             <div class="d-flex flex-column gap-5">
-                <!-- Schedule Name -->
                 <div class="d-flex flex-column gap-2">
                     <label class="form-label fw-semibold text-dark required fs-7 mb-0" for="name">Schedule Name</label>
                     <input type="text" class="form-control form-control-sm w-100" id="name" name="name" placeholder="e.g., Engineering Core Hours" maxlength="100" autocomplete="off">
                 </div>
 
-                <div class="border-top border-secondary-subtle my-1"></div>
+                <div class="border-top my-1"></div>
 
-                <!-- Weekly Schedule Matrix (Vercel Style) -->
                 <div class="d-flex flex-column gap-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <label class="form-label fw-semibold text-dark fs-7 mb-0">Weekly Availability</label>
+                        <label class="form-label fw-semibold text-dark fs-7 mb-0">Schedule</label>
                         <span class="text-muted fs-8">Configure hours or mark as rest days</span>
                     </div>
                     
@@ -93,7 +91,6 @@
                                     </tr>
                                 </thead>
                                 <tbody class="fs-7">
-                                    <!-- Row 1: Rest Day Toggle -->
                                     <tr class="border-bottom border-light">
                                         <td class="text-start ps-4 text-muted fw-medium py-3">Rest Day</td>
                                         @foreach($daysOfWeek as $dayNum =>$dayName)
@@ -108,7 +105,6 @@
                                         @endforeach
                                     </tr>
 
-                                    <!-- Row 2: Start Time -->
                                     <tr class="border-bottom border-light">
                                         <td class="text-start ps-4 text-muted fw-medium py-2">Start Time</td>
                                         @foreach($daysOfWeek as $dayNum =>$dayName)
@@ -120,7 +116,6 @@
                                         @endforeach
                                     </tr>
 
-                                    <!-- Row 3: End Time -->
                                     <tr class="border-bottom border-light">
                                         <td class="text-start ps-4 text-muted fw-medium py-2">End Time</td>
                                         @foreach($daysOfWeek as $dayNum =>$dayName)
@@ -132,7 +127,6 @@
                                         @endforeach
                                     </tr>
 
-                                    <!-- Row 4: Break Start -->
                                     <tr class="border-bottom border-light">
                                         <td class="text-start ps-4 text-muted fw-medium py-2">Break Start</td>
                                         @foreach($daysOfWeek as $dayNum =>$dayName)
@@ -144,7 +138,6 @@
                                         @endforeach
                                     </tr>
 
-                                    <!-- Row 5: Break End -->
                                     <tr>
                                         <td class="text-start ps-4 text-muted fw-medium py-3">Break End</td>
                                         @foreach($daysOfWeek as $dayNum =>$dayName)

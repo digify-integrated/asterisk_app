@@ -123,6 +123,12 @@ export class WorkSchedule {
                     data: 'name',
                     title: 'Work Schedule',
                 },
+                {
+                    data: 'schedule_summary',
+                    title: 'Weekly Schedule',
+                    orderable: false,
+                    render: (data) => escapeHtml(data ?? '')
+                },
                 { 
                     data: 'created_at',
                     title: 'Created At',
@@ -288,7 +294,7 @@ export class WorkSchedule {
             }
         }, { signal: this.abortController.signal });
     }
-
+    
     async handleFetchWorkflow(referenceId) {
         await DetailFetcher.fetch({
             url: CONFIG.endpoints.fetch,
@@ -297,21 +303,59 @@ export class WorkSchedule {
             formSelector: CONFIG.selectors.form,
             submitBtnSelector: CONFIG.selectors.submitButton,
             signal: this.abortController.signal,
+
             onSuccess: async (response) => {
                 const data = response?.data || response;
+
                 if (!this.dom.form) return;
 
-                const targetFields = {
-                    'work_schedule_id': referenceId,
-                    'name': data.name,
-                };
+                const $form = $(this.dom.form);
 
-                Object.entries(targetFields).forEach(([name, val]) => {
-                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
-                    
-                    if ($field.length) {$field.val(val ?? '').trigger('change');
-                    }
-                });
+                // Populate the schedule name and ID.
+                $form.find('[name="work_schedule_id"]')
+                    .val(referenceId)
+                    .trigger('change');
+
+                $form.find('[name="name"]')
+                    .val(data.name ?? '')
+                    .trigger('change');
+
+                // Populate Monday through Sunday.
+                for (let day = 1; day <= 7; day++) {
+                    const dayData = data.days?.[day] ?? {};
+
+                    const $restDay = $form.find(
+                        `#is_rest_day_${day}`
+                    );
+
+                    const isRestDay = Boolean(
+                        dayData.is_rest_day
+                    );
+
+                    $restDay
+                        .prop('checked', isRestDay)
+                        .trigger('change');
+
+                    // Populate each day's time fields.
+                    const timeFields = [
+                        'start_time',
+                        'end_time',
+                        'break_start',
+                        'break_end',
+                    ];
+
+                    timeFields.forEach((field) => {
+                        $form.find(`#${field}_${day}`)
+                            .val(dayData[field] ?? '')
+                            .trigger('change');
+                    });
+
+                    // Optional: disable time fields on rest days.
+                    timeFields.forEach((field) => {
+                        $form.find(`#${field}_${day}`)
+                            .prop('disabled', isRestDay);
+                    });
+                }
             }
         });
     }

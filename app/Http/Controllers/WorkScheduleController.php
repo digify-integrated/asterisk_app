@@ -38,19 +38,20 @@ class WorkScheduleController extends Controller
 
         } catch (Exception $e) {
             report($e);
-            
+
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => 'Unable to save the work schedule.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function fetch(FetchWorkScheduleDetailsRequest $request): JsonResponse|ConfigurationDetailsResource
+    public function fetch(FetchWorkScheduleDetailsRequest $request): JsonResponse|ConfigurationDetailsResource 
     {
         try {
             $validated = $request->validated();
 
-            $workSchedule = WorkSchedule::findOrFail($validated['work_schedule_id']);
+            $workSchedule = WorkSchedule::with('days')
+                ->findOrFail($validated['work_schedule_id']);
 
             return new ConfigurationDetailsResource($workSchedule);
 
@@ -58,7 +59,7 @@ class WorkScheduleController extends Controller
             report($e);
 
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => 'Unable to fetch work schedule details.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -112,7 +113,7 @@ class WorkScheduleController extends Controller
 
         $permissions = $user->getMenuPermissions($menuId);
 
-        $query = WorkSchedule::query();
+        $query = WorkSchedule::with('days');
 
         // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -130,7 +131,7 @@ class WorkScheduleController extends Controller
 
         return ConfigurationTableResource::collection($workSchedules)
             ->additional([
-                'permissions'  => $permissions,
+                'permissions' => $permissions,
             ])
             ->response();
     }

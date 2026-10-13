@@ -9,6 +9,14 @@ class WorkScheduleDays extends Model
 {
     protected $table = 'work_schedule_days';
 
+    protected function casts(): array
+    {
+        return [
+            'is_rest_day' => 'boolean',
+        ];
+    }
+
+    
     protected $fillable = [
         'work_schedule_id',
         'day_of_week',
@@ -17,7 +25,9 @@ class WorkScheduleDays extends Model
         'end_time',
         'break_start',
         'break_end',
+        'last_log_by',
     ];
+
 
     public function workSchedule(): BelongsTo
     {

@@ -145,6 +145,38 @@ class NavigationMenuDatabaseTableSeeder extends Seeder
                 'navigation_menu_id' => 34,
                 'database_table' => 'upload_setting_extensions',
             ],
+            [
+                'navigation_menu_id' => 37,
+                'database_table' => 'departments',
+            ],
+            [
+                'navigation_menu_id' => 39,
+                'database_table' => 'employee_types',
+            ],
+            [
+                'navigation_menu_id' => 40,
+                'database_table' => 'job_positions',
+            ],
+            [
+                'navigation_menu_id' => 42,
+                'database_table' => 'work_locations',
+            ],
+            [
+                'navigation_menu_id' => 43,
+                'database_table' => 'work_schedules',
+            ],
+            [
+                'navigation_menu_id' => 43,
+                'database_table' => 'work_schedule_days',
+            ],
+            [
+                'navigation_menu_id' => 45,
+                'database_table' => 'degree_types',
+            ],
+            [
+                'navigation_menu_id' => 47,
+                'database_table' => 'departure_reasons',
+            ],
         ];
 
         DB::table('navigation_menu_database_tables')->insert(

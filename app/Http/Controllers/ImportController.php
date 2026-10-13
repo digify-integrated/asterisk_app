@@ -7,8 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
-use Exception;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Carbon\Carbon;
+use Exception;
 
 class ImportController extends Controller
 {
@@ -30,9 +31,8 @@ class ImportController extends Controller
 
             $tableFields = Schema::getColumnListing($table);
             $file = $request->file('import_file');
-            $path = $file->getRealPath();
-
-            $handle = fopen($path, 'r');
+            
+            $handle = fopen($file->getRealPath(), 'r');
             if ($handle === false) {
                 return response()->json([
                     'message' => 'Failed to open the uploaded CSV file.'
@@ -86,26 +86,11 @@ class ImportController extends Controller
             ]);
 
             $table = $request->input('database_table');
-            $mapping = $request->input('mapping');
             
-            // Validate duplicate field mappings
-            $selectedFields = [];
-            foreach ($mapping as $map) {
-                $dbField = $map['field'] ?? 'ignore';
-                if ($dbField === 'ignore') continue;
-
-                if (in_array($dbField, $selectedFields)) {
-                    return response()->json([
-                        'message' => "The database field '{$dbField}' is mapped multiple times. Each database field can only be mapped once."
-                    ], Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
-                $selectedFields[] = $dbField;
-
-                if (!Schema::hasColumn($table, $dbField)) {
-                    return response()->json([
-                        'message' => "The mapped field '{$dbField}' does not exist in table '{$table}'."
-                    ], Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
+            // Validate mapping using helper
+            $mappingError = $this->validateMapping($table, $request->input('mapping'));
+            if ($mappingError) {
+                return response()->json(['message' => $mappingError], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $file = $request->file('import_file');
@@ -126,7 +111,7 @@ class ImportController extends Controller
             fclose($handle);
 
             return response()->json([
-                'message' => "Test import successful! Validated sample rows without errors.",
+                'message' => 'Test import successful! Validated sample rows without errors.',
                 'checked_rows' => $rowCount
             ], Response::HTTP_OK);
 
@@ -151,7 +136,7 @@ class ImportController extends Controller
             $table = $request->input('database_table');
             $mapping = $request->input('mapping');
 
-            // Validate duplicate field mappings
+            // Validate mapping and build clean field mapping array
             $selectedFields = [];
             $fieldMapping = [];
             foreach ($mapping as $index => $map) {
@@ -165,7 +150,13 @@ class ImportController extends Controller
                 }
                 $selectedFields[] = $dbField;
 
-                // Automatically skip primary key / auto-increment field ('id') to prevent duplicate entry violations
+                if (!Schema::hasColumn($table, $dbField)) {
+                    return response()->json([
+                        'message' => "The mapped field '{$dbField}' does not exist in table '{$table}'."
+                    ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                // Skip primary key auto-increment ID
                 if ($dbField === 'id') {
                     continue;
                 }
@@ -181,11 +172,15 @@ class ImportController extends Controller
             $batchData = [];
             $importedCount = 0;
 
-            // Cache table column types to intelligently format dates
+            // Cache column types and table structural checks OUTSIDE the loop for performance
             $columnTypes = [];
             foreach ($fieldMapping as $dbField) {
                 $columnTypes[$dbField] = Schema::getColumnType($table, $dbField);
             }
+
+            $hasCreatedAt = Schema::hasColumn($table, 'created_at');
+            $hasUpdatedAt = Schema::hasColumn($table, 'updated_at');
+            $now = now();
 
             DB::beginTransaction();
 
@@ -198,7 +193,6 @@ class ImportController extends Controller
                 foreach ($fieldMapping as $colIndex => $dbField) {
                     $cellValue = $row[$colIndex] ?? null;
 
-                    // Format date/timestamp fields automatically if incoming data is present
                     if (in_array($columnTypes[$dbField] ?? '', ['date', 'datetime', 'timestamp'])) {
                         $cellValue = $this->parseDateTime($cellValue);
                     }
@@ -206,11 +200,11 @@ class ImportController extends Controller
                     $rowData[$dbField] = $cellValue;
                 }
 
-                if (Schema::hasColumn($table, 'created_at') && !isset($rowData['created_at'])) {
-                    $rowData['created_at'] = now();
+                if ($hasCreatedAt && !isset($rowData['created_at'])) {
+                    $rowData['created_at'] = $now;
                 }
-                if (Schema::hasColumn($table, 'updated_at') && !isset($rowData['updated_at'])) {
-                    $rowData['updated_at'] = now();
+                if ($hasUpdatedAt && !isset($rowData['updated_at'])) {
+                    $rowData['updated_at'] = $now;
                 }
 
                 if (!empty($rowData)) {
@@ -255,9 +249,8 @@ class ImportController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            // Get table columns and exclude auto-increment IDs or timestamps if you want a clean user template
             $columns = Schema::getColumnListing($table);
-            $exclude = ['id', 'created_at', 'updated_at', 'deleted_at'];
+            $exclude = ['created_at', 'updated_at', 'deleted_at'];
             $templateHeaders = array_values(array_diff($columns, $exclude));
 
             $filename = "{$table}_import_template.csv";
@@ -278,6 +271,25 @@ class ImportController extends Controller
         }
     }
 
+    private function validateMapping(string $table, array $mapping): ?string
+    {
+        $selectedFields = [];
+        foreach ($mapping as $map) {
+            $dbField = $map['field'] ?? 'ignore';
+            if ($dbField === 'ignore') continue;
+
+            if (in_array($dbField, $selectedFields)) {
+                return "The database field '{$dbField}' is mapped multiple times. Each database field can only be mapped once.";
+            }
+            $selectedFields[] = $dbField;
+
+            if (!Schema::hasColumn($table, $dbField)) {
+                return "The mapped field '{$dbField}' does not exist in table '{$table}'.";
+            }
+        }
+        return null;
+    }
+
     private function parseDateTime(?string $value): ?string
     {
         if (empty(trim($value ?? ''))) {
@@ -285,21 +297,16 @@ class ImportController extends Controller
         }
 
         try {
-            // Handle common formats or let Carbon parse flexible strings
-            return \Carbon\Carbon::parse($value)->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
-            // Return original value if it fails parsing so validation can catch it later if needed
+            return Carbon::parse($value)->format('Y-m-d H:i:s');
+        } catch (Exception $e) {
             return $value;
         }
     }
 
     private function isRowEmpty(array $row): bool
     {
-        foreach ($row as $cell) {
-            if (!empty(trim($cell ?? ''))) {
-                return false;
-            }
-        }
-        return true;
+        return empty(array_filter($row, function ($cell) {
+            return !empty(trim($cell ?? ''));
+        }));
     }
 }

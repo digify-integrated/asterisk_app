@@ -6,6 +6,7 @@ import { FormEnvironmentManager } from '../util/formEnvironmentManager.js';
 import { errorHandler } from '../util/errorHandler.js';
 import { ButtonStateManager } from '../util/buttonManager.js';
 import { ComponentRegistry } from '../util/componentRegistry.js';
+import { Toast } from '../util/notifications.js';
 
 const CONFIG = {
     selectors: {
@@ -143,7 +144,7 @@ export class Import {
                 e.preventDefault();
                 const tableVal = this.dom.databaseTable.value;
                 if (!tableVal) {
-                    errorHandler.handle(null, 'validation_error', 'Please select a target table first to download its template.');
+                    Toast.error('Please select a target table first to download its template.');
                     return;
                 }
                 window.location.href = `/import/template/${tableVal}`;
@@ -156,7 +157,7 @@ export class Import {
         const fileVal = this.dom.importFile.files[0];
 
         if (!tableVal || !fileVal) {
-            await errorHandler.handle(null, 'validation_error', 'Please select a target table and a CSV file first.');
+            Toast.error('Please select a target table and a CSV file first.');
             return;
         }
 
@@ -247,7 +248,6 @@ export class Import {
                 <tr>
                     <td class="ps-4">
                         <span class="fw-bold text-gray-800">${header}</span>
-                        <span class="text-muted fs-8 d-block">Col #${index + 1}</span>
                         <input type="hidden" name="mapping[${index}][column]" value="${header}">
                     </td>
                     <td>
@@ -256,7 +256,7 @@ export class Import {
                         </select>
                     </td>
                     <td class="pe-4">
-                        <span class="text-gray-600 fs-7 bg-light px-2 py-1 rounded">${sampleValue}</span>
+                        <span class="fs-8 bg-danger px-2 py-1 rounded">${sampleValue}</span>
                     </td>
                 </tr>
             `;

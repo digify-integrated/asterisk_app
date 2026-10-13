@@ -1,0 +1,318 @@
+'use strict';
+
+import { PageInitializer } from '../util/pageInitializer.js';
+import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
+import { AuditLogManager } from '../util/auditLogManager.js';
+import { initValidation } from '../util/validator.js';
+import { FormEnvironmentManager } from '../util/formEnvironmentManager.js';
+import { errorHandler } from '../util/errorHandler.js';
+import { ButtonStateManager } from '../util/buttonManager.js';
+import { DetailFetcher } from '../util/detailFetcher.js';
+import { initConfirmAction } from '../util/confirmationAction.js';
+import { ComponentRegistry } from '../util/componentRegistry.js';
+import { TableFilterManager } from '../util/tableFilterManager.js';
+import { SaveFilterManager } from '../util/saveFilterManager.js';
+import { escapeHtml } from '../util/sanitize.js';
+
+const CONFIG = {
+    selectors: {
+        table: '#work-schedule-table',
+        tableColumn: '#work-schedule-table-column-dropdown',
+        form: '#work_schedule_form',
+        formId: 'work_schedule_form',
+        detailId: 'work_schedule_id',
+        submitButton: '#submit-data',
+        modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
+        logNotesTrigger: '.view-log-notes',
+        deleteMultipleTrigger: '#delete-data',
+        deleteTrigger: '.delete-details',
+        updateTrigger: '.update-details',
+        createTrigger: '.new-button',
+        timeInput: '.time-input',
+        checkboxes: '.datatable-checkbox-children:checked',
+        filterCollapse: 'work-schedule-filter-collapse',
+        filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
+    },
+    endpoints: {
+        tableData: '/work-schedule/generate-table',
+        save: '/work-schedule/save',
+        delete: '/work-schedule/delete',
+        deleteMultiple: '/work-schedule/delete-multiple',
+        fetch: '/work-schedule/fetch',
+    }
+};
+    
+export class WorkSchedule {
+    constructor() {
+        this.orchestrator = new DataTableOrchestrator();
+        this.abortController = new AbortController();
+
+        this.filterManager = new TableFilterManager({
+            containerId: CONFIG.selectors.filterCollapse,
+            orchestrator: this.orchestrator,
+            tableSelector: CONFIG.selectors.table
+        });
+
+        this.saveFilterManager = new SaveFilterManager({
+            filterManager: this.filterManager
+        });
+        
+        this.dom = {
+            table: document.querySelector(CONFIG.selectors.table),
+            form: document.querySelector(CONFIG.selectors.form),
+            modal: $(CONFIG.selectors.modal),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
+        };
+    }
+
+    async init() {
+        return PageInitializer.run(async () => {
+            await this.saveFilterManager.checkAndApplyDefaultFilter();
+            this.initTable();
+                                        
+            await Promise.all([
+                this.initForm(),
+                this.initDelete(),
+                this.initDateRangePicker(),
+                this.initTimePicker(),
+                this.registerGlobalListeners()
+            ]);
+                                        
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'work_schedules');
+        });
+    }
+
+    destroy() {
+        this.abortController.abort();
+    }
+
+    initTable() {
+        this.orchestrator.initialize({
+            selector: CONFIG.selectors.table,
+            url: CONFIG.endpoints.tableData,
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
+            colVisContainer: CONFIG.selectors.tableColumn,
+            order: [[1, 'asc']],
+            exportColumns: [2, 3, 4],
+            addons: { 
+                controls: true, 
+                export: true,
+                columnVisibility: true
+            },
+            columnDefs: [
+                { width: '5%', orderable: false, targets: 0 },
+                { width: '10%', orderable: false, targets: 3 },
+            ],
+            columns: [
+                { 
+                    data: 'id',
+                    render: (id) => `
+                        <div class="form-check form-check-sm ms-5">
+                            <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
+                        </div>`
+                },
+                { 
+                    data: 'name',
+                    title: 'Work Schedule',
+                },
+                { 
+                    data: 'created_at',
+                    title: 'Created At',
+                    visible: false
+                },
+                { 
+                    data: null, 
+                    title: '&nbsp;',
+                    render: (data, type, row, meta) => {
+                        const perms = meta.settings.json?.permissions || row.permissions || {};
+                        const safeId = escapeHtml(row.id);
+
+                        return `
+                        <div class="d-flex justify-content-end gap-2 me-5">
+                            ${perms.write ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
+                            ${perms.logs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
+                            ${perms.delete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                        </div>`;
+                    }
+                }
+            ]
+        });
+    }
+
+    initForm() {
+        initValidation({
+            forms: [
+                {
+                    selector: CONFIG.selectors.form,
+                    rules: {
+                        name: { required: true },
+                    },
+                    submitHandler: async (formElement) => this.handleFormSubmission(formElement)
+                }
+            ]
+        });
+    }
+
+    async handleFormSubmission(formElement) {
+        const btn = CONFIG.selectors.submitButton;
+        ButtonStateManager.disable(btn, { loadingText: 'Saving...' });
+
+        try {
+            const response = await fetch(CONFIG.endpoints.save, {
+                method: 'POST',
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest', 
+                    'Accept': 'application/json' 
+                },
+                body: new FormData(formElement),
+                signal: this.abortController.signal
+            });
+
+            if (await errorHandler.handleResponse(response, btn)) return;
+
+            this.dom.modal.modal('hide');
+            FormEnvironmentManager.resetForm(formElement);
+            this.orchestrator.reload(CONFIG.selectors.table);
+        } catch (error) {
+            if (error.name === 'AbortError') return; 
+            ButtonStateManager.enable(btn);
+            await errorHandler.handle(error, 'network_failure', 'Transactional pipeline error.');
+        }
+    }
+
+    initDelete() {
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteTrigger,
+            url: CONFIG.endpoints.delete,
+            method: 'DELETE',
+            payload: { work_schedule_id: (el) => el.dataset.referenceId },
+            swalTitle: 'Delete Record?',
+            swalText: 'This action will permanently delete this record and cannot be undone.',
+            confirmButtonText: 'Delete Record',
+            confirmButtonClass: 'danger',
+            onSuccess: () => this.orchestrator.reload(CONFIG.selectors.table)
+        });
+
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteMultipleTrigger,
+            url: CONFIG.endpoints.deleteMultiple,
+            method: 'DELETE',
+            payload: { 
+                'work_schedule_id': () => {
+                    const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
+                    return Array.from(checked, cb => Number(cb.value)).join(',');
+                }
+            },
+            swalTitle: 'Delete Multiple Records?',
+            swalText: 'This action will permanently delete the selected records and cannot be undone.',
+            confirmButtonText: 'Delete Records',
+            confirmButtonClass: 'danger',
+            onSuccess: () => this.orchestrator.reload(CONFIG.selectors.table)
+        });
+    }
+
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
+        });
+    }
+
+    initTimePicker() {
+        ComponentRegistry.initializeTimePicker({
+            selector: CONFIG.selectors.timeInput
+        });
+    }
+
+    registerGlobalListeners() {
+        document.addEventListener('click', async (event) => {
+            const { target } = event;
+            
+            const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
+            if (updateTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+                this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
+                return;
+            }
+            
+            const createTrigger = target.closest(CONFIG.selectors.createTrigger);
+            if (createTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+            }
+        }, { signal: this.abortController.signal });
+
+        document.addEventListener('change', async (event) => {
+            const { target } = event;
+            
+            if (target.classList.contains('rest-day-toggle')) {
+                const dayNum = target.dataset.day;
+                const isRestDay = target.checked;
+
+                const timeInputs = [
+                    document.getElementById(`start_time_${dayNum}`),
+                    document.getElementById(`end_time_${dayNum}`),
+                    document.getElementById(`break_start_${dayNum}`),
+                    document.getElementById(`break_end_${dayNum}`)
+                ];
+
+                timeInputs.forEach(input => {
+                    if (input) {
+                        const fp = input._flatpickr;
+
+                        if (isRestDay) {
+                            input.value = '';
+                            input.readOnly = true;
+                            input.classList.add('bg-light');
+
+                            if (fp) {
+                                fp.clear();
+                                fp.set('clickOpens', false);
+                            }
+                        } else {
+                            input.readOnly = false;
+                            input.classList.remove('bg-light');
+
+                            if (fp) {
+                                fp.set('clickOpens', true);
+                            }
+                        }
+                    }
+                });
+            }
+        }, { signal: this.abortController.signal });
+    }
+
+    async handleFetchWorkflow(referenceId) {
+        await DetailFetcher.fetch({
+            url: CONFIG.endpoints.fetch,
+            detailIdKey: CONFIG.selectors.detailId,
+            detailIdValue: referenceId,
+            formSelector: CONFIG.selectors.form,
+            submitBtnSelector: CONFIG.selectors.submitButton,
+            signal: this.abortController.signal,
+            onSuccess: async (response) => {
+                const data = response?.data || response;
+                if (!this.dom.form) return;
+
+                const targetFields = {
+                    'work_schedule_id': referenceId,
+                    'name': data.name,
+                };
+
+                Object.entries(targetFields).forEach(([name, val]) => {
+                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
+                    }
+                });
+            }
+        });
+    }
+}

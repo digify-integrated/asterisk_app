@@ -242,6 +242,19 @@ export class ComponentRegistry {
         flatpickr(elements, { enableTime, dateFormat });
     }
 
+    static initializeTimePicker({ selector, dateFormat = "h:i K", time_24hr = false }) {
+        const elements = document.querySelectorAll(selector);
+        if (!elements.length || typeof flatpickr === 'undefined') return;
+        
+        flatpickr(elements, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat,
+            time_24hr,
+            allowInput: true
+        });
+    }
+
     static initializeDateRangePicker({ selector, ...options } = {}) {
         if (typeof window.jQuery === 'undefined' || typeof moment === 'undefined' || !selector) return;
 

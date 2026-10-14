@@ -101,7 +101,7 @@ export class WorkSchedule {
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
             order: [[1, 'asc']],
-            exportColumns: [2, 3, 4],
+            exportColumns: [2, 3, 4, 5, 6, 7, 8],
             addons: { 
                 controls: true, 
                 export: true,
@@ -109,7 +109,7 @@ export class WorkSchedule {
             },
             columnDefs: [
                 { width: '5%', orderable: false, targets: 0 },
-                { width: '10%', orderable: false, targets: 3 },
+                { orderable: true, width: 'auto', targets: [2, 3, 4, 5, 6, 7, 8] },
             ],
             columns: [
                 { 
@@ -123,12 +123,28 @@ export class WorkSchedule {
                     data: 'name',
                     title: 'Work Schedule',
                 },
-                {
-                    data: 'schedule_summary',
-                    title: 'Weekly Schedule',
-                    orderable: false,
-                    render: (data) => escapeHtml(data ?? '')
-                },
+                ...[0, 1, 2, 3, 4, 5, 6].map((index) => ({
+                    data: `days.${index}`,
+                    title: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][index],
+                    render: (dayData) => {
+                        if (!dayData || dayData.is_rest_day) {
+                            return `<span class="badge badge-light-warning fw-semibold fs-8 px-2 py-1">Rest Day</span>`;
+                        }
+                        return `
+                            <div class="d-flex flex-column text-start">
+                                <div class="fw-bold text-dark d-flex align-items-center gap-1 fs-8">
+                                    <i class="ki-outline ki-time fs-7 text-primary me-2"></i>
+                                    <span>${escapeHtml(dayData.start_time)} – ${escapeHtml(dayData.end_time)}</span>
+                                </div>
+                                ${dayData.break_start && dayData.break_end ? `
+                                    <div class="text-muted fs-7 d-flex align-items-center gap-1 mt-1">
+                                        <i class="ki-outline ki-coffee fs-8 text-warning me-2"></i>
+                                        <span>Break: ${escapeHtml(dayData.break_start)} – ${escapeHtml(dayData.break_end)}</span>
+                                    </div>
+                                ` : ''}
+                            </div>`;
+                    }
+                })),
                 { 
                     data: 'created_at',
                     title: 'Created At',
@@ -275,18 +291,19 @@ export class WorkSchedule {
                         if (isRestDay) {
                             input.value = '';
                             input.readOnly = true;
-                            input.classList.add('bg-light');
 
                             if (fp) {
                                 fp.clear();
                                 fp.set('clickOpens', false);
+                                // Ensure the underlying flatpickr altInput or main input respects readonly
+                                if (fp.altInput) fp.altInput.readOnly = true;
                             }
                         } else {
                             input.readOnly = false;
-                            input.classList.remove('bg-light');
 
                             if (fp) {
                                 fp.set('clickOpens', true);
+                                if (fp.altInput) fp.altInput.readOnly = false;
                             }
                         }
                     }
@@ -305,11 +322,11 @@ export class WorkSchedule {
             signal: this.abortController.signal,
 
             onSuccess: async (response) => {
-                const data = response?.data || response;
+                const data = response?.data?.data || response?.data || response;
 
                 if (!this.dom.form) return;
 
-                const $form = $(this.dom.form);
+                const $form =$(this.dom.form);
 
                 // Populate the schedule name and ID.
                 $form.find('[name="work_schedule_id"]')
@@ -320,40 +337,53 @@ export class WorkSchedule {
                     .val(data.name ?? '')
                     .trigger('change');
 
-                // Populate Monday through Sunday.
-                for (let day = 1; day <= 7; day++) {
-                    const dayData = data.days?.[day] ?? {};
+                // Loop through the 0-indexed JSON array (0 = Monday, 6 = Sunday)
+                if (Array.isArray(data.days)) {
+                    data.days.forEach((dayData, index) => {
+                        const dayNum = index + 1; // Maps array index 0-6 to day numbers 1-7
 
-                    const $restDay = $form.find(
-                        `#is_rest_day_${day}`
-                    );
+                        const $restDay =$form.find(`#is_rest_day_${dayNum}`);
+                        const isRestDay = Boolean(dayData.is_rest_day);
 
-                    const isRestDay = Boolean(
-                        dayData.is_rest_day
-                    );
-
-                    $restDay
-                        .prop('checked', isRestDay)
-                        .trigger('change');
-
-                    // Populate each day's time fields.
-                    const timeFields = [
-                        'start_time',
-                        'end_time',
-                        'break_start',
-                        'break_end',
-                    ];
-
-                    timeFields.forEach((field) => {
-                        $form.find(`#${field}_${day}`)
-                            .val(dayData[field] ?? '')
+                        $restDay
+                            .prop('checked', isRestDay)
                             .trigger('change');
-                    });
 
-                    // Optional: disable time fields on rest days.
-                    timeFields.forEach((field) => {
-                        $form.find(`#${field}_${day}`)
-                            .prop('disabled', isRestDay);
+                        // Populate each day's time fields.
+                        const timeFields = [
+                            'start_time',
+                            'end_time',
+                            'break_start',
+                            'break_end',
+                        ];
+
+                        timeFields.forEach((field) => {
+                            const input = document.getElementById(`${field}_${dayNum}`);
+                            if (!input) return;
+
+                            const fp = input._flatpickr;
+                            const val = dayData[field] ?? '';
+
+                            if (isRestDay) {
+                                input.value = '';
+                                input.readOnly = true;
+                                
+                                if (fp) {
+                                    fp.clear();
+                                    fp.set('clickOpens', false);
+                                    if (fp.altInput) fp.altInput.readOnly = true;
+                                }
+                            } else {
+                                input.value = val;
+                                input.readOnly = false;
+
+                                if (fp) {
+                                    fp.setDate(val, false); // Safely set Flatpickr value without triggering infinite loops
+                                    fp.set('clickOpens', true);
+                                    if (fp.altInput) fp.altInput.readOnly = false;
+                                }
+                            }
+                        });
                     });
                 }
             }

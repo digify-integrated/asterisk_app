@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body py-4">
+        <div class="card-body py-5 px-5">
             <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
                     @include('partials.datatable-search')

@@ -34,6 +34,17 @@ export class FormEnvironmentManager {
 
             select.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
         });
+
+        // Remove readonly and background styling from any fields in the form
+        form.querySelectorAll('[readonly]').forEach(el => {
+            el.removeAttribute('readonly');
+            
+            const fp = el._flatpickr;
+            if (fp) {
+                fp.set('clickOpens', true);
+                if (fp.altInput) fp.altInput.removeAttribute('readonly');
+            }
+        });
     }
 
     static getCsrfToken(metaName = 'csrf-token', doc = document) {

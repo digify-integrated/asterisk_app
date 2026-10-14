@@ -1,4 +1,4 @@
-<div class="d-flex align-items-center gap-3 w-100">
+<div class="d-flex align-items-center gap-3">
     <div class="position-relative flex-grow-1">
         <i class="ki-outline ki-magnifier fs-4 position-absolute top-50 translate-middle-y ms-5 text-gray-500"></i>
         <input type="text" autocomplete="off" class="form-control form-control-sm ps-12 pe-5 rounded-3 datatable-search" placeholder="Search" />

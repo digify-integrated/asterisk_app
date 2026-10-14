@@ -2586,6 +2586,14 @@ textarea.form-control-lg {
     cursor: pointer
 }
 
+.form-control:disabled,
+.form-control[readonly],
+.form-select:disabled,
+.form-select[readonly] {
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+    --bs-bg-opacity: 1;
+}
+
 .form-control-color::-moz-color-swatch {
     border: 0 !important;
     border-radius: .475rem

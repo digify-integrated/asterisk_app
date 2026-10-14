@@ -18,16 +18,16 @@
                         </div>
                     </div>
                     
-                    <div id="saved_filters_container" class="mb-2" style="max-height: 210px; overflow-y: auto; overflow-x: hidden;">
+                    <div id="saved_filters_container"style="max-height: 210px; overflow-y: auto; overflow-x: hidden;">
                         <div id="saved_filters_list">
-                            <span class="text-muted fs-8 px-2 py-3 d-block text-center">No saved filters yet</span>
+                            <span class="text-muted fs-8 px-2 py-2 d-block text-center">No saved filters yet</span>
                         </div>
                     </div>
 
                     <div class="separator my-3"></div>
 
                     <div class="menu-item px-1">
-                        <label class="form-label fs-8 fw-bold text-gray-700 mb-1">Save Current Filter</label>
+                        <label class="form-label fs-8 fw-bold text-gray-700 mb-2">Save Current Filter</label>
                         <input type="text" id="save_filter_name" class="form-control form-control-sm mb-2" placeholder="Enter filter name" autocomplete="off" />
                         
                         <div class="form-check form-check-custom form-check-solid form-check-sm mb-3">
@@ -38,7 +38,7 @@
                         </div>
 
                         <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" id="save_filter_btn">
-                            <i class="ki-outline ki-plus fs-6 me-1"></i> Save Preset
+                            Save Preset
                         </button>
                     </div>
                 </div>

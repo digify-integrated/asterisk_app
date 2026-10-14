@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body py-4">
+        <div class="card-body py-5 px-5">
             <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
                 <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
                     @include('partials.datatable-search')
@@ -68,7 +68,7 @@
             <div class="d-flex flex-column gap-5">
                 <div class="d-flex flex-column gap-2">
                     <label class="form-label fw-semibold text-dark required fs-7 mb-0" for="name">Schedule Name</label>
-                    <input type="text" class="form-control form-control-sm w-100" id="name" name="name" placeholder="e.g., Engineering Core Hours" maxlength="100" autocomplete="off">
+                    <input type="text" class="form-control form-control-sm w-100" id="name" name="name" placeholder="Enter Schedule Name" maxlength="100" autocomplete="off">
                 </div>
 
                 <div class="border-top my-1"></div>

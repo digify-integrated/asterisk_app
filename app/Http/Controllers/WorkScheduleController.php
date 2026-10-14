@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\WorkSchedule;
 use App\Http\Resources\ConfigurationOptionResource;
-use App\Http\Resources\ConfigurationTableResource;
-use App\Http\Resources\ConfigurationDetailsResource;
+use App\Http\Resources\WorkScheduleTableResource;
+use App\Http\Resources\WorkScheduleDetailsResource;
 use App\Http\Requests\SaveWorkScheduleRequest;
 use App\Http\Requests\FetchWorkScheduleDetailsRequest;
 use App\Http\Requests\DeleteWorkScheduleRequest;
@@ -45,7 +45,7 @@ class WorkScheduleController extends Controller
         }
     }
 
-    public function fetch(FetchWorkScheduleDetailsRequest $request): JsonResponse|ConfigurationDetailsResource 
+    public function fetch(FetchWorkScheduleDetailsRequest $request): JsonResponse|WorkScheduleDetailsResource 
     {
         try {
             $validated = $request->validated();
@@ -53,7 +53,7 @@ class WorkScheduleController extends Controller
             $workSchedule = WorkSchedule::with('days')
                 ->findOrFail($validated['work_schedule_id']);
 
-            return new ConfigurationDetailsResource($workSchedule);
+            return new WorkScheduleDetailsResource($workSchedule);
 
         } catch (Exception $e) {
             report($e);
@@ -129,7 +129,7 @@ class WorkScheduleController extends Controller
 
         $workSchedules = $query->orderBy('name')->get();
 
-        return ConfigurationTableResource::collection($workSchedules)
+        return WorkScheduleTableResource::collection($workSchedules)
             ->additional([
                 'permissions' => $permissions,
             ])

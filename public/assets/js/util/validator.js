@@ -102,11 +102,8 @@ export class FormValidator {
                 });
             }
 
-            this.form.classList.add('was-validated');
             return;
         }
-
-        this.form.classList.add('was-validated');
 
         if (typeof this.config.submitHandler === 'function') {
             event.preventDefault();

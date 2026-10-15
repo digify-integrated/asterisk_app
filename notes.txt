@@ -1,0 +1,11 @@
+Revise:
+1. employee_type to employment_type
+2. degree_type to educational level
+
+to add sa menu
+1. document type
+2. training type
+
+rename
+employee type to employment type
+degree type to educational level

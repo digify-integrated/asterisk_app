@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DegreeTypeSeeder extends Seeder
+class EducationalLevelSeeder extends Seeder
 {
     public function run(): void
     {
@@ -16,7 +16,7 @@ class DegreeTypeSeeder extends Seeder
             'updated_at' => $now,
         ];
 
-        $degreeTypes = [
+        $educationalLevels = [
             ['name' => 'High School Diploma / K-12'],
             ['name' => 'Vocational / Technical / Certificate'],
             ['name' => 'Associate Degree'],
@@ -27,8 +27,8 @@ class DegreeTypeSeeder extends Seeder
             ['name' => 'Professional Doctorate (MD, JD, DVM)'],
         ];
 
-        DB::table('degree_types')->insert(
-            array_map(fn ($row) => $row + $defaults, $degreeTypes)
+        DB::table('educational_levels')->insert(
+            array_map(fn ($row) => $row + $defaults, $educationalLevels)
         );
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('status')->default('Inactive');
+            $table->enum('status', ['Active', 'Inactive'])->default('Inactive');
             $table->rememberToken();
             $table->foreignId('last_log_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

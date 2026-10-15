@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('state_id')->constrained('states')->cascadeOnDelete();
-            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();            
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

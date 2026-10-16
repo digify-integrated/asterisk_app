@@ -3,7 +3,7 @@ Revise:
 2. degree_type to educational level
 
 to add sa menu
-1. document type
+1. document type /
 2. training type
 
 rename

@@ -123,8 +123,8 @@ export class SystemActionPermission {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2, 3, 4],
             order: [[1, 'asc']],
-            exportColumns: [1, 2, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -165,13 +165,13 @@ export class SystemActionPermission {
                 })),
                 { 
                     data: 'created_at',
-                    title: 'Created At',
+                    title: 'Created Date',
                     visible: false
                 },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const globalPerms = meta.settings.json?.permissions || {};
                         const rowPerms = row.permissions || {};
                         

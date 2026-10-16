@@ -40,6 +40,7 @@ export class DataTableOrchestrator {
             columns: [],
             columnDefs: [],
             order: [[1, 'asc']],
+            exportColumns: ':visible',
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             onRowClick: null,
             addons: { controls: false, subControls: false, columnVisibility: false },
@@ -90,7 +91,7 @@ export class DataTableOrchestrator {
             columns: config.columns,
             columnDefs: config.columnDefs,
             lengthMenu: config.lengthMenu,
-            buttons: enableExport ? this._buildExportConfig(tableNode) : [],
+            buttons: enableExport ? this._buildExportConfig(tableNode, config.exportColumns) : [],
             ajax: {
                 url: config.url,
                 type: 'GET',
@@ -471,11 +472,11 @@ export class DataTableOrchestrator {
             .on(`click${ns}`, '.export-print', (e) => { e.preventDefault(); dt.button('.buttons-print').trigger(); });
     }
 
-    _buildExportConfig(tableNode) {
+    _buildExportConfig(tableNode, exportColumns) {
         const titleStrategy = () => `${document.title} Export ${new Date().toISOString().split('T')[0]}`;
         
         const baseOpts = {
-            columns: ':visible',
+            columns: exportColumns, // Uses the custom column indices passed from config
             rows: function(idx, data, node) {
                 const allChecked = document.querySelectorAll('.datatable-checkbox-children:checked');
                 if (allChecked.length === 0) {
@@ -486,11 +487,6 @@ export class DataTableOrchestrator {
             }
         };
 
-        const getDynamicOrientation = (dt) => {
-            const visibleColsCount = dt.columns(':visible').indexes().length;
-            return visibleColsCount > 5 ? 'landscape' : 'portrait';
-        };
-
         return [
             { 
                 extend: 'csvHtml5', 
@@ -499,38 +495,146 @@ export class DataTableOrchestrator {
                 className: 'd-none buttons-csv' 
             },
             { 
-                extend: 'pdfHtml5', 
-                title: titleStrategy, 
-                exportOptions: baseOpts, 
-                className: 'd-none buttons-pdf', 
-                orientation: (dt) => getDynamicOrientation(dt), 
-                pageSize: 'A4' 
-            },
-            { 
                 extend: 'excelHtml5', 
-                title: titleStrategy, 
                 exportOptions: { ...baseOpts, header: false },
                 className: 'd-none buttons-excel' 
             },
-            { 
-                extend: 'print', 
-                title: titleStrategy, 
-                exportOptions: baseOpts, 
+            {
+                extend: 'pdfHtml5',
+                title: titleStrategy,
+                exportOptions: baseOpts,
+                className: 'd-none buttons-pdf',
+                pageSize: 'A4',
+                orientation: 'landscape',
+
+                customize: function (doc) {
+                    const dt = window.jQuery(tableNode).DataTable();
+                    const colCount = dt.columns(exportColumns).count();
+                    const orientation = colCount > 5 ? 'landscape' : 'portrait';
+
+                    const pageWidth = orientation === 'landscape' ? 841.89 : 595.28;
+                    const margin = colCount > 8 ? 15 : 25;
+                    const availableWidth = pageWidth - (margin * 2);
+
+                    doc.pageSize = 'A4';
+                    doc.pageOrientation = orientation;
+                    doc.pageMargins = [margin, 35, margin, 35];
+
+                    const fontSize = colCount > 12 ? 5
+                        : colCount > 9 ? 6
+                        : colCount > 6 ? 7 : 9;
+
+                    doc.defaultStyle = {
+                        fontSize: fontSize,
+                        alignment: 'left',
+                        lineHeight: 1
+                    };
+
+                    doc.styles.tableHeader = {
+                        bold: true,
+                        fontSize: fontSize,
+                        alignment: 'left',
+                        margin: [2, 3, 2, 3]
+                    };
+
+                    const table = doc.content.find(
+                        item => item.table && item.table.body
+                    );
+
+                    if (table) {
+                        const columnCount = table.table.body[0].length;
+
+                        table.table.widths = Array(columnCount).fill(
+                            availableWidth / columnCount
+                        );
+
+                        table.table.dontBreakRows = false;
+                        table.table.keepWithHeaderRows = 1;
+
+                        table.layout = {
+                            hLineWidth: () => 0.5,
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => '#cccccc',
+                            vLineColor: () => '#cccccc',
+                            paddingLeft: () => 2,
+                            paddingRight: () => 2,
+                            paddingTop: () => 3,
+                            paddingBottom: () => 3
+                        };
+                    }
+                }
+            },
+            {
+                extend: 'print',
+                title: titleStrategy,
+                exportOptions: baseOpts,
                 className: 'd-none buttons-print',
+
                 customize: function (win) {
-                    const dtInstance = window.jQuery(tableNode).DataTable();
-                    const orientation = getDynamicOrientation(dtInstance);
-                    const css = `@page { size: A4 ${orientation}; }`;
-                    const head = win.document.head || win.document.getElementsByTagName('head')[0];
+                    const dt = window.jQuery(tableNode).DataTable();
+                    const colCount = dt.columns(exportColumns).count();
+                    const orientation = colCount > 5 ? 'landscape' : 'portrait';
+
+                    const fontSize = colCount > 12 ? '6pt'
+                        : colCount > 8 ? '7pt'
+                        : colCount > 5 ? '9pt' : '11pt';
+
+                    const css = `
+                        @page {
+                            size: A4 ${orientation};
+                            margin: 8mm;
+                        }
+
+                        @media print {
+                            html, body {
+                                width: auto !important;
+                                height: auto !important;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+
+                            body {
+                                font-size: ${fontSize} !important;
+                            }
+
+                            .dt-print-view {
+                                width: 100% !important;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+
+                            table {
+                                width: 100% !important;
+                                max-width: 100% !important;
+                                table-layout: fixed !important;
+                                border-collapse: collapse !important;
+                            }
+
+                            th, td {
+                                white-space: normal !important;
+                                overflow-wrap: anywhere !important;
+                                word-break: break-word !important;
+                                padding: 2px !important;
+                                font-size: ${fontSize} !important;
+                                box-sizing: border-box !important;
+                            }
+
+                            thead {
+                                display: table-header-group;
+                            }
+
+                            tr {
+                                break-inside: avoid;
+                                page-break-inside: avoid;
+                            }
+                        }
+                    `;
+
                     const style = win.document.createElement('style');
                     style.type = 'text/css';
                     style.media = 'print';
-                    if (style.styleSheet) {
-                        style.styleSheet.cssText = css;
-                    } else {
-                        style.appendChild(win.document.createTextNode(css));
-                    }
-                    head.appendChild(style);
+                    style.appendChild(win.document.createTextNode(css));
+                    win.document.head.appendChild(style);
                 }
             }
         ];

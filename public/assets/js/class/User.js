@@ -104,6 +104,7 @@ export class User {
                 filter_created_date: this.dom.filterDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [2, 3, 4, 5],
             order: [[2, 'asc']],
             addons: { 
                 controls: true, 
@@ -148,13 +149,13 @@ export class User {
                 },
                 { 
                     data: 'created_at',
-                    title: 'Created At',
+                    title: 'Created Date',
                     visible: false
                 },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 

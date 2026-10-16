@@ -35409,6 +35409,10 @@ h6 {
     content: "•"
 }
 
+.breadcrumb-arrow .breadcrumb-item:after {
+    content: ">"
+}
+
 .breadcrumb-separatorless .breadcrumb-item:after {
     display: none
 }
@@ -53724,7 +53728,7 @@ body {
 
 @media (min-width:992px) {
     .content {
-        padding: 30px 0 0 0
+        padding: 15px 0 0 0
     }
 }
 

@@ -146,8 +146,8 @@ export class PagePermission {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             order: [[1, 'asc']],
-            exportColumns: [1, 2, 8],
             addons: { 
                 controls: true, 
                 export: true,
@@ -188,13 +188,13 @@ export class PagePermission {
                 })),
                 { 
                     data: 'created_at',
-                    title: 'Created At',
+                    title: 'Created Date',
                     visible: false
                 },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const globalPerms = meta.settings.json?.permissions || {};
                         const rowPerms = row.permissions || {};
                         

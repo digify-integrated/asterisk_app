@@ -30,17 +30,14 @@
                         <span class="text-gray-900 fw-semibold fs-7 d-flex align-items-center gap-2">
                             <span class="symbol symbol-25px symbol-circle">
                                 <span class="symbol-label bg-primary bg-opacity-10 text-primary">
-                                    <i class="ki-duotone ki-file-down fs-6"><span class="path1"></span><span class="path2"></span></i>
+                                    <i class="ki-duotone ki-file-down fs-6"></i>
                                 </span>
                             </span>
                             Need an import template? Browse available table schemas
                         </span>
                         <span class="d-flex align-items-center text-gray-500 fs-8 fw-bold text-uppercase me-1 gap-2">
-                            <span class="badge badge-light-primary fs-8 fw-semibold py-1 px-2">CSV</span>
-                            <i class="ki-duotone ki-down fs-5 text-gray-500 transition-all transform-rotate">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
+                            <span class="badge badge-light-primary fs-8 fw-semibold py-1 px-2">CSV Template</span>
+                            <i class="ki-duotone ki-down fs-5 text-gray-500 transition-all transform-rotate"></i>
                         </span>
                     </button>
 
@@ -51,9 +48,7 @@
                                 <span class="text-gray-500 fs-8">Includes all database fields excluding timestamps</span>
                             </div>
                             
-                            <div id="dynamic-template-list" class="d-flex flex-column gap-2">
-                                <!-- Populated dynamically via JavaScript -->
-                            </div>
+                            <div id="dynamic-template-list" class="d-flex flex-column gap-2"></div>
                         </div>
                     </div>
                 </div>
@@ -66,10 +61,7 @@
             <div class="card shadow-sm mb-7" id="config-card">
                 <div class="card-header">
                     <h3 class="card-title fw-bold">
-                        <i class="ki-duotone ki-setting-2 fs-2 text-primary me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                        <i class="ki-duotone ki-setting-2 fs-2 text-primary me-2"></i>
                         Step 1: Configuration & Upload
                     </h3>
                 </div>
@@ -98,18 +90,12 @@
             <div class="card shadow-sm d-none" id="mapping-card">
                 <div class="card-header d-flex align-items-center">
                     <h3 class="card-title fw-bold m-0">
-                        <i class="ki-duotone ki-columns fs-2 text-primary me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                        <i class="ki-duotone ki-columns fs-2 text-primary me-2"></i>
                         Step 2: Field Mapping & Data Preview
                     </h3>
                     <div class="card-toolbar">
                         <button type="button" id="back-to-config-btn" class="btn btn-sm btn-light-secondary">
-                            <i class="ki-duotone ki-arrow-left fs-2 me-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
+                            <i class="ki-duotone ki-arrow-left fs-2 me-1"></i>
                             Change File / Table
                         </button>
                     </div>

@@ -9,7 +9,7 @@
     $isManageOrImport = $isManageRoute || $isImportRoute;
 @endphp
 
-<ol class="breadcrumb breadcrumb-dot text-muted fs-8 fw-semibold">
+<ol class="breadcrumb breadcrumb-arrow text-muted fs-8 fw-semibold">
     <li class="breadcrumb-item">
         <a href="{{ route('apps.main') }}" class="text-muted text-hover-primary">
             Home {{ $routeName ?? '' }}

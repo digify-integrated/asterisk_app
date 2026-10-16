@@ -78,12 +78,12 @@ export class Import {
                 item.className = 'd-flex align-items-center justify-content-between p-3 border border-gray-200 rounded text-decoration-none bg-hover-light transition-all text-gray-800';
                 item.innerHTML = `
                     <div class="d-flex align-items-center gap-2">
-                        <i class="ki-duotone ki-file fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                        <i class="ki-duotone ki-file fs-4 text-gray-500"></i>
                         <span class="fw-medium fs-7">${label}</span>
                     </div>
                     <span class="fs-8 text-gray-500 fw-semibold d-flex align-items-center gap-1">
                         Download .csv 
-                        <i class="ki-duotone ki-arrow-right fs-7 text-gray-400"><span class="path1"></span><span class="path2"></span></i>
+                        <i class="ki-duotone ki-arrow-right fs-7 text-gray-400"></i>
                     </span>
                 `;
                 

@@ -134,8 +134,8 @@ export class Company {
                 filter_created_date: this.dom.filterCreatedDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
-            order: [[2, 'asc']],
             exportColumns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            order: [[2, 'asc']],
             addons: { 
                 controls: true, 
                 export: true,
@@ -174,11 +174,11 @@ export class Company {
                 { data: 'email', title: 'Email', visible: false },
                 { data: 'website', title: 'Website', visible: false },
                 { data: 'contact_person', title: 'Contact Person', visible: false },
-                { data: 'created_at', title: 'Created At', visible: false },
+                { data: 'created_at', title: 'Created Date', visible: false },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 

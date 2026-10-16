@@ -117,6 +117,7 @@ export class NavigationMenu {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2, 3, 4, 5, 6, 7],
             order: [[1, 'asc']],
             addons: { 
                 controls: true, 
@@ -125,6 +126,7 @@ export class NavigationMenu {
             },
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
+                { width: '20%', targets: [1, 2, 4, 5] },
                 { width: '10%', bSortable: false, targets: 7 },
             ],
             columns: [
@@ -144,15 +146,14 @@ export class NavigationMenu {
                     title: 'Apps',
                     render: (apps) => {
                         if (!Array.isArray(apps) || apps.length === 0) {
-                            return `<span class="badge badge-light-secondary">No Apps</span>`;
+                            return `<span class="badge badge-light-secondary text-muted">No Apps</span>`;
                         }
 
-                        const badges = apps.map((app, index) => {
-                            const margin = index === apps.length - 1 ? '' : 'me-1';
-                            return `<span class="badge badge-light-primary ${margin}">${escapeHtml(app.name)}</span>`;
+                        const badges = apps.map((app) => {
+                            return `<span class="badge badge-light-primary">${escapeHtml(app.name)}</span>`;
                         }).join('');
 
-                        return `<div class="d-flex flex-wrap align-items-center">${badges}</div>`;
+                        return `<div class="d-flex flex-wrap align-items-center gap-1">${badges}</div>`;
                     }
                 },
                 { 
@@ -171,12 +172,11 @@ export class NavigationMenu {
                             return `<span class="badge badge-light-secondary">No Import/Export Tables</span>`;
                         }
 
-                        const badges = database_tables.map((table, index) => {
-                            const margin = index === database_tables.length - 1 ? '' : 'me-1';
-                            return `<span class="badge badge-light-warning ${margin}">${escapeHtml(table.name)}</span>`;
+                        const badges = database_tables.map((table) => {
+                            return `<span class="badge badge-light-warning">${escapeHtml(table.name)}</span>`;
                         }).join('');
 
-                        return `<div class="d-flex flex-wrap align-items-center">${badges}</div>`;
+                        return `<div class="d-flex flex-wrap align-items-center gap-1">${badges}</div>`;
                     }
                 },
                 { 
@@ -185,13 +185,13 @@ export class NavigationMenu {
                 },
                 { 
                     data: 'created_at',
-                    title: 'Created At',
+                    title: 'Created Date',
                     visible: false
                 },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 

@@ -98,8 +98,8 @@ export class App {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [2, 3, 4, 5],
             order: [[2, 'asc']],
-            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -126,10 +126,10 @@ export class App {
                 { data: 'name', title: 'App' },
                 { data: 'description', title: 'Description' },
                 { data: 'order_sequence', title: 'Sequence' },
-                { data: 'created_at', title: 'Created At', visible: false },
+                { data: 'created_at', title: 'Created Date', visible: false },
                 { 
                     data: null, 
-                    title: '&nbsp;',
+                    title: 'Action',
                     render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);

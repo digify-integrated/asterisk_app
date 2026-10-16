@@ -5,14 +5,10 @@
 @endpush
 
 @section('content')
-    <div class="card border-0 shadow-sm mb-7">
-        <div class="card-body py-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-5">
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
-                    @include('partials.datatable-search')
-                </div>
-
-                <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-body py-5 px-5">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
+                <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
 
                     @component('partials.datatable-actions')
                         @slot('deletePermission', $deletePermission)
@@ -30,6 +26,10 @@
                         @slot('dropdownId', 'work-location-table-column-dropdown')
                         @slot('dropdownButtonId', 'work-location-table-button-column-dropdown')
                     @endcomponent
+                </div>
+                
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
+                    @include('partials.datatable-search')
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
     </div>
 
     <div class="card">
-        <div class="card-body pt-3 pb-3 pe-0 ps-0">
+        <div class="card-body pt-1 pb-0 pe-0 ps-0">
             @component('partials.index-table')
                 @slot('tableId', 'work-location-table')
             @endcomponent

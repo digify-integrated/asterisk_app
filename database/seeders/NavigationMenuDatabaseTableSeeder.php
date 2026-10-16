@@ -77,104 +77,114 @@ class NavigationMenuDatabaseTableSeeder extends Seeder
                 'navigation_menu_id' => 21,
                 'database_table' => 'address_types',
             ],
+            // Added Document Type ID: 22
+            [
+                'navigation_menu_id' => 22,
+                'database_table' => 'document_types',
+            ],
+            // Added Training Type ID: 23
             [
                 'navigation_menu_id' => 23,
+                'database_table' => 'training_types',
+            ],
+            [
+                'navigation_menu_id' => 25,
                 'database_table' => 'users',
             ],
             [
-                'navigation_menu_id' => 22,
+                'navigation_menu_id' => 26,
                 'database_table' => 'roles',
-            ],
-            [
-                'navigation_menu_id' => 22,
-                'database_table' => 'role_permissions',
-            ],
-            [
-                'navigation_menu_id' => 22,
-                'database_table' => 'role_system_action_permissions',
-            ],
-            [
-                'navigation_menu_id' => 22,
-                'database_table' => 'role_users',
             ],
             [
                 'navigation_menu_id' => 26,
                 'database_table' => 'role_permissions',
             ],
             [
-                'navigation_menu_id' => 27,
+                'navigation_menu_id' => 26,
                 'database_table' => 'role_system_action_permissions',
             ],
             [
+                'navigation_menu_id' => 26,
+                'database_table' => 'role_users',
+            ],
+            [
+                'navigation_menu_id' => 28,
+                'database_table' => 'role_permissions',
+            ],
+            [
                 'navigation_menu_id' => 29,
+                'database_table' => 'role_system_action_permissions',
+            ],
+            [
+                'navigation_menu_id' => 31,
                 'database_table' => 'apps',
             ],
             [
-                'navigation_menu_id' => 30,
+                'navigation_menu_id' => 32,
                 'database_table' => 'companies',
             ],
             [
-                'navigation_menu_id' => 31,
+                'navigation_menu_id' => 33,
                 'database_table' => 'navigation_menus',
             ],
             [
-                'navigation_menu_id' => 31,
+                'navigation_menu_id' => 33,
                 'database_table' => 'navigation_menu_apps',
             ],
             [
-                'navigation_menu_id' => 31,
+                'navigation_menu_id' => 33,
                 'database_table' => 'navigation_menu_routes',
             ],
             [
-                'navigation_menu_id' => 31,
+                'navigation_menu_id' => 33,
                 'database_table' => 'navigation_menu_database_tables',
             ],
             [
-                'navigation_menu_id' => 32,
+                'navigation_menu_id' => 34,
                 'database_table' => 'system_actions',
             ],
             [
-                'navigation_menu_id' => 33,
+                'navigation_menu_id' => 35,
                 'database_table' => 'system_parameters',
             ],
             [
-                'navigation_menu_id' => 34,
+                'navigation_menu_id' => 36,
                 'database_table' => 'upload_settings',
             ],
             [
-                'navigation_menu_id' => 34,
+                'navigation_menu_id' => 36,
                 'database_table' => 'upload_setting_extensions',
             ],
             [
-                'navigation_menu_id' => 37,
+                'navigation_menu_id' => 39,
                 'database_table' => 'departments',
             ],
             [
-                'navigation_menu_id' => 39,
-                'database_table' => 'employee_types',
-            ],
-            [
-                'navigation_menu_id' => 40,
-                'database_table' => 'job_positions',
+                'navigation_menu_id' => 41,
+                'database_table' => 'employment_types',
             ],
             [
                 'navigation_menu_id' => 42,
+                'database_table' => 'job_positions',
+            ],
+            [
+                'navigation_menu_id' => 44,
                 'database_table' => 'work_locations',
             ],
             [
-                'navigation_menu_id' => 43,
+                'navigation_menu_id' => 45,
                 'database_table' => 'work_schedules',
             ],
             [
-                'navigation_menu_id' => 43,
+                'navigation_menu_id' => 45,
                 'database_table' => 'work_schedule_days',
             ],
             [
-                'navigation_menu_id' => 45,
-                'database_table' => 'degree_types',
+                'navigation_menu_id' => 47,
+                'database_table' => 'educational_levels',
             ],
             [
-                'navigation_menu_id' => 47,
+                'navigation_menu_id' => 49,
                 'database_table' => 'departure_reasons',
             ],
         ];

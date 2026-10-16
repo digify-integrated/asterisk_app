@@ -104,8 +104,8 @@ export class State {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2, 3],
             order: [[1, 'asc']],
-            exportColumns: [2, 3, 4],
             addons: { 
                 controls: true, 
                 export: true,
@@ -133,13 +133,13 @@ export class State {
                 },
                 { 
                     data: 'created_at',
-                    title: 'Created At',
+                    title: 'Created Date',
                     visible: false
                 },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 

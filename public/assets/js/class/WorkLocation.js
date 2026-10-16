@@ -120,6 +120,7 @@ export class WorkLocation {
                 filter_created_date: this.dom.filterCreatedDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2, 3, 4],
             order: [[1, 'asc']],
             addons: { 
                 controls: true, 
@@ -141,11 +142,11 @@ export class WorkLocation {
                 { data: 'name', title: 'Name' },
                 { data: 'location_type', title: 'Location Type' },
                 { data: 'address', title: 'Address' },
-                { data: 'created_at', title: 'Created At', visible: false },
+                { data: 'created_at', title: 'Created Date', visible: false },
                 { 
                     data: null, 
-                    title: '&nbsp;',
-                    render: (data, type, row, meta) => {
+                    title: 'Action',
+                    render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
 

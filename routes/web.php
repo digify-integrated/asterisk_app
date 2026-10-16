@@ -13,10 +13,11 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DatabaseTableController;
-use App\Http\Controllers\DegreeTypeController;
+use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\EducationalLevelController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartureReasonController;
-use App\Http\Controllers\EmployeeTypeController;
+use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HolidayTypeController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SystemActionController;
 use App\Http\Controllers\SystemActionPermissionController;
 use App\Http\Controllers\SystemParameterController;
+use App\Http\Controllers\TrainingTypeController;
 use App\Http\Controllers\UploadSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkLocationController;
@@ -384,9 +386,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
     
-    Route::prefix('employee-type')
-        ->name('employee-type')
-        ->controller(EmployeeTypeController::class)
+    Route::prefix('employment-type')
+        ->name('employment-type')
+        ->controller(EmploymentTypeController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');
@@ -396,9 +398,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/generate-option', 'generateOption')->name('generate.option');
         });
     
-    Route::prefix('degree-type')
-        ->name('degree-type')
-        ->controller(DegreeTypeController::class)
+    Route::prefix('educational-level')
+        ->name('educational-level')
+        ->controller(EducationalLevelController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');
@@ -454,7 +456,31 @@ Route::middleware('auth')->group(function () {
             Route::get('/fetch', 'fetch')->name('fetch');
             Route::get('/generate-table', 'generateTable')->name('generate.table');
             Route::get('/generate-option', 'generateOption')->name('generate.option');
-        });    
+        });
+
+    Route::prefix('document-type')
+        ->name('document-type')
+        ->controller(DocumentTypeController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+
+    Route::prefix('training-type')
+        ->name('training-type')
+        ->controller(TrainingTypeController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
     
     Route::prefix('work-schedule')
         ->name('work-schedule')

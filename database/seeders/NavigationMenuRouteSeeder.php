@@ -147,83 +147,99 @@ class NavigationMenuRouteSeeder extends Seeder
                 'js_file'               => 'address-type/index',
             ],
 
-            // --- Security & Technical Menus ---
+            // Document Type (ID: 22)
+            [
+                'navigation_menu_id'    => 22,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.document-type.index',
+                'js_file'               => 'document-type/index',
+            ],
 
-            // User Account (ID: 23)
+            // Training Type (ID: 23)
             [
                 'navigation_menu_id'    => 23,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.training-type.index',
+                'js_file'               => 'training-type/index',
+            ],
+
+            // --- Security & Technical Menus ---
+
+            // User Account (ID: 25)
+            [
+                'navigation_menu_id'    => 25,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.user.index',
                 'js_file'               => 'user/index',
             ],
 
-            // Role (ID: 24)
+            // Role (ID: 26)
             [
-                'navigation_menu_id'    => 24,
+                'navigation_menu_id'    => 26,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.role.index',
                 'js_file'               => 'role/index',
             ],
 
-            // Page Permission (ID: 26)
+            // Page Permission (ID: 28)
             [
-                'navigation_menu_id'    => 26,
+                'navigation_menu_id'    => 28,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.page-permission.index',
                 'js_file'               => 'page-permission/index',
             ],
 
-            // System Action Permission (ID: 27)
+            // System Action Permission (ID: 29)
             [
-                'navigation_menu_id'    => 27,
+                'navigation_menu_id'    => 29,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.system-action-permission.index',
                 'js_file'               => 'system-action-permission/index',
             ],
 
-            // Apps (ID: 29)
+            // Apps (ID: 31)
             [
-                'navigation_menu_id'    => 29,
+                'navigation_menu_id'    => 31,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.app.index',
                 'js_file'               => 'app/index',
             ],
 
-            // Company (ID: 30)
+            // Company (ID: 32)
             [
-                'navigation_menu_id'    => 30,
+                'navigation_menu_id'    => 32,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.company.index',
                 'js_file'               => 'company/index',
             ],
             
-            // Navigation Menu (ID: 31)
+            // Navigation Menu (ID: 33)
             [
-                'navigation_menu_id'    => 31,
+                'navigation_menu_id'    => 33,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.navigation-menu.index',
                 'js_file'               => 'navigation-menu/index',
             ],
             
-            // System Action (ID: 32)
+            // System Action (ID: 34)
             [
-                'navigation_menu_id'    => 32,
+                'navigation_menu_id'    => 34,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.system-action.index',
                 'js_file'               => 'system-action/index',
             ],
             
-            // System Parameters (ID: 33)
+            // System Parameters (ID: 35)
             [
-                'navigation_menu_id'    => 33,
+                'navigation_menu_id'    => 35,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.system-parameter.index',
                 'js_file'               => 'system-parameter/index',
             ],
             
-            // Upload Setting (ID: 34)
+            // Upload Setting (ID: 36)
             [
-                'navigation_menu_id'    => 34,
+                'navigation_menu_id'    => 36,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.upload-setting.index',
                 'js_file'               => 'upload-setting/index',
@@ -233,80 +249,80 @@ class NavigationMenuRouteSeeder extends Seeder
             // EMPLOYEE MANAGEMENT MODULE ROUTES
             // ==========================================
 
-            // Employees (ID: 35)
+            // Employees (ID: 37)
             [
-                'navigation_menu_id'    => 35,
+                'navigation_menu_id'    => 37,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.employee.index',
                 'js_file'               => 'employee/index',
             ],
             
             [
-                'navigation_menu_id'    => 35,
+                'navigation_menu_id'    => 37,
                 'route_type'            => 'manage',
                 'view_file'             => 'pages.employee.manage',
                 'js_file'               => 'employee/manage',
             ],
 
-            // Directory (ID: 36)
+            // Directory (ID: 38)
             [
-                'navigation_menu_id'    => 36,
+                'navigation_menu_id'    => 38,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.directory.index',
                 'js_file'               => 'directory/index',
             ],
 
-            // Departments (ID: 37)
+            // Departments (ID: 39)
             [
-                'navigation_menu_id'    => 37,
+                'navigation_menu_id'    => 39,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.department.index',
                 'js_file'               => 'department/index',
             ],
 
-            // Employee Type (ID: 39)
+            // Employment Type (ID: 41)
             [
-                'navigation_menu_id'    => 39,
+                'navigation_menu_id'    => 41,
                 'route_type'            => 'index',
-                'view_file'             => 'pages.employee-type.index',
-                'js_file'               => 'employee-type/index',
+                'view_file'             => 'pages.employment-type.index',
+                'js_file'               => 'employment-type/index',
             ],
 
-            // Job Position (ID: 40)
+            // Job Position (ID: 42)
             [
-                'navigation_menu_id'    => 40,
+                'navigation_menu_id'    => 42,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.job-position.index',
                 'js_file'               => 'job-position/index',
             ],
 
-            // Work Location (ID: 42)
+            // Work Location (ID: 44)
             [
-                'navigation_menu_id'    => 42,
+                'navigation_menu_id'    => 44,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.work-location.index',
                 'js_file'               => 'work-location/index',
             ],
 
-            // Work Schedule (ID: 43)
+            // Work Schedule (ID: 45)
             [
-                'navigation_menu_id'    => 43,
+                'navigation_menu_id'    => 45,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.work-schedule.index',
                 'js_file'               => 'work-schedule/index',
             ],
 
-            // Degree Type (ID: 45)
-            [
-                'navigation_menu_id'    => 45,
-                'route_type'            => 'index',
-                'view_file'             => 'pages.degree-type.index',
-                'js_file'               => 'degree-type/index',
-            ],
-
-            // Departure Reason (ID: 47)
+            // Educational Level (ID: 47)
             [
                 'navigation_menu_id'    => 47,
+                'route_type'            => 'index',
+                'view_file'             => 'pages.educational-level.index',
+                'js_file'               => 'educational-level/index',
+            ],
+
+            // Departure Reason (ID: 49)
+            [
+                'navigation_menu_id'    => 49,
                 'route_type'            => 'index',
                 'view_file'             => 'pages.departure-reason.index',
                 'js_file'               => 'departure-reason/index',

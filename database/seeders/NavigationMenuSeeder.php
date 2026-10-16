@@ -198,8 +198,24 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
+            // Document Type ID: 22
+            [
+                'name'              => 'Document Type',
+                'icon'              => null,
+                'parent_id'         => 19,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 3,
+            ],
+            // Training Type ID: 23
+            [
+                'name'              => 'Training Type',
+                'icon'              => null,
+                'parent_id'         => 19,
+                'page_type'         => 'single_page',
+                'order_sequence'    => 4,
+            ],
 
-            // Security ID: 22
+            // Security ID: 24
             [
                 'name'              => 'Security',
                 'icon'              => 'ki-outline ki-lock-2',
@@ -207,48 +223,48 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 100,
             ],
-            // User Account ID: 23
+            // User Account ID: 25
             [
                 'name'              => 'User Account',
                 'icon'              => null,
-                'parent_id'         => 22,
+                'parent_id'         => 24,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // Role ID: 24
+            // Role ID: 26
             [
                 'name'              => 'Role',
                 'icon'              => null,
-                'parent_id'         => 22,
+                'parent_id'         => 24,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
-            // Permissions ID: 25
+            // Permissions ID: 27
             [
                 'name'              => 'Permissions',
                 'icon'              => null,
-                'parent_id'         => 22,
+                'parent_id'         => 24,
                 'page_type'         => 'menu',
                 'order_sequence'    => 3,
             ],
-            // Page Permission ID: 26
+            // Page Permission ID: 28
             [
                 'name'              => 'Page Permission',
                 'icon'              => null,
-                'parent_id'         => 25,
+                'parent_id'         => 27,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // System Action Permission ID: 27
+            // System Action Permission ID: 29
             [
                 'name'              => 'System Action Permission',
                 'icon'              => null,
-                'parent_id'         => 25,
+                'parent_id'         => 27,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
 
-            // Technical ID: 28
+            // Technical ID: 30
             [
                 'name'              => 'Technical',
                 'icon'              => 'ki-outline ki-abstract-26',
@@ -256,51 +272,51 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 500,
             ],
-            // Apps ID: 29
+            // Apps ID: 31
             [
                 'name'              => 'Apps',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // Company ID: 30
+            // Company ID: 32
             [
                 'name'              => 'Company',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
-            // Navigation Menu ID: 31
+            // Navigation Menu ID: 33
             [
                 'name'              => 'Navigation Menu',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,
             ],
-            // System Action ID: 32
+            // System Action ID: 34
             [
                 'name'              => 'System Action',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 4,
             ],
-            // System Parameters ID: 33
+            // System Parameters ID: 35
             [
                 'name'              => 'System Parameters',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 5,
             ],
-            // Upload Setting ID: 34
+            // Upload Setting ID: 36
             [
                 'name'              => 'Upload Setting',
                 'icon'              => null,
-                'parent_id'         => 28,
+                'parent_id'         => 30,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 21,
             ],
@@ -309,7 +325,7 @@ class NavigationMenuSeeder extends Seeder
             // EMPLOYEE MANAGEMENT MODULE
             // ==========================================
 
-            // Employees ID: 35
+            // Employees ID: 37
             [
                 'name'              => 'Employees',
                 'icon'              => 'ki-outline ki-user-square',
@@ -317,7 +333,7 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'multi_page',
                 'order_sequence'    => 1,
             ],
-            // Directory ID: 36
+            // Directory ID: 38
             [
                 'name'              => 'Directory',
                 'icon'              => 'ki-outline ki-address-book',
@@ -325,7 +341,7 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
-            // Departments ID: 37
+            // Departments ID: 39
             [
                 'name'              => 'Departments',
                 'icon'              => 'ki-outline ki-element-7',
@@ -336,7 +352,7 @@ class NavigationMenuSeeder extends Seeder
 
             // --- Employee Configuration Sub-Menus (Nested under Shared Configurations ID: 2) ---
 
-            // 1. Employment Setup ID: 38
+            // 1. Employment Setup ID: 40
             [
                 'name'              => 'Employment Setup',
                 'icon'              => null,
@@ -344,25 +360,24 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 5,
             ],
-            // Employee Type ID: 39
+            // Employment Type ID: 41
             [
-                'name'              => 'Employee Type',
+                'name'              => 'Employment Type',
                 'icon'              => null,
-                'parent_id'         => 38,
+                'parent_id'         => 40,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // Job Position ID: 40
+            // Job Position ID: 42
             [
                 'name'              => 'Job Position',
                 'icon'              => null,
-                'parent_id'         => 38,
+                'parent_id'         => 40,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
-            // (Contract Template removed)
 
-            // 2. Operations & Schedule ID: 41
+            // 2. Operations & Schedule ID: 43
             [
                 'name'              => 'Operations & Schedule',
                 'icon'              => null,
@@ -370,24 +385,24 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 6,
             ],
-            // Work Location ID: 42
+            // Work Location ID: 44
             [
                 'name'              => 'Work Location',
                 'icon'              => null,
-                'parent_id'         => 41,
+                'parent_id'         => 43,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
-            // Work Schedule ID: 43
+            // Work Schedule ID: 45
             [
                 'name'              => 'Work Schedule',
                 'icon'              => null,
-                'parent_id'         => 41,
+                'parent_id'         => 43,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
             ],
 
-            // 3. Qualifications & Skills ID: 44
+            // 3. Qualifications & Skills ID: 46
             [
                 'name'              => 'Qualifications & Skills',
                 'icon'              => null,
@@ -395,17 +410,17 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 7,
             ],
-            // (Skill Type removed)
-            // Degree Type ID: 45
+           
+            // Educational Level ID: 47
             [
-                'name'              => 'Degree Type',
+                'name'              => 'Educational Level',
                 'icon'              => null,
-                'parent_id'         => 44,
+                'parent_id'         => 46,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],
 
-            // 4. Offboarding ID: 46
+            // 4. Offboarding ID: 48
             [
                 'name'              => 'Offboarding',
                 'icon'              => null,
@@ -413,11 +428,11 @@ class NavigationMenuSeeder extends Seeder
                 'page_type'         => 'menu',
                 'order_sequence'    => 8,
             ],
-            // Departure Reason ID: 47
+            // Departure Reason ID: 49
             [
                 'name'              => 'Departure Reason',
                 'icon'              => null,
-                'parent_id'         => 46,
+                'parent_id'         => 48,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
             ],

@@ -2,7 +2,7 @@
     <div class="pt-4 mt-4 border-top border-gray-200">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <span class="fs-7 text-uppercase fw-bold text-gray-600 tracking-wide">
-                <i class="ki-outline ki-filter-search me-1"></i> Filter Options
+                <i class="ki-outline ki-setting-4 me-1"></i> Filter Options
             </span>
 
             <div class="dropdown">
@@ -12,7 +12,7 @@
 
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-300px p-4 shadow-sm" data-kt-menu="true">                    
                     <div class="menu-item mb-2">
-                        <div class="menu-content text-muted pb-2 fs-8 fw-bold text-uppercase border-bottom d-flex justify-content-between align-items-center">
+                        <div class="menu-content text-muted pb-2 px-0 pt-0 fs-8 fw-bold text-uppercase border-bottom d-flex justify-content-between align-items-center">
                             <span>Presets</span>
                             <span class="badge badge-light fs-8" id="saved_filters_count">0</span>
                         </div>

@@ -27,7 +27,7 @@ return new class extends Migration
             AFTER UPDATE ON educational_levels
             FOR EACH ROW
             BEGIN
-                DECLARE audit_log TEXT DEFAULT 'Degree type updated.<br/><br/>';
+                DECLARE audit_log TEXT DEFAULT 'Educational level updated.<br/><br/>';
 
                 IF NOT (NEW.name <=> OLD.name) THEN
                     SET audit_log = CONCAT(
@@ -40,7 +40,7 @@ return new class extends Migration
                     );
                 END IF;
 
-                IF audit_log <> 'Degree type updated.<br/><br/>' THEN
+                IF audit_log <> 'Educational level updated.<br/><br/>' THEN
                     INSERT INTO audit_log (
                         table_name,
                         reference_id,
@@ -67,7 +67,7 @@ return new class extends Migration
                 DECLARE audit_log TEXT;
 
                 SET audit_log = CONCAT(
-                    'Degree type created.<br/><br/>',
+                    'Educational level created.<br/><br/>',
                     'Name: "', COALESCE(NEW.name, 'Not set'), '"<br/>'
                 );
 

@@ -9,3 +9,5 @@ to add sa menu
 rename
 employee type to employment type
 degree type to educational level
+
+To finish changing of action adn adding column field

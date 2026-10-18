@@ -214,7 +214,7 @@ export class DataTableOrchestrator {
         let visibleCount = 0;
 
         columns.forEach((col, idx) => {
-            const rawTitle = col.sTitle || '';
+            const rawTitle = col.column || '';
             const colTitle = rawTitle.replace(/&nbsp;/g, '').trim();
 
             if (col.colVis === false || !colTitle) {

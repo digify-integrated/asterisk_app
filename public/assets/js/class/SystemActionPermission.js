@@ -143,10 +143,19 @@ export class SystemActionPermission {
                             <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
                         </div>`
                 },
-                { data: 'role', title: 'Role' },
-                { data: 'system_action', title: 'System Action' },
+                {
+                    data: 'role',
+                    column: 'Role',
+                    title: 'Role'
+                },
+                {
+                    data: 'system_action',
+                    column: 'System Action',
+                    title: 'System Action'
+                },
                 ...['access'].map(field => ({
                     data: field,
+                    column: field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
                     title: field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
                     render: (data, type, row) => {
                         const isChecked = Boolean(data);
@@ -165,28 +174,42 @@ export class SystemActionPermission {
                 })),
                 { 
                     data: 'created_at',
+                    column: 'Created Date',
                     title: 'Created Date',
                     visible: false
                 },
-                { 
-                    data: null, 
-                    title: 'Action',
+                {
+                    data: null,
+                    column: 'Action',
+                    title: '',
                     render: (_, __, row, meta) => {
-                        const globalPerms = meta.settings.json?.permissions || {};
-                        const rowPerms = row.permissions || {};
-                        
-                        const canLogs = globalPerms.logs ?? rowPerms.logs ?? false;
-                        const canDelete = globalPerms.delete ?? rowPerms.delete ?? false;
+                        const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
-
-                        if (!canLogs && !canDelete) {
-                            return '';
-                        }
-
+                                                
                         return `
-                        <div class="d-flex justify-content-end gap-2 me-5">
-                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                        <div class="text-center me-10">
+                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                Actions
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                            </a>
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
+                                                                                                                
+                                ${perms.logs ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-shield-search fs-5"></i></span>
+                                        <span class="menu-title">Audit Logs</span>
+                                    </a>
+                                </div>` : ''}
+                                                
+                                ${perms.delete ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-trash fs-5 text-danger"></i></span>
+                                        <span class="menu-title text-danger">Delete</span>
+                                    </a>
+                                </div>` : ''}
+                            </div>
                         </div>`;
                     }
                 }

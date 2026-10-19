@@ -33,7 +33,8 @@
                                     <i class="ki-duotone ki-file-down fs-6"></i>
                                 </span>
                             </span>
-                            Need an import template? Browse available table schemas
+                            Need an import template? Browse available table schemas 
+                            <i class="ki-duotone ki-arrow-right fs-5 text-gray-500"></i>
                         </span>
                         <span class="d-flex align-items-center text-gray-500 fs-8 fw-bold text-uppercase me-1 gap-2">
                             <span class="badge badge-light-primary fs-8 fw-semibold py-1 px-2">CSV Template</span>

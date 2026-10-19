@@ -114,6 +114,7 @@ export class DataTableOrchestrator {
             },
             drawCallback: () => {
                 self.resetSelectionState(config);
+                KTMenu.createInstances();
             },
             initComplete: function () {
                 dt.columns.adjust();

@@ -10,7 +10,7 @@
                     </div>
 
                     <div>
-                        <h2 class="fw-bold fs-3 text-gray-900 mb-1" id="modal-title-{{ $formId }}">{{ $formTitle }}</h2>
+                        <h2 class="fw-bold fs-3 text-gray-900 mb-1 mt-2" id="modal-title-{{ $formId }}">{{ $formTitle }}</h2>
                         <p class="text-muted fs-7 mb-0">Complete the required information below before saving.</p>
                     </div>
                 </div>

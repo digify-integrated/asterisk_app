@@ -55,8 +55,8 @@ export class AuditLogManager {
 
         logNotesContainer.innerHTML = `
             <div class="d-flex flex-column justify-content-center align-items-center py-12 w-100">
-                <div class="spinner-border text-primary-active mb-4" role="status" style="width: 2.25rem; height: 2.25rem; border-width: 0.2rem; --bs-spinner-border-width: 3px;"></div>
-                <span class="text-gray-500 fw-medium fs-7 tracking-wide">Retrieving history trail...</span>
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 2rem; height: 2rem; border-width: 0.15rem;"></div>
+                <span class="text-gray-500 fw-semibold fs-7">Verifying and retrieving audit history...</span>
             </div>
         `;
         logNotesContainer.classList.remove('d-none');
@@ -92,7 +92,7 @@ export class AuditLogManager {
                 } else if (data.logs !== undefined) {
                     if (Array.isArray(data.logs) && data.logs.length > 0) {
                         logNotesContainer.innerHTML = this._buildTimelineHtml(data.logs);
-                        this._attachExpandButtonListeners(logNotesContainer);
+                        this._attachEventListeners(logNotesContainer, data.logs);
                     } else {
                         logNotesContainer.innerHTML = '';
                         logNotesContainer.classList.add('d-none');
@@ -163,96 +163,114 @@ export class AuditLogManager {
     }
 
     static _buildTimelineHtml(logs) {
-        const timelineItems = logs.map((item, logIndex) => {
+        const timelineItems = logs.map((item) => {
             const { title, changes } = this._parseLogContent(item.raw_log);
             const action = title.toLowerCase();
 
-            const defaults = { icon: 'ki-pencil', type: 'primary' };
-
+            const defaults = { icon: 'ki-pencil', category: 'update', actionVerb: 'Updated' };
             const mappings = [
-                { keywords: ['create', 'added', 'approve', 'confirm'], icon: 'ki-plus', type: 'success' },
-                { keywords: ['delete', 'remove', 'reject', 'decline'], icon: 'ki-cross', type: 'danger' },
-                { keywords: ['archive'], icon: 'ki-archive', type: 'warning' }
+                { keywords: ['create', 'added', 'approve', 'confirm'], icon: 'ki-plus-circle', category: 'create', actionVerb: 'Added' },
+                { keywords: ['delete', 'remove', 'reject', 'decline'], icon: 'ki-trash', category: 'delete', actionVerb: 'Deleted' },
+                { keywords: ['archive', 'lock'], icon: 'ki-archive', category: 'archive', actionVerb: 'Archived' }
             ];
 
-            if (action.includes('delete') || action.includes('remove')) defaults.icon = 'ki-trash';
-
             const match = mappings.find(m => m.keywords.some(k => action.includes(k))) || defaults;
-
             const icon = match.icon;
-            const badgeBg = `bg-light-${match.type}`;
-            const border = `border-${match.type}`;
-            const iconColor = `text-${match.type}`;
 
-            const visibleLimit = 5;
+            const isCreation = match.category === 'create';
+            const headerTitle = isCreation ? 'Initial Values' : 'Field Modifications';
+            const badgeText = `${changes.length} ${changes.length === 1 ? (isCreation ? 'field' : 'change') : (isCreation ? 'fields' : 'changes')}`;
+
+            const visibleLimit = 4;
             const hasMore = changes.length > visibleLimit;
             let changesHtml = '';
 
             if (changes.length) {
                 changesHtml = `
-                    <div class="mt-4 p-5 rounded-3 bg-light-soft border border-gray-200">
-                        ${changes.map((change, index) => {
-                            const hiddenClass = hasMore && index >= visibleLimit ? 'audit-hidden-change d-none' : '';
-                            
-                            // Dynamically remove border-bottom for the last item in the changes list
-                            const isLastChange = index === changes.length - 1;
-                            const borderClass = isLastChange ? '' : 'border-bottom border-gray-100';
-
-                            if (change.type === 'note') {
-                                return `
-                                    <div class="alert alert-custom py-3 px-4 mb-2 bg-white border shadow-xs text-gray-700 fs-7 rounded-2 ${hiddenClass}">
-                                        ${this._escapeHtml(change.text)}
-                                    </div>
-                                `;
-                            }
-
-                            if (change.type === 'create') {
-                                return `
-                                    <div class="row g-2 py-2 align-items-center ${borderClass} ${hiddenClass}">
-                                        <div class="col-lg-3">
-                                            <span class="text-uppercase text-muted fw-bold fs-9 tracking-wider">${this._escapeHtml(change.field)}</span>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <span class="fw-semibold text-break text-gray-800 fs-7">${this._escapeHtml(change.value)}</span>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-
-                            return `
-                                <div class="row g-2 py-2 align-items-center ${borderClass} ${hiddenClass}">
-                                    <div class="col-lg-3">
-                                        <span class="text-uppercase text-muted fw-bold fs-9 tracking-wider">${this._escapeHtml(change.field)}</span>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        ${change.before ? `<span class="text-muted text-break fs-7">${this._escapeHtml(change.before)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
-                                    </div>
-                                    <div class="col-lg-1 text-center d-none d-lg-flex justify-content-center">
-                                        <i class="ki-outline ki-arrow-right fs-6 text-gray-400"></i>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        ${change.after ? `<span class="fw-semibold text-break text-gray-900 fs-7">${this._escapeHtml(change.after)}</span>` : `<span class="badge badge-light-secondary fs-9 rounded-pill">Null</span>`}
-                                    </div>
+                    <div class="w-100 pb-3">
+                        <div class="d-flex flex-column border border-dashed border-gray-300 rounded w-100 overflow-hidden mb-0 bg-body">
+                            <!-- Refined Header Bar -->
+                            <div class="bg-light px-4 py-3 border-bottom border-gray-300 d-flex justify-content-between align-items-center">
+                                <div class="fw-bold fs-7 text-gray-800 d-flex align-items-center">
+                                    <i class="ki-outline ki-data text-primary me-2 fs-5"></i>
+                                    <span>${headerTitle}</span>
                                 </div>
-                            `;
-                        }).join('')}
-
-                        ${hasMore ? `
-                            <div class="text-center pt-3">
-                                <button class="btn btn-sm btn-link text-primary fw-bold text-decoration-none py-1 fs-7 audit-expand-btn"
-                                        data-show-text="Show ${changes.length - visibleLimit} more changes..."
-                                        data-hide-text="Show less">
-                                    Show ${changes.length - visibleLimit} more changes...
-                                </button>
+                                <span class="badge badge-light-primary fw-bold fs-8 px-2.5 py-1">${badgeText}</span>
                             </div>
-                        ` : ''}
+
+                            <div class="audit-changes-list w-100 p-4">
+                                ${changes.map((change, index) => {
+                                    const hiddenClass = hasMore && index >= visibleLimit ? 'audit-hidden-change d-none' : '';
+                                    const isLastChange = index === changes.length - 1;
+                                    const borderClass = isLastChange ? '' : 'border-bottom border-gray-200 mb-3 pb-3';
+
+                                    if (change.type === 'note') {
+                                        return `
+                                            <div class="alert bg-light-primary border-0 py-2 px-3 mb-2 text-gray-700 fs-7 rounded text-wrap text-break ${hiddenClass}">
+                                                <i class="ki-outline ki-information fs-6 text-primary me-2"></i>${this._escapeHtml(change.text)}
+                                            </div>
+                                        `;
+                                    }
+
+                                    if (change.type === 'create') {
+                                        return `
+                                            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center ${borderClass}${hiddenClass}">
+                                                <div class="fw-bold fs-8 text-uppercase text-gray-800 me-sm-4 mb-1 mb-sm-0 text-wrap text-break" style="min-width: 140px; max-width: 200px;">
+                                                    ${this._escapeHtml(change.field)}
+                                                </div>
+                                                <div class="flex-grow-1 w-100">
+                                                    <div class="p-2 rounded bg-light-success border border-success border-opacity-50 text-gray-800 fs-7 text-wrap text-break">
+                                                        <div class="text-success fw-bold fs-9 text-uppercase mb-1">Value</div>
+                                                        ${this._escapeHtml(change.value)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+
+                                    return `
+                                        <div class="d-flex flex-column flex-sm-row align-items-start ${borderClass}${hiddenClass}">
+                                            <div class="fw-bold fs-8 text-uppercase text-gray-800 me-sm-4 mb-2 mb-sm-0 pt-1 text-wrap text-break" style="min-width: 140px; max-width: 200px;">
+                                                ${this._escapeHtml(change.field)}
+                                            </div>
+                                            <div class="row g-2 flex-grow-1 w-100">
+                                                <div class="col-12 col-md-6">
+                                                    <div class="p-2 rounded bg-light-danger border border-danger border-opacity-25 h-100">
+                                                        <div class="text-danger fw-bold fs-9 text-uppercase mb-1">Previous</div>
+                                                        <div class="text-gray-800 fs-7 text-wrap text-break">${change.before ? this._escapeHtml(change.before) : '<span class="text-muted fst-italic">Empty / Null</span>'}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div class="p-2 rounded bg-light-success border border-success border-opacity-50 h-100">
+                                                        <div class="text-success fw-bold fs-9 text-uppercase mb-1">New</div>
+                                                        <div class="text-gray-800 fs-7 text-wrap text-break">${change.after ? this._escapeHtml(change.after) : '<span class="text-muted fst-italic">Cleared</span>'}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            ${hasMore ? `
+                                <div class="bg-light px-3 py-2 text-center border-top border-gray-200">
+                                    <button class="btn btn-sm btn-link text-primary fw-bold text-decoration-none py-0 fs-8 audit-expand-btn"
+                                        data-show-text="Show ${changes.length - visibleLimit} more ${isCreation ? 'field(s)' : 'changes'}..."
+                                        data-hide-text="Show fewer ${isCreation ? 'fields' : 'changes'}">
+                                        Show ${changes.length - visibleLimit} more ${isCreation ? 'fields' : 'changes'}...
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             }
 
             const safeImgUrl = this._escapeAttribute(item.profile_picture || '');
             const userName = this._escapeHtml(item.user_name || 'System User');
-            
+            const exactTimestamp = this._escapeHtml(item.timestamp || item.created_at || '');
+            const relativeTime = this._escapeHtml(item.time_relative || '');
+
             const initials = userName
                 .split(' ')
                 .map(n => n[0])
@@ -261,36 +279,28 @@ export class AuditLogManager {
                 .toUpperCase();
 
             const avatarHtml = safeImgUrl && safeImgUrl !== '#' 
-                ? `<img src="${safeImgUrl}" class="rounded-circle w-100 h-100 object-fit-cover" alt="Profile" onerror="this.parentElement.innerHTML='<span class=\'fw-bold text-primary\' style=\'font-size: 7px; line-height: 1;\'>${initials}</span>';">`
-                : `<span class="fw-bold text-primary" style="font-size: 7px; line-height: 1;">${initials}</span>`;
+                ? `<img src="${safeImgUrl}" alt="${userName}" class="w-10 h-10 object-fit-cover">`
+                : `<div class="symbol-label fs-8 fw-semibold bg-primary text-inverse-primary">${initials}</div>`;
 
             return `
-                <div class="timeline-item d-flex align-items-start position-relative pb-8">
-                    ${logIndex !== logs.length - 1 ? '<div class="timeline-line position-absolute start-20px top-40px bottom-0 border-start border-2 border-gray-200"></div>' : ''}
-                    
-                    <div class="timeline-icon me-4 position-relative z-index-1">
-                        <div class="symbol symbol-40px">
-                            <div class="symbol-label ${badgeBg} rounded-circle border ${border} border-2 shadow-sm">
-                                <i class="ki-outline ${icon} fs-5 ${iconColor}"></i>
-                            </div>
-                        </div>
+                <div class="timeline-item" data-category="${match.category}">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-icon me-4">
+                        <i class="ki-duotone ${icon} fs-2 text-gray-500">
+                            <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        </i>
                     </div>
-
-                    <div class="flex-grow-1" style="min-width: 0;">
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-1">
-                            <h5 class="fw-bold text-gray-900 m-0 fs-6">${this._escapeHtml(title)}</h5>
-                            <span class="fs-8 text-muted pt-1 pt-sm-0">${this._escapeHtml(item.time_relative)}</span>
-                        </div>
-                        
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="symbol position-relative" style="width: 18px; height: 18px;">
-                                <div class="symbol-label bg-light-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden border border-gray-300" style="width: 18px; height: 18px;">
+                    <div class="timeline-content mb-8 mt-n1 w-100 pe-3">
+                        <div class="mb-4">
+                            <div class="fs-5 fw-semibold text-gray-900 mb-1 text-wrap text-break">${this._escapeHtml(title)}</div>
+                            <div class="d-flex align-items-center flex-wrap fs-6">
+                                <span class="text-muted me-2 fs-7">${match.actionVerb} at ${relativeTime || exactTimestamp} by</span>
+                                <div class="symbol symbol-circle symbol-25px me-2" data-bs-toggle="tooltip" title="${userName}">
                                     ${avatarHtml}
                                 </div>
+                                <span class="fw-semibold text-gray-800 fs-7">${userName}</span>
                             </div>
-                            <span class="fs-8 fw-bold text-gray-700 hover-primary cursor-pointer">${userName}</span>
                         </div>
-
                         ${changesHtml}
                     </div>
                 </div>
@@ -298,38 +308,25 @@ export class AuditLogManager {
         }).join('');
 
         return `
-            <div class="timeline-container px-2 py-2">
+            <div class="timeline timeline-border-dashed">
                 ${timelineItems}
             </div>
         `;
     }
 
-    static _attachExpandButtonListeners(container) {
+    static _attachEventListeners(container, logs) {
         const expandBtns = container.querySelectorAll('.audit-expand-btn');
-        if (!expandBtns.length) return;
-
         expandBtns.forEach(expandBtn => {
             expandBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                
-                const wrapper = expandBtn.closest('.bg-light-soft');
+                const wrapper = expandBtn.closest('.rounded');
                 if (!wrapper) return;
-
                 const hiddenChanges = wrapper.querySelectorAll('.audit-hidden-change');
                 if (!hiddenChanges.length) return;
 
-                // Determine if they are currently expanded by checking the first hidden item
                 const isExpanded = !hiddenChanges[0].classList.contains('d-none');
-
-                if (isExpanded) {
-                    // Collapse them back
-                    hiddenChanges.forEach(el => el.classList.add('d-none'));
-                    expandBtn.textContent = expandBtn.getAttribute('data-show-text');
-                } else {
-                    // Expand them
-                    hiddenChanges.forEach(el => el.classList.remove('d-none'));
-                    expandBtn.textContent = expandBtn.getAttribute('data-hide-text');
-                }
+                hiddenChanges.forEach(el => el.classList.toggle('d-none', isExpanded));
+                expandBtn.textContent = isExpanded ? expandBtn.getAttribute('data-show-text') : expandBtn.getAttribute('data-hide-text');
             });
         });
     }

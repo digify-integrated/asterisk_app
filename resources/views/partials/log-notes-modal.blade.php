@@ -10,7 +10,7 @@
                     </div>
 
                     <div>
-                        <h2 class="fw-bold fs-3 text-dark mb-1" id="log-notes-modal-title">Audit Logs</h2>
+                        <h2 class="fw-bold fs-3 text-dark mb-1 mt-2" id="log-notes-modal-title">Audit Logs</h2>
 
                         <div class="text-muted fs-7">
                             View every change made to this record, including status updates,
@@ -40,11 +40,6 @@
                         <p class="text-muted fs-7 mx-auto" style="max-width:420px">Once users begin editing this record, every important activity will appear here in chronological order.</p>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer border-0 px-8 py-6">
-                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">
-                    Close
-                </button>
             </div>
         </div>
     </div>

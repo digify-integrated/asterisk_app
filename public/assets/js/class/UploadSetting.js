@@ -121,10 +121,12 @@ export class UploadSetting {
                 },
                 { 
                     data: 'name',
+                    column: 'System Parameter',
                     title: 'System Parameter',
                 },
                 { 
                     data: 'max_file_size',
+                    column: 'Max File Size',
                     title: 'Max File Size',
                     render: (size) => {
                         const kb = size ?? 0;
@@ -144,6 +146,7 @@ export class UploadSetting {
                 },
                 { 
                     data: 'extensions',
+                    column: 'Allowed Extensions',
                     title: 'Allowed Extensions',
                     orderable: false,
                     render: (extensions) => {
@@ -158,25 +161,50 @@ export class UploadSetting {
                 },
                 { 
                     data: 'created_at',
+                    column: 'Created Date',
                     title: 'Created Date',
                     visible: false
                 },
-                { 
-                    data: null, 
-                    title: 'Action',
+                {
+                    data: null,
+                    column: 'Action',
+                    title: '',
                     render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
                         const safeId = escapeHtml(row.id);
-
-                        const canWrite = perms.can_write || perms.write;
-                        const canLogs = perms.can_logs || perms.logs;
-                        const canDelete = perms.can_delete || perms.delete;
-
+                                
                         return `
-                        <div class="d-flex justify-content-end gap-2 me-5">
-                            ${canWrite ? `<button class="btn btn-sm btn-icon btn-light-primary ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}" title="Edit"><i class="ki-outline ki-eye fs-5 m-0"></i></button>` : ''}
-                            ${canLogs ? `<button class="btn btn-sm btn-icon btn-light-warning ${CONFIG.classes.logNotesTrigger}" data-reference-id="${safeId}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" title="Logs"><i class="ki-outline ki-shield-search fs-5 m-0"></i></button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-icon btn-light-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" title="Delete"><i class="ki-outline ki-trash fs-5 m-0"></i></button>` : ''}
+                        <div class="text-center me-10">
+                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                Actions
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                            </a>
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
+                                                                
+                                ${perms.write ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-eye fs-5"></i></span>
+                                        <span class="menu-title">Edit</span>
+                                    </a>
+                                </div>` : ''}
+                                
+                                ${perms.logs ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-shield-search fs-5"></i></span>
+                                        <span class="menu-title">Audit Logs</span>
+                                    </a>
+                                </div>` : ''}
+                                
+                                ${perms.delete ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-trash fs-5 text-danger"></i></span>
+                                        <span class="menu-title text-danger">Delete</span>
+                                    </a>
+                                </div>` : ''}
+                            </div>
                         </div>`;
                     }
                 }

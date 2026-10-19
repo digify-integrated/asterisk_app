@@ -164,7 +164,7 @@ export class EducationalLevel {
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
                                         <span class="menu-icon me-2"><i class="ki-outline ki-trash fs-5 text-danger"></i></span>
-                                        <span class="menu-title">Delete</span>
+                                        <span class="menu-title text-danger">Delete</span>
                                     </a>
                                 </div>` : ''}
                             </div>

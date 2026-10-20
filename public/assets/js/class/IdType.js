@@ -1,0 +1,300 @@
+'use strict';
+
+import { PageInitializer } from '../util/pageInitializer.js';
+import { DataTableOrchestrator } from '../util/dataTableOrchestrator.js';
+import { AuditLogManager } from '../util/auditLogManager.js';
+import { initValidation } from '../util/validator.js';
+import { FormEnvironmentManager } from '../util/formEnvironmentManager.js';
+import { errorHandler } from '../util/errorHandler.js';
+import { ButtonStateManager } from '../util/buttonManager.js';
+import { DetailFetcher } from '../util/detailFetcher.js';
+import { initConfirmAction } from '../util/confirmationAction.js';
+import { ComponentRegistry } from '../util/componentRegistry.js';
+import { TableFilterManager } from '../util/tableFilterManager.js';
+import { SaveFilterManager } from '../util/saveFilterManager.js';
+import { escapeHtml } from '../util/sanitize.js';
+
+const CONFIG = {
+    selectors: {
+        table: '#id-type-table',
+        tableColumn: '#id-type-table-column-dropdown',
+        form: '#id_type_form',
+        formId: 'id_type_form',
+        detailId: 'id_type_id',
+        submitButton: '#submit-data',
+        modal: '#form-modal',
+        logNotesModal: '#log-notes-modal',
+        logNotesTrigger: '.view-log-notes',
+        deleteMultipleTrigger: '#delete-data',
+        deleteTrigger: '.delete-details',
+        updateTrigger: '.update-details',
+        createTrigger: '.new-button',
+        checkboxes: '.datatable-checkbox-children:checked',
+        filterCollapse: 'id-type-filter-collapse',
+        filterCreatedDate: '#filter_created_date'
+    },
+    classes: {
+        logNotesTrigger: 'view-log-notes',
+        deleteTrigger: 'delete-details',
+        updateTrigger: 'update-details'
+    },
+    endpoints: {
+        tableData: '/id-type/generate-table',
+        save: '/id-type/save',
+        delete: '/id-type/delete',
+        deleteMultiple: '/id-type/delete-multiple',
+        fetch: '/id-type/fetch',
+    }
+};
+    
+export class IdType {
+    constructor() {
+        this.orchestrator = new DataTableOrchestrator();
+        this.abortController = new AbortController();
+
+        this.filterManager = new TableFilterManager({
+            containerId: CONFIG.selectors.filterCollapse,
+            orchestrator: this.orchestrator,
+            tableSelector: CONFIG.selectors.table
+        });
+
+        this.saveFilterManager = new SaveFilterManager({
+            filterManager: this.filterManager
+        });
+        
+        this.dom = {
+            table: document.querySelector(CONFIG.selectors.table),
+            form: document.querySelector(CONFIG.selectors.form),
+            modal: $(CONFIG.selectors.modal),
+            filterDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
+        };
+    }
+
+    async init() {
+        return PageInitializer.run(async () => {
+            await this.saveFilterManager.checkAndApplyDefaultFilter();
+            this.initTable();
+                                        
+            await Promise.all([
+                this.initForm(),
+                this.initDelete(),
+                this.initDateRangePicker(),
+                this.registerGlobalListeners()
+            ]);
+                                        
+            AuditLogManager.attachLogNotesClassHandler(CONFIG.selectors.logNotesTrigger, 'id_types');
+        });
+    }
+
+    destroy() {
+        this.abortController.abort();
+    }
+
+    initTable() {
+        this.orchestrator.initialize({
+            selector: CONFIG.selectors.table,
+            url: CONFIG.endpoints.tableData,
+            ajaxData: (d) => Object.assign({}, d, {
+                filter_created_date: this.dom.filterDate?.value || ''
+            }),
+            colVisContainer: CONFIG.selectors.tableColumn,
+            exportColumns: [1, 2],
+            order: [[1, 'asc']],
+            addons: { 
+                controls: true, 
+                export: true,
+                columnVisibility: true
+            },
+            columnDefs: [
+                { width: '5%', orderable: false, targets: 0 },
+                { width: '10%', orderable: false, targets: 3 },
+            ],
+            columns: [
+                { 
+                    data: 'id',
+                    render: (id) => `
+                        <div class="form-check form-check-sm ms-5">
+                            <input class="form-check-input datatable-checkbox-children" type="checkbox" value="${escapeHtml(id)}">
+                        </div>`
+                },
+                { 
+                    data: 'name',
+                    column: 'ID Type',
+                    title: 'ID Type',
+                },
+                { 
+                    data: 'created_at',
+                    column: 'Created Date',
+                    title: 'Created Date',
+                    visible: false
+                },
+                {
+                    data: null,
+                    column: 'Action',
+                    title: '',
+                    render: (_, __, row, meta) => {
+                        const perms = meta.settings.json?.permissions || row.permissions || {};
+                        const safeId = escapeHtml(row.id);
+                
+                        return `
+                        <div class="text-center me-10">
+                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                Actions
+                                <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                            </a>
+                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
+                                                
+                                ${perms.write ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-eye fs-5"></i></span>
+                                        <span class="menu-title">Edit</span>
+                                    </a>
+                                </div>` : ''}
+                
+                                ${perms.logs ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-shield-search fs-5"></i></span>
+                                        <span class="menu-title">Audit Logs</span>
+                                    </a>
+                                </div>` : ''}
+                
+                                ${perms.delete ? `
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
+                                        <span class="menu-icon me-2"><i class="ki-outline ki-trash fs-5 text-danger"></i></span>
+                                        <span class="menu-title text-danger">Delete</span>
+                                    </a>
+                                </div>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                }
+            ]
+        });
+    }
+
+    initForm() {
+        initValidation({
+            forms: [
+                {
+                    selector: CONFIG.selectors.form,
+                    rules: {
+                        name: { required: true },
+                    },
+                    submitHandler: async (formElement) => this.handleFormSubmission(formElement)
+                }
+            ]
+        });
+    }
+
+    async handleFormSubmission(formElement) {
+        const btn = CONFIG.selectors.submitButton;
+        ButtonStateManager.disable(btn, { loadingText: 'Saving...' });
+
+        try {
+            const response = await fetch(CONFIG.endpoints.save, {
+                method: 'POST',
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest', 
+                    'Accept': 'application/json' 
+                },
+                body: new FormData(formElement),
+                signal: this.abortController.signal
+            });
+
+            if (await errorHandler.handleResponse(response, btn)) return;
+
+            this.dom.modal.modal('hide');
+            FormEnvironmentManager.resetForm(formElement);
+            this.orchestrator.reload(CONFIG.selectors.table);
+        } catch (error) {
+            if (error.name === 'AbortError') return; 
+            ButtonStateManager.enable(btn);
+            await errorHandler.handle(error, 'network_failure', 'Transactional pipeline error.');
+        }
+    }
+
+    initDelete() {
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteTrigger,
+            url: CONFIG.endpoints.delete,
+            method: 'DELETE',
+            payload: { id_type_id: (el) => el.dataset.referenceId },
+            swalTitle: 'Delete Record?',
+            swalText: 'This action will permanently delete this record and cannot be undone.',
+            confirmButtonText: 'Delete Record',
+            confirmButtonClass: 'danger',
+            onSuccess: () => this.orchestrator.reload(CONFIG.selectors.table)
+        });
+
+        initConfirmAction({
+            trigger: CONFIG.selectors.deleteMultipleTrigger,
+            url: CONFIG.endpoints.deleteMultiple,
+            method: 'DELETE',
+            payload: { 
+                'id_type_id': () => {
+                    const checked = this.dom.table.querySelectorAll(CONFIG.selectors.checkboxes);
+                    return Array.from(checked, cb => Number(cb.value)).join(',');
+                }
+            },
+            swalTitle: 'Delete Multiple Records?',
+            swalText: 'This action will permanently delete the selected records and cannot be undone.',
+            confirmButtonText: 'Delete Records',
+            confirmButtonClass: 'danger',
+            onSuccess: () => this.orchestrator.reload(CONFIG.selectors.table)
+        });
+    }
+
+    initDateRangePicker() {
+        ComponentRegistry.initializeDateRangePicker({
+            selector: CONFIG.selectors.filterCreatedDate
+        });
+    }
+
+    registerGlobalListeners() {
+        document.addEventListener('click', async (event) => {
+            const { target } = event;
+            
+            const updateTrigger = target.closest(CONFIG.selectors.updateTrigger);
+            if (updateTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+                this.handleFetchWorkflow(updateTrigger.dataset.referenceId);
+                return;
+            }
+            
+            const createTrigger = target.closest(CONFIG.selectors.createTrigger);
+            if (createTrigger) {
+                FormEnvironmentManager.resetForm(CONFIG.selectors.formId);
+            }
+        }, { signal: this.abortController.signal });
+    }
+
+    async handleFetchWorkflow(referenceId) {
+        await DetailFetcher.fetch({
+            url: CONFIG.endpoints.fetch,
+            detailIdKey: CONFIG.selectors.detailId,
+            detailIdValue: referenceId,
+            formSelector: CONFIG.selectors.form,
+            submitBtnSelector: CONFIG.selectors.submitButton,
+            signal: this.abortController.signal,
+            onSuccess: async (response) => {
+                const data = response?.data || response;
+                if (!this.dom.form) return;
+
+                const targetFields = {
+                    'id_type_id': referenceId,
+                    'name': data.name,
+                };
+
+                Object.entries(targetFields).forEach(([name, val]) => {
+                    const $field =$(this.dom.form).find(`[name="${name}"], [name="${name}[]"]`);
+                    
+                    if ($field.length) {$field.val(val ?? '').trigger('change');
+                    }
+                });
+            }
+        });
+    }
+}

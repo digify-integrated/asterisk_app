@@ -17,10 +17,12 @@ use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\EducationalLevelController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartureReasonController;
+use App\Http\Controllers\EmploymentStatusController;
 use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\HolidayTypeController;
+use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\JobPositionController;
 use App\Http\Controllers\LanguageController;
@@ -329,6 +331,30 @@ Route::middleware('auth')->group(function () {
     Route::prefix('marital-status')
         ->name('marital-status')
         ->controller(MaritalStatusController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('employment-status')
+        ->name('employment-status')
+        ->controller(EmploymentStatusController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('id-type')
+        ->name('id-type')
+        ->controller(IdTypeController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

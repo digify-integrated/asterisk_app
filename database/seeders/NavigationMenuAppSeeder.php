@@ -19,9 +19,9 @@ class NavigationMenuAppSeeder extends Seeder
 
         $apps = [];
 
-        // 1. Assign Settings App Menus (IDs 1 to 36, excluding Training Type ID 23) to App ID 1
-        for ($i = 1; $i <= 36; $i++) {
-            if ($i === 23) {
+        // 1. Assign Settings App Menus (IDs 1 to 48, excluding Training Type ID 31) to App ID 1
+        for ($i = 1; $i <= 48; $i++) {
+            if ($i === 31) {
                 continue; // Training Type is for App ID 2 only
             }
             $apps[] = [
@@ -30,8 +30,8 @@ class NavigationMenuAppSeeder extends Seeder
             ];
         }
 
-        // 2. Assign Employee Management Main Menus (IDs 37 to 39) to App ID 2
-        for ($i = 37; $i <= 39; $i++) {
+        // 2. Assign Employee Management Main Menus (IDs 49 to 51) to App ID 2
+        for ($i = 49; $i <= 51; $i++) {
             $apps[] = [
                 'navigation_menu_id' => $i,
                 'app_id'             => 2,
@@ -44,26 +44,31 @@ class NavigationMenuAppSeeder extends Seeder
             'app_id'             => 2,
         ];
 
-        // 4. Assign Document Type (ID 22) and Training Type (ID 23) to App ID 2
-        
+        // 4. Assign General Setup (ID 27), Document Type (ID 30) and Training Type (ID 31) to App ID 2
         $apps[] = [
-            'navigation_menu_id' => 19,
-            'app_id'             => 2,
-        ];
-        
-        $apps[] = [
-            'navigation_menu_id' => 22, // Document Type
+            'navigation_menu_id' => 27, // General Setup
             'app_id'             => 2,
         ];
         $apps[] = [
-            'navigation_menu_id' => 23, // Training Type
+            'navigation_menu_id' => 30, // Document Type
+            'app_id'             => 2,
+        ];
+        $apps[] = [
+            'navigation_menu_id' => 31, // Training Type
             'app_id'             => 2,
         ];
 
-        // 5. Assign Employee Configuration Sub-menus & Groupings (IDs 40 to 49) to App ID 2
-        for ($i = 40; $i <= 49; $i++) {
+        // 5. Assign Employee Configuration Sub-menus & Groupings to App ID 2
+        $employeeConfigIds = array_merge(
+            range(20, 23),
+            range(24, 26),
+            range(32, 33),
+            range(34, 35)
+        );
+
+        foreach ($employeeConfigIds as $menuId) {
             $apps[] = [
-                'navigation_menu_id' => $i,
+                'navigation_menu_id' => $menuId,
                 'app_id'             => 2,
             ];
         }

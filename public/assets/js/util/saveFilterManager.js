@@ -119,7 +119,7 @@ export class SaveFilterManager {
         sortedFilters.forEach(preset => {
             const defaultAction = preset.is_default 
                 ? `<span class="badge badge-light-success fs-8 px-2 py-1 me-1">Default</span>` 
-                : `<button type="button" class="btn btn-icon btn-sm btn-light-success h-26px w-26px me-1" data-set-default-id="${preset.id}" title="Set as default filter"><i class="ki-outline ki-check fs-6"></i></button>`;
+                : `<button type="button" class="btn btn-icon btn-sm btn-light-success h-26px w-26px me-1" data-set-default-id="${preset.id}" title="Set as default filter"><i class="ki-duotone ki-check fs-6"></i></button>`;
 
             html += `
                 <div class="d-flex align-items-center justify-content-between px-2 py-1.5 rounded hover-bg-light transition-base mb-1 border-bottom border-dashed border-gray-100">
@@ -129,7 +129,7 @@ export class SaveFilterManager {
                     <div class="d-flex align-items-center flex-shrink-0">
                         ${defaultAction}
                         <button type="button" class="btn btn-icon btn-sm btn-light-danger h-26px w-26px" data-delete-filter-id="${preset.id}" title="Delete preset">
-                            <i class="ki-outline ki-trash fs-6"></i>
+                            <i class="ki-duotone ki-trash fs-6"></i>
                         </button>
                     </div>
                 </div>

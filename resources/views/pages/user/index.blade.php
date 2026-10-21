@@ -7,7 +7,11 @@
 @section('content')
     <div class="card border-0 shadow-sm mb-5">
         <div class="card-body py-5 px-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">                
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
+                    @include('partials.datatable-search')
+                </div>
+
                 <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
 
                     @component('partials.datatable-actions')
@@ -27,10 +31,6 @@
                         @slot('dropdownButtonId', 'user-table-button-column-dropdown')
                     @endcomponent
                 </div>
-                
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
-                    @include('partials.datatable-search')
-                </div>
             </div>
 
             @component('partials.filter-module')
@@ -38,7 +38,7 @@
                 @slot('resetFilterId', 'user-reset-filters-btn')
                 @slot('applyFilterId', 'user-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_status">Status</label>
                     <select id="filter_status" name="filter_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Status" data-allow-clear="true">
                         <option value="Inactive">Inactive</option>
@@ -90,7 +90,7 @@
                             <input type="password" id="password" name="password" class="form-control bg-transparent" placeholder="Enter your password">
 
                             <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#password">
-                                <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                                <i class="fs-4 ki-duotone ki-eye pe-none"></i>
                             </span>
                         </div>
                     </div>

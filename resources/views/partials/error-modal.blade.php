@@ -5,7 +5,7 @@
                 <div class="d-flex align-items-start gap-4">
                     <div class="symbol symbol-50px shrink-0">
                         <div class="symbol-label bg-light-danger">
-                            <i class="ki-outline ki-information-4 fs-2 text-danger"></i>
+                            <i class="ki-duotone ki-information-4 fs-2 text-danger"></i>
                         </div>
                     </div>
 
@@ -21,7 +21,7 @@
                 </div>
 
                 <button type="button" class="btn btn-icon bg-transparent btn-sm rounded-circle" data-bs-dismiss="modal">
-                    <i class="ki-outline ki-cross fs-4"></i>
+                    <i class="ki-duotone ki-cross fs-4"></i>
                 </button>
             </div>
 
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="d-flex align-items-start gap-3 bg-light rounded p-4">
-                    <i class="ki-outline ki-information-4 fs-4 text-muted mt-1"></i>
+                    <i class="ki-duotone ki-information-4 fs-4 text-muted mt-1"></i>
                     <div>
                         <div class="fw-semibold mb-1">
                             Need help?
@@ -70,7 +70,7 @@
                 </button>
 
                 <button type="button" class="btn btn-primary btn-sm" id="copy-error-message">
-                    <i class="ki-outline ki-copy fs-5 me-2"></i>
+                    <i class="ki-duotone ki-copy fs-5 me-2"></i>
 
                     Copy Technical Details
                 </button>

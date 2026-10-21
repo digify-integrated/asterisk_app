@@ -138,7 +138,7 @@ export class IdType {
                 
                         return `
                         <div class="text-center me-10">
-                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            <a href="#" class="btn btn-light-dark btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                 Actions
                                 <i class="ki-duotone ki-down fs-5 ms-1"></i>
                             </a>
@@ -147,7 +147,7 @@ export class IdType {
                                 ${perms.write ? `
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3 ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}">
-                                        <span class="menu-icon me-2"><i class="ki-outline ki-eye fs-5"></i></span>
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-eye fs-5"></i></span>
                                         <span class="menu-title">Edit</span>
                                     </a>
                                 </div>` : ''}

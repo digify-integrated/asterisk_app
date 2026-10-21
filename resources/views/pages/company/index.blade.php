@@ -7,7 +7,11 @@
 @section('content')
     <div class="card border-0 shadow-sm mb-5">
         <div class="card-body py-5 px-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">                
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
+                    @include('partials.datatable-search')
+                </div>
+                
                 <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
                     @component('partials.datatable-actions')
                         @slot('deletePermission', $deletePermission)
@@ -25,10 +29,6 @@
                         @slot('dropdownId', 'company-table-column-dropdown')
                         @slot('dropdownButtonId', 'company-table-button-column-dropdown')
                     @endcomponent
-                </div>
-                
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
-                    @include('partials.datatable-search')
                 </div>
             </div>
 
@@ -57,27 +57,35 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_date_registered">Date Registered</label>
+                    <div class="position-relative d-flex align-items-center">
+                        <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
+                        <input type="text" id="filter_date_registered" name="filter_date_registered" class="form-control form-control-sm ps-10" placeholder="Pick date range" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
                     <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
                     <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
                     <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_currency_id">Currency</label>
                     <select id="filter_currency_id" name="filter_currency_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Currency" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_fiscal_year_start_month">Fiscal Year Start Month</label>
                     <select id="filter_fiscal_year_start_month" name="filter_fiscal_year_start_month[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Fiscal Year Start Month" data-allow-clear="true">
                         <option value="1">January</option>
@@ -93,14 +101,6 @@
                         <option value="11">November</option>
                         <option value="12">December</option>
                     </select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_date_registered">Date Registered</label>
-                    <div class="position-relative d-flex align-items-center">
-                        <i class="ki-outline ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
-                        <input type="text" id="filter_date_registered" name="filter_date_registered" class="form-control form-control-sm ps-10" placeholder="Pick date range" autocomplete="off"/>
-                    </div>
                 </div>
             @endcomponent
         </div>
@@ -173,7 +173,7 @@
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-2" for="date_registered">Date Registered</label>
                             <div class="position-relative d-flex align-items-center">
-                                <i class="ki-outline ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
+                                <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
                                 <input type="text" id="date_registered" name="date_registered" class="form-control form-control-sm ps-10" placeholder="Pick date registered" autocomplete="off"/>
                             </div>
                         </div>

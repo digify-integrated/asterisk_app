@@ -27,7 +27,7 @@ class NavigationMenuSeeder extends Seeder
             // Account Setting ID: 1
             [
                 'name'              => 'Account Setting',
-                'icon'              => 'ki-outline ki-user',
+                'icon'              => 'ki-duotone ki-user',
                 'parent_id'         => null,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 1,
@@ -323,7 +323,7 @@ class NavigationMenuSeeder extends Seeder
             // Security ID: 36
             [
                 'name'              => 'Security',
-                'icon'              => 'ki-outline ki-lock-2',
+                'icon'              => 'ki-duotone ki-lock-2',
                 'parent_id'         => null,
                 'page_type'         => 'menu',
                 'order_sequence'    => 200,
@@ -376,7 +376,7 @@ class NavigationMenuSeeder extends Seeder
             // Technical ID: 42
             [
                 'name'              => 'Technical',
-                'icon'              => 'ki-outline ki-abstract-26',
+                'icon'              => 'ki-duotone ki-abstract-26',
                 'parent_id'         => null,
                 'page_type'         => 'menu',
                 'order_sequence'    => 300,
@@ -437,7 +437,7 @@ class NavigationMenuSeeder extends Seeder
             // Employees ID: 49
             [
                 'name'              => 'Employees',
-                'icon'              => 'ki-outline ki-user-square',
+                'icon'              => 'ki-duotone ki-user-square',
                 'parent_id'         => null,
                 'page_type'         => 'multi_page',
                 'order_sequence'    => 1,
@@ -445,7 +445,7 @@ class NavigationMenuSeeder extends Seeder
             // Directory ID: 50
             [
                 'name'              => 'Directory',
-                'icon'              => 'ki-outline ki-address-book',
+                'icon'              => 'ki-duotone ki-address-book',
                 'parent_id'         => null,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 2,
@@ -453,7 +453,7 @@ class NavigationMenuSeeder extends Seeder
             // Departments ID: 51
             [
                 'name'              => 'Departments',
-                'icon'              => 'ki-outline ki-element-7',
+                'icon'              => 'ki-duotone ki-element-7',
                 'parent_id'         => null,
                 'page_type'         => 'single_page',
                 'order_sequence'    => 3,

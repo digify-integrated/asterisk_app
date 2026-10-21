@@ -27,28 +27,28 @@
             <div class="d-flex align-items-center py-3 py-md-1">
                 @if(($createPermission ?? 0) > 0 && (request()->routeIs('apps.base') || request()->routeIs('apps.manage')))
                     @if($pageType == 'multi_page')
-                        <a href="{{ route('apps.manage', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-primary btn-sm d-inline-flex align-items-center">
-                            <i class="ki-outline ki-plus fs-5"></i>
+                        <a href="{{ route('apps.manage', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-dark btn-sm d-inline-flex align-items-center">
+                            <i class="ki-duotone ki-plus fs-5"></i>
                             <span>New</span>
                         </a>
                     @else
-                        <button type="button" class="btn btn-light-primary btn-sm d-inline-flex align-items-center new-button"
+                        <button type="button" class="btn btn-light-dark btn-sm d-inline-flex align-items-center new-button"
                             data-bs-toggle="modal" data-bs-target="#form-modal">
-                            <i class="ki-outline ki-plus fs-5"></i>
+                            <i class="ki-duotone ki-plus fs-5"></i>
                             <span>New</span>
                         </button>
                     @endif
                 @endif
 
                 @if(($importPermission ?? 0) > 0 && !request()->routeIs('apps.import'))
-                    <a href="{{ route('apps.import', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-warning btn-sm d-inline-flex align-items-center ms-3">
-                        <i class="ki-outline ki-exit-down fs-4 me-2"></i> Import
+                    <a href="{{ route('apps.import', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-dark btn-sm d-inline-flex align-items-center ms-3">
+                        <i class="ki-duotone ki-exit-down fs-4 me-2"></i> Import
                     </a>
                 @endif
 
                 @if(($logsPermission ?? 0) > 0 && request()->routeIs('apps.details'))
-                    <button id="log-notes-main" class="btn btn-flex btn-sm btn-outline btn-active-color-primary btn-custom ms-3 px-4" data-bs-toggle="modal" data-bs-target="#log-notes-modal">
-                        <i class="ki-outline ki-shield-search fs-4 me-2"></i> Log Notes
+                    <button id="log-notes-main" class="btn btn-light-dark btn-sm d-inline-flex align-items-center ms-3" data-bs-toggle="modal" data-bs-target="#log-notes-modal">
+                        <i class="ki-duotone ki-shield-search fs-4 me-2"></i> Log Notes
                     </button>
                 @endif
             </div>

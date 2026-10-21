@@ -192,7 +192,7 @@ export class AuditLogManager {
                             <!-- Refined Header Bar -->
                             <div class="bg-light px-4 py-3 border-bottom border-gray-300 d-flex justify-content-between align-items-center">
                                 <div class="fw-bold fs-7 text-gray-800 d-flex align-items-center">
-                                    <i class="ki-outline ki-data text-primary me-2 fs-5"></i>
+                                    <i class="ki-duotone ki-data text-primary me-2 fs-5"></i>
                                     <span>${headerTitle}</span>
                                 </div>
                                 <span class="badge badge-light-primary fw-bold fs-8 px-2.5 py-1">${badgeText}</span>
@@ -207,7 +207,7 @@ export class AuditLogManager {
                                     if (change.type === 'note') {
                                         return `
                                             <div class="alert bg-light-primary border-0 py-2 px-3 mb-2 text-gray-700 fs-7 rounded text-wrap text-break ${hiddenClass}">
-                                                <i class="ki-outline ki-information fs-6 text-primary me-2"></i>${this._escapeHtml(change.text)}
+                                                <i class="ki-duotone ki-information fs-6 text-primary me-2"></i>${this._escapeHtml(change.text)}
                                             </div>
                                         `;
                                     }
@@ -335,7 +335,7 @@ export class AuditLogManager {
         if (!container) return;
         container.innerHTML = `
             <div class="notice d-flex bg-light-danger rounded-3 border-danger border border-dashed p-5 w-100">
-                <i class="ki-outline ki-information-5 fs-1 text-danger me-4"></i>
+                <i class="ki-duotone ki-information-5 fs-1 text-danger me-4"></i>
                 <div class="d-flex flex-stack flex-grow-1">
                     <div class="fw-semibold">
                         <h4 class="text-gray-900 fw-bold fs-7 mb-1">Retrieval Error</h4>

@@ -73,7 +73,7 @@ class AppRenderController extends Controller
         return view($viewFile, array_merge($perms, [
             'pageTitle'        => $pageTitle,
             'pageType'         => $pageType,
-            'iconClass'        => $menu->icon ?? 'ki-outline ki-abstract-26',
+            'iconClass'        => $menu->icon ?? 'ki-duotone ki-abstract-26',
             'jsFile'           => $jsFile,
             'appId'            => $appId,
             'navigationMenuId' => $navigationMenuId,

@@ -43,7 +43,7 @@
                     </button>
 
                     <div id="templateCollapse" class="collapse mt-3">
-                        <div class="bg-body border border-gray-200 rounded-3 p-4 shadow-xs">
+                        <div class="bg-body border border-gray-200 rounded-3 p-4">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <span class="text-gray-800 fw-bold fs-8 text-uppercase tracking-wider">Available Schema Downloads</span>
                                 <span class="text-gray-500 fs-8">Includes all database fields excluding timestamps</span>

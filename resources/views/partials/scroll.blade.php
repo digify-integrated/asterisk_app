@@ -1,3 +1,3 @@
 <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
-    <i class="ki-outline ki-arrow-up"></i>
+    <i class="ki-duotone ki-arrow-up"></i>
 </div>

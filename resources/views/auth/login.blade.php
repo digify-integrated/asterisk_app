@@ -19,7 +19,7 @@
                 <span class="input-group-text bg-transparent cursor-pointer password-addon" 
                     data-password-toggle 
                     data-target="#password">
-                    <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                    <i class="fs-4 ki-duotone ki-eye pe-none"></i>
                 </span>
             </div>
         </div>

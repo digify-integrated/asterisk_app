@@ -64,7 +64,7 @@
                         <input type="password" id="current_password" name="current_password" class="form-control bg-transparent" placeholder="Enter your current password">
 
                         <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#current_password">
-                            <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                            <i class="fs-4 ki-duotone ki-eye pe-none"></i>
                         </span>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         <input type="password" id="new_password" name="new_password" class="form-control bg-transparent" placeholder="Enter your new password">
 
                         <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#new_password">
-                            <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                            <i class="fs-4 ki-duotone ki-eye pe-none"></i>
                         </span>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                         <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control bg-transparent" placeholder="Comfirm your new password">
 
                         <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#new_password_confirmation">
-                            <i class="fs-4 ki-outline ki-eye pe-none"></i>
+                            <i class="fs-4 ki-duotone ki-eye pe-none"></i>
                         </span>
                     </div>
                 </div>

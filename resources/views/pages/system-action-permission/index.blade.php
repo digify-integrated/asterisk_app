@@ -7,7 +7,11 @@
 @section('content')
     <div class="card border-0 shadow-sm mb-5">
         <div class="card-body py-5 px-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">                
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
+                    @include('partials.datatable-search')
+                </div>
+
                 <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
                     @component('partials.datatable-actions')
                         @slot('deletePermission', $deletePermission)
@@ -26,10 +30,6 @@
                         @slot('dropdownButtonId', 'system-action-permission-table-button-column-dropdown')
                     @endcomponent
                 </div>
-                
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
-                    @include('partials.datatable-search')
-                </div>
             </div>
 
             @component('partials.filter-module')
@@ -37,17 +37,17 @@
                 @slot('resetFilterId', 'system-action-permission-reset-filters-btn')
                 @slot('applyFilterId', 'system-action-permission-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_role_id">Role</label>
                     <select id="filter_role_id" name="filter_role_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select role" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_system_action_id">System Action</label>
                     <select id="filter_system_action_id" name="filter_system_action_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select system action" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_access">Access</label>
                     <select id="filter_access" name="filter_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Access" data-allow-clear="true" data-placeholder="Select access">
                         <option value="1">True</option>

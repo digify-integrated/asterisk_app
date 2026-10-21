@@ -62,7 +62,7 @@
                                     <img src="{{ $logoUrl }}" alt="{{ $app->name }}">
                                 </div>
 
-                                <i class="ki-outline ki-arrow-up-right fs-3 text-muted"></i>
+                                <i class="ki-duotone ki-arrow-up-right fs-3 text-muted"></i>
                             </div>
 
                             <div class="mt-8">

@@ -135,12 +135,12 @@ export class WorkSchedule {
                         return `
                             <div class="d-flex flex-column text-start">
                                 <div class="fw-bold text-dark d-flex align-items-center gap-1 fs-8">
-                                    <i class="ki-outline ki-time fs-7 text-primary me-2"></i>
+                                    <i class="ki-duotone ki-time fs-7 text-primary me-2"></i>
                                     <span>${escapeHtml(dayData.start_time)} – ${escapeHtml(dayData.end_time)}</span>
                                 </div>
                                 ${dayData.break_start && dayData.break_end ? `
                                     <div class="text-muted fs-7 d-flex align-items-center gap-1 mt-1">
-                                        <i class="ki-outline ki-coffee fs-8 text-warning me-2"></i>
+                                        <i class="ki-duotone ki-coffee fs-8 text-warning me-2"></i>
                                         <span>Break: ${escapeHtml(dayData.break_start)} – ${escapeHtml(dayData.break_end)}</span>
                                     </div>
                                 ` : ''}
@@ -163,7 +163,7 @@ export class WorkSchedule {
                 
                         return `
                         <div class="text-center me-10">
-                            <a href="#" class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            <a href="#" class="btn btn-light-dark btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                 Actions
                                 <i class="ki-duotone ki-down fs-5 ms-1"></i>
                             </a>
@@ -172,7 +172,7 @@ export class WorkSchedule {
                                 ${perms.write ? `
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3 ${CONFIG.classes.updateTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.modal}" data-reference-id="${safeId}">
-                                        <span class="menu-icon me-2"><i class="ki-outline ki-eye fs-5"></i></span>
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-eye fs-5"></i></span>
                                         <span class="menu-title">Edit</span>
                                     </a>
                                 </div>` : ''}
@@ -180,7 +180,7 @@ export class WorkSchedule {
                                 ${perms.logs ? `
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
-                                        <span class="menu-icon me-2"><i class="ki-outline ki-shield-search fs-5"></i></span>
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-shield-search fs-5"></i></span>
                                         <span class="menu-title">Audit Logs</span>
                                     </a>
                                 </div>` : ''}
@@ -188,7 +188,7 @@ export class WorkSchedule {
                                 ${perms.delete ? `
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
-                                        <span class="menu-icon me-2"><i class="ki-outline ki-trash fs-5 text-danger"></i></span>
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-trash fs-5 text-danger"></i></span>
                                         <span class="menu-title text-danger">Delete</span>
                                     </a>
                                 </div>` : ''}

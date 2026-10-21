@@ -4,8 +4,8 @@ const BOUND_FLAG = 'passwordToggleBound';
 
 export class PasswordToggle {
     static DEFAULTS = {
-        eyeClass: 'ki-outline ki-eye',
-        eyeOffClass: 'ki-outline ki-eye-slash',
+        eyeClass: 'ki-duotone ki-eye',
+        eyeOffClass: 'ki-duotone ki-eye-slash',
         label: 'Toggle password visibility',
     };
 

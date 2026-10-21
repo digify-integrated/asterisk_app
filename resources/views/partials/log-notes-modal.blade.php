@@ -1,11 +1,11 @@
 <div id="log-notes-modal" class="modal fade" tabindex="-1" aria-labelledby="log-notes-modal-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 rounded-4">
-            <div class="modal-header border-0 px-9 pt-8 pb-6">
+            <div class="modal-header border-0 px-6 pt-8 pb-6">
                 <div class="d-flex align-items-start gap-4">
                     <div class="symbol symbol-50px shrink-0">
                         <div class="symbol-label bg-light-warning">
-                            <i class="ki-outline ki-time fs-2 text-warning"></i>
+                            <i class="ki-duotone ki-time fs-2 text-warning"></i>
                         </div>
                     </div>
 
@@ -20,19 +20,19 @@
                 </div>
 
                 <button type="button" class="btn btn-icon bg-transparent btn-sm rounded-circle" data-bs-dismiss="modal">
-                    <i class="ki-outline ki-cross fs-4"></i>
+                    <i class="ki-duotone ki-cross fs-4"></i>
                 </button>
             </div>
 
             <div class="border-top"></div>
 
-            <div class="modal-body px-5 py-5">
+            <div class="modal-body px-6 py-5">
                 <div class="timeline timeline-border-dashed" id="log-notes"></div>
 
                 <div id="log-notes-empty" class="d-none">
                     <div class="py-16 text-center">
                         <div class="empty-icon mb-6">
-                            <i class="ki-outline ki-file-sheet fs-2hx text-muted"></i>
+                            <i class="ki-duotone ki-file-sheet fs-2hx text-muted"></i>
                         </div>
 
                         <h4 class="fw-bold text-dark mb-2">No audit history</h4>

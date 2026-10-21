@@ -2,12 +2,12 @@
     <div class="pt-4 mt-4 border-top border-gray-200">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <span class="fs-7 text-uppercase fw-bold text-gray-600 tracking-wide">
-                <i class="ki-outline ki-setting-4 me-1"></i> Filter Options
+                <i class="ki-duotone ki-setting-4 me-1"></i> Filter Options
             </span>
 
             <div class="dropdown">
                 <button class="btn btn-sm btn-light-dark fw-bold px-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true" title="Saved Filters">
-                    <i class="ki-outline ki-save-2 fs-6 me-1"></i> Saved Filters
+                    <i class="ki-duotone ki-save-2 fs-6 me-1"></i> Saved Filters
                 </button>
 
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-300px p-4 shadow-sm" data-kt-menu="true">                    
@@ -48,10 +48,10 @@
         <div class="row g-3">
             {{ $slot }}
 
-            <div class="col-12 col-md-6 col-lg-3">
+            <div class="col-12 col-md-6 col-lg-4">
                 <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_created_date">Created Date</label>
                 <div class="position-relative d-flex align-items-center">
-                    <i class="ki-outline ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
+                    <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
                     <input type="text" id="filter_created_date" name="filter_created_date" class="form-control form-control-sm ps-10" placeholder="Pick date range" autocomplete="off"/>
                 </div>
             </div>

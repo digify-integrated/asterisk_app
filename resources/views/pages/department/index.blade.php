@@ -7,7 +7,11 @@
 @section('content')
     <div class="card border-0 shadow-sm mb-5">
         <div class="card-body py-5 px-5">
-            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">
+            <div class="d-flex flex-column flex-xl-row align-items-xl-center justify-content-between gap-4">                
+                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
+                    @include('partials.datatable-search')
+                </div>
+
                 <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
                     @component('partials.datatable-actions')
                         @slot('deletePermission', $deletePermission)
@@ -26,10 +30,6 @@
                         @slot('dropdownButtonId', 'department-table-button-column-dropdown')
                     @endcomponent
                 </div>
-                
-                <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 grow">
-                    @include('partials.datatable-search')
-                </div>
             </div>
 
             @component('partials.filter-module')
@@ -37,7 +37,7 @@
                 @slot('resetFilterId', 'department-reset-filters-btn')
                 @slot('applyFilterId', 'department-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-4">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
                     <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
                 </div>

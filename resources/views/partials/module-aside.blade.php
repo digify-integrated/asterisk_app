@@ -36,8 +36,8 @@
                                     <span class="menu-title position-relative">
                                         Mode
                                         <span class="ms-5 position-absolute translate-middle-y top-50 end-0">
-                                            <i class="ki-outline ki-night-day theme-light-show fs-2"></i>
-                                            <i class="ki-outline ki-moon theme-dark-show fs-2"></i>
+                                            <i class="ki-duotone ki-night-day theme-light-show fs-2"></i>
+                                            <i class="ki-duotone ki-moon theme-dark-show fs-2"></i>
                                         </span>
                                     </span>
                                 </a>
@@ -45,7 +45,7 @@
                                     <div class="menu-item px-3 my-0">
                                         <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="light">
                                             <span class="menu-icon" data-kt-element="icon">
-                                                <i class="ki-outline ki-night-day fs-2"></i>
+                                                <i class="ki-duotone ki-night-day fs-2"></i>
                                             </span>
                                             <span class="menu-title"> Light </span>
                                         </a>
@@ -53,7 +53,7 @@
                                     <div class="menu-item px-3 my-0">
                                         <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
                                             <span class="menu-icon" data-kt-element="icon">
-                                                <i class="ki-outline ki-moon fs-2"></i>
+                                                <i class="ki-duotone ki-moon fs-2"></i>
                                             </span>
                                             <span class="menu-title"> Dark </span>
                                         </a>
@@ -61,7 +61,7 @@
                                     <div class="menu-item px-3 my-0">
                                         <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
                                             <span class="menu-icon" data-kt-element="icon">
-                                                <i class="ki-outline ki-screen fs-2"></i>
+                                                <i class="ki-duotone ki-screen fs-2"></i>
                                             </span>
                                             <span class="menu-title"> System </span>
                                         </a>
@@ -89,7 +89,7 @@
                 <div class="menu-item">
                     <a class="menu-link" href="{{route('apps.main')}}">
                         <span class="menu-icon">
-                            <i class="ki-outline ki-home fs-2"></i>
+                            <i class="ki-duotone ki-home fs-2"></i>
                         </span>
 
                         <span class="menu-title">Home</span>
@@ -105,19 +105,5 @@
                 @endforeach
             </div>
         </div>
-    </div>
-
-    <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
-        <a
-            href="https://preview.keenthemes.com/html/metronic/docs"
-            class="btn btn-flex btn-custom btn-primary w-100"
-            data-bs-toggle="tooltip"
-            data-bs-trigger="hover"
-            data-bs-dismiss-="click"
-            title="200+ in-house components and 3rd-party plugins"
-        >
-            <span class="btn-label">Docs & Components</span>
-            <i class="ki-duotone ki-document ms-2 fs-2"></i>
-        </a>
     </div>
 </div>

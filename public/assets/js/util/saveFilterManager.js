@@ -103,7 +103,12 @@ export class SaveFilterManager {
         }
 
         if (!filters || filters.length === 0) {
-            listContainer.innerHTML = `<span class="text-muted fs-8 px-2 py-3 d-block text-center">No saved filters yet</span>`;
+            listContainer.innerHTML = `
+                <div class="text-center py-4 px-2">
+                    <i class="ki-duotone ki-filter-search fs-2 text-gray-400 mb-1"><span class="path1"></span><span class="path2"></span></i>
+                    <span class="text-muted fs-8 d-block fw-semibold">No saved filters yet</span>
+                </div>
+            `;
             return;
         }
 
@@ -118,18 +123,18 @@ export class SaveFilterManager {
         let html = '';
         sortedFilters.forEach(preset => {
             const defaultAction = preset.is_default 
-                ? `<span class="badge badge-light-success fs-8 px-2 py-1 me-1">Default</span>` 
-                : `<button type="button" class="btn btn-icon btn-sm btn-light-success h-26px w-26px me-1" data-set-default-id="${preset.id}" title="Set as default filter"><i class="ki-duotone ki-check fs-6"></i></button>`;
+                ? `<span class="badge badge-light-success badge-sm fw-bold px-2 py-1 me-1"><i class="ki-duotone ki-check fs-8 text-success me-1"></i> Default</span>` 
+                : `<button type="button" class="btn btn-icon btn-sm btn-light-success h-24px w-24px me-1" data-set-default-id="${preset.id}" title="Set as default filter"><i class="ki-duotone ki-check fs-7"></i></button>`;
 
             html += `
-                <div class="d-flex align-items-center justify-content-between px-2 py-1.5 rounded hover-bg-light transition-base mb-1 border-bottom border-dashed border-gray-100">
-                    <a href="#" class="text-gray-800 text-hover-primary fw-medium text-truncate flex-grow-1 me-2 text-decoration-none py-1" data-load-filter-id="${preset.id}" title="${this.escapeHtml(preset.name)}">
+                <div class="d-flex align-items-center justify-content-between p-2 rounded-2 hover-bg-light transition-base mb-1 border border-transparent hover-border-gray-200">
+                    <a href="#" class="text-gray-800 text-hover-primary fw-semibold text-truncate flex-grow-1 me-2 text-decoration-none py-0.5" data-load-filter-id="${preset.id}" title="${this.escapeHtml(preset.name)}">
                         <span class="text-truncate fs-7">${this.escapeHtml(preset.name)}</span>
                     </a>
-                    <div class="d-flex align-items-center flex-shrink-0">
+                    <div class="d-flex align-items-center flex-shrink-0 gap-1">
                         ${defaultAction}
-                        <button type="button" class="btn btn-icon btn-sm btn-light-danger h-26px w-26px" data-delete-filter-id="${preset.id}" title="Delete preset">
-                            <i class="ki-duotone ki-trash fs-6"></i>
+                        <button type="button" class="btn btn-icon btn-sm btn-light-danger h-24px w-24px" data-delete-filter-id="${preset.id}" title="Delete preset">
+                            <i class="ki-duotone ki-trash fs-7"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
                         </button>
                     </div>
                 </div>

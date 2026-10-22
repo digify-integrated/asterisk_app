@@ -4,8 +4,8 @@
             <div class="modal-header border-0 px-8 pt-8 pb-6">
                 <div class="d-flex align-items-start gap-4">
                     <div class="symbol symbol-50px shrink-0">
-                        <div class="symbol-label bg-light-primary">
-                            <i class="ki-duotone ki-notepad-edit fs-2 text-primary"></i>
+                        <div class="symbol-label">
+                            <i class="ki-duotone ki-notepad-edit fs-2"></i>
                         </div>
                     </div>
 

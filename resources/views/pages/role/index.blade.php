@@ -37,7 +37,7 @@
                 @slot('resetFilterId', 'role-reset-filters-btn')
                 @slot('applyFilterId', 'role-apply-filters-btn')
                 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_user_id">User Account</label>
                     <select id="filter_user_id" name="filter_user_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select User Account" data-allow-clear="true"></select>
                 </div>

@@ -32,37 +32,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'work-location-filter-collapse')
-                @slot('resetFilterId', 'work-location-reset-filters-btn')
-                @slot('applyFilterId', 'work-location-apply-filters-btn')
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_location_type">Location Type</label>
-                    <select id="filter_location_type" name="filter_location_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Entity Type" data-allow-clear="true">
-                        <option value="Home">Home</option>
-                        <option value="Office">Office</option>
-                        <option value="Warehouse">Warehouse</option>
-                        <option value="Others">Others</option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
-                    <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
-                    <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
-                    <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -137,6 +106,37 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('collapseId', 'work-location-filter-collapse')
+        @slot('resetFilterId', 'work-location-reset-filters-btn')
+        @slot('applyFilterId', 'work-location-apply-filters-btn')
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_location_type">Location Type</label>
+            <select id="filter_location_type" name="filter_location_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Entity Type" data-allow-clear="true">
+                <option value="Home">Home</option>
+                <option value="Office">Office</option>
+                <option value="Warehouse">Warehouse</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
+            <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
+            <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
+            <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

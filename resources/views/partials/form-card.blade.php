@@ -28,7 +28,7 @@
                     </div>
                 @endisset
                 
-                <button type="submit" class="btn btn-primary btn-sm" form="{{ $formId }}" id="{{ $submitButtonId }}">Save Changes</button>
+                <button type="submit" class="btn btn-sm btn-primary" form="{{ $formId }}" id="{{ $submitButtonId }}">Save Changes</button>
             </div>
         </div>
     </div>

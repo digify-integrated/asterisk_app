@@ -1,17 +1,17 @@
 /**
- * Dynamic DataTables Filter Manager (Collapsible Edition)
- * Handles collapsible filter panels, granular per-value status tags, chip dismissals,
+ * Dynamic DataTables Filter Manager (Drawer Edition)
+ * Handles Metronic drawer filter panels, granular per-value status tags, chip dismissals,
  * minimal UI status bar, and DataTables reloads.
  */
 export class TableFilterManager {
     /**
      * @param {Object} options
-     * @param {string} options.containerId - ID of the collapsible filter element
-     * @param {Object} options.orchestrator - DataTables orchestrator instance
-     * @param {string} [options.tableSelector='#table'] - DataTables table selector string
-     * @param {string} [options.statusContainerSelector] - Selector for status bar placement
-     * @param {Function} [options.onApply] - Optional callback triggered after applying filters
-     * @param {Function} [options.onReset] - Optional callback triggered after resetting filters
+     * @param {string} options.containerId ID of the drawer element
+     * @param {Object} options.orchestrator DataTables orchestrator instance
+     * @param {string} [options.tableSelector='#table'] DataTables table selector string
+     * @param {string} [options.statusContainerSelector] Selector for status bar placement
+     * @param {Function} [options.onApply] Optional callback triggered after applying filters
+     * @param {Function} [options.onReset] Optional callback triggered after resetting filters
      */
     constructor(options = {}) {
         this.isInitialized = false;
@@ -23,10 +23,10 @@ export class TableFilterManager {
         this.onApply = options.onApply || null;
         this.onReset = options.onReset || null;
 
-        // DOM References scoped to this specific collapsible element
+        // DOM References scoped to this specific drawer element
         this.container = document.getElementById(this.containerId);
         if (!this.container) {
-            console.warn(`TableFilterManager: Collapse container with ID "#${this.containerId}" was not found.`);
+            console.warn(`TableFilterManager: Drawer container with ID "#${this.containerId}" was not found.`);
             return;
         }
 
@@ -34,9 +34,10 @@ export class TableFilterManager {
             ? this.container
             : this.container.querySelector('form') || this.container;
 
-        // Find badge associated with this collapsible trigger
+        // Find badge associated with this drawer toggle
         this.badge = document.querySelector(`[data-filter-badge="${this.containerId}"]`) ||
-                     document.querySelector(`[data-bs-target="#${this.containerId}"] .filter-count-badge`) ||
+                     document.querySelector(`[data-kt-drawer-toggle="#${this.containerId}"] .filter-count-badge`) ||
+                     document.querySelector(`[data-kt-drawer-toggle="#${this.containerId}"] .badge`) ||
                      document.querySelector(`[href="#${this.containerId}"] .filter-count-badge`);
 
         // Setup container for Active Filter Status bar
@@ -75,7 +76,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Bind click events inside collapsible container and status bar
+     * Bind click events inside drawer container and status bar
      */
     initEvents() {
         // Container button interactions (Apply & Reset buttons)
@@ -248,7 +249,7 @@ export class TableFilterManager {
     }
 
     /**
-     * Apply active filters, hide collapsible drawer, and update UI
+     * Apply active filters, hide drawer, and update UI
      */
     apply(isInitialLoad = false) {
         const { raw, formatted } = this.getFilterData();
@@ -261,11 +262,9 @@ export class TableFilterManager {
         // 2. Render Active Filters Status Bar
         this.renderStatusBar(formatted);
 
-        // 3. Hide Bootstrap Collapse container
-        this.closeCollapse();
+        // 3. Hide Metronic Drawer
+        this.closeDrawer();
 
-        // If this is triggered during startup phase and the table hasn't bound yet, 
-        // avoid forcing an aggressive draw(false) that aborts the initial network pipe.
         if (isInitialLoad && !this.isInitialized) {
             return;
         }
@@ -274,11 +273,9 @@ export class TableFilterManager {
         if (this.orchestrator && typeof this.orchestrator.reload === 'function') {
             this.orchestrator.reload(this.tableSelector, this.currentFilters, true);
         } else {
-            // Direct DataTables API fallback:
             const $table =$(this.tableSelector);
             if ($.fn.DataTable.isDataTable($table)) {
                 const dt = $table.DataTable();
-                // Only redraw if it's fully initialized to prevent abort status 0
                 dt.page('first').draw(false); 
             }
         }
@@ -289,17 +286,23 @@ export class TableFilterManager {
     }
 
     /**
-     * Hides the Bootstrap Collapse element
+     * Hides the Metronic Drawer element
      */
-    closeCollapse() {
-        if (typeof bootstrap === 'undefined') return;
-
-        // Get existing instance or create/toggle safely
-        let collapseInstance = bootstrap.Collapse.getInstance(this.container);
-        if (!collapseInstance) {
-            collapseInstance = new bootstrap.Collapse(this.container, { toggle: false });
+    closeDrawer() {
+        if (typeof KTDrawer !== 'undefined') {
+            let drawerInstance = KTDrawer.getInstance(this.container);
+            if (drawerInstance) {
+                drawerInstance.hide();
+                return;
+            }
         }
-        collapseInstance.hide();
+
+        // Fallback: trigger the drawer close button if present
+        const closeBtn = this.container.querySelector('[data-kt-drawer-close]') || 
+                         document.querySelector(this.container.getAttribute('data-kt-drawer-close'));
+        if (closeBtn) {
+            closeBtn.click();
+        }
     }
 
     /**
@@ -359,11 +362,11 @@ export class TableFilterManager {
     removeGranularFilter(fieldName, valueToRemove) {
         if (!this.form) return;
 
-        const $form = $(this.form);
+        const $form =$(this.form);
         const elements = $form.find(`[name="${fieldName}"], [name="${fieldName}[]"]`);
 
         elements.each((_, el) => {
-            const $el = $(el);
+            const $el =$(el);
 
             if (el.type === 'checkbox' || el.type === 'radio') {
                 if (String(el.value) === String(valueToRemove)) {
@@ -391,7 +394,7 @@ export class TableFilterManager {
     reset() {
         if (!this.form) return;
 
-        const $form = $(this.form);
+        const $form =$(this.form);
 
         if (this.form.tagName === 'FORM') {
             this.form.reset();

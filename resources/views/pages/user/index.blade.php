@@ -38,7 +38,7 @@
                 @slot('resetFilterId', 'user-reset-filters-btn')
                 @slot('applyFilterId', 'user-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_status">Status</label>
                     <select id="filter_status" name="filter_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Status" data-allow-clear="true">
                         <option value="Inactive">Inactive</option>

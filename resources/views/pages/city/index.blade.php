@@ -37,12 +37,12 @@
                 @slot('resetFilterId', 'city-reset-filters-btn')
                 @slot('applyFilterId', 'city-apply-filters-btn')
                 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
                     <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
                 </div>
                 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
                     <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
                 </div>

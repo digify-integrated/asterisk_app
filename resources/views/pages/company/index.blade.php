@@ -37,7 +37,7 @@
                 @slot('resetFilterId', 'company-reset-filters-btn')
                 @slot('applyFilterId', 'company-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_entity_type">Entity Type</label>
                     <select id="filter_entity_type" name="filter_entity_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Entity Type" data-allow-clear="true">
                         <option value="Corporation">Corporation</option>
@@ -48,7 +48,7 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_vat_status">VAT Status</label>
                     <select id="filter_vat_status" name="filter_vat_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select VAT Status" data-allow-clear="true">
                         <option value="VAT-Registered">VAT-Registered</option>
@@ -57,7 +57,7 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_date_registered">Date Registered</label>
                     <div class="position-relative d-flex align-items-center">
                         <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
@@ -65,27 +65,27 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
                     <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
                     <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
                     <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_currency_id">Currency</label>
                     <select id="filter_currency_id" name="filter_currency_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Currency" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_fiscal_year_start_month">Fiscal Year Start Month</label>
                     <select id="filter_fiscal_year_start_month" name="filter_fiscal_year_start_month[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Fiscal Year Start Month" data-allow-clear="true">
                         <option value="1">January</option>

@@ -82,7 +82,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-end py-4">
-                    <button type="button" class="btn btn-primary btn-sm px-6" id="configure-mapping">
+                    <button type="button" class="btn btn-light-dark btn-sm px-6" id="configure-mapping">
                         <span class="indicator-label">Next: Configure Mapping</span>
                     </button>
                 </div>
@@ -95,7 +95,7 @@
                         Step 2: Field Mapping & Data Preview
                     </h3>
                     <div class="card-toolbar">
-                        <button type="button" id="back-to-config-btn" class="btn btn-sm btn-light-secondary">
+                        <button type="button" id="back-to-config-btn" class="btn btn-sm btn-light-dark">
                             <i class="ki-duotone ki-arrow-left fs-2 me-1"></i>
                             Change File / Table
                         </button>
@@ -137,10 +137,10 @@
                 </div>
 
                 <div class="card-footer d-flex justify-content-end gap-3 py-4">
-                    <button type="button" class="btn btn-light-danger btn-sm" id="test-import-btn">
+                    <button type="button" class="btn btn-sm btn-danger" id="test-import-btn">
                         Test Import
                     </button>
-                    <button type="submit" class="btn btn-success btn-sm" id="submit-btn">
+                    <button type="submit" class="btn btn-sm btn-success" id="submit-btn">
                         Commit Import
                     </button>
                 </div>

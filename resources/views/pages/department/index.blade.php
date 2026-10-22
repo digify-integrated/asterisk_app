@@ -37,7 +37,7 @@
                 @slot('resetFilterId', 'department-reset-filters-btn')
                 @slot('applyFilterId', 'department-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
                     <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
                 </div>

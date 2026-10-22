@@ -10,7 +10,6 @@
             @slot('formId', 'account_profile_form')
             @slot('formTitle', 'General Details')
             @slot('formDescription', 'Update your public profile information and avatar')
-            @slot('footerDescription', 'Please use a maximum of 32 characters for your display name.')
             @slot('submitButtonId', 'submit-profile')
 
             <div class="d-flex align-items-center gap-5 mb-7">
@@ -21,10 +20,10 @@
                 </div>
                 <div class="d-flex flex-column gap-2">
                     <div class="d-flex gap-2">
-                        <label class="btn btn-sm btn-light-primary fw-semibold" for="profile_picture">
+                        <label class="btn btn-sm btn-light-dark fw-semibold" for="profile_picture">
                             Upload Photo
                         </label>
-                        <button type="button" class="btn btn-sm btn-light-danger fw-semibold" data-image-reset data-target="#profile_picture">
+                        <button type="button" class="btn btn-sm btn-danger fw-semibold" data-image-reset data-target="#profile_picture">
                             Remove
                         </button>
                         <input type="file" id="profile_picture" name="profile_picture" class="d-none" accept="image/*" 
@@ -83,7 +82,7 @@
                 <div class="col-12 col-md-6">
                     <label class="form-label required fw-semibold text-gray-700 fs-7" for="new_password_confirmation">Confirm New Password</label>
                     <div class="input-group input-group-sm">
-                        <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control bg-transparent" placeholder="Comfirm your new password">
+                        <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control bg-transparent" placeholder="Confirm your new password">
 
                         <span class="input-group-text bg-transparent cursor-pointer password-addon" data-password-toggle data-target="#new_password_confirmation">
                             <i class="fs-4 ki-duotone ki-eye pe-none"></i>

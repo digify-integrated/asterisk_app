@@ -9,7 +9,7 @@
         
         @if($deletePermission)
             <div class="menu-item px-3">
-                <a href="javascript:void(0);" class="menu-link px-3 text-hover-danger" id="delete-data">
+                <a href="javascript:void(0);" class="menu-link px-3 text-danger" id="delete-data">
                     <i class="ki-duotone ki-trash fs-6 me-2 text-danger"></i>Delete
                 </a>
             </div>

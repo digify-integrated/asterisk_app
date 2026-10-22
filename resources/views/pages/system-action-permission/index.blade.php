@@ -37,17 +37,17 @@
                 @slot('resetFilterId', 'system-action-permission-reset-filters-btn')
                 @slot('applyFilterId', 'system-action-permission-apply-filters-btn')
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_role_id">Role</label>
                     <select id="filter_role_id" name="filter_role_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select role" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_system_action_id">System Action</label>
                     <select id="filter_system_action_id" name="filter_system_action_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select system action" data-allow-clear="true"></select>
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12">
                     <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_access">Access</label>
                     <select id="filter_access" name="filter_access[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Access" data-allow-clear="true" data-placeholder="Select access">
                         <option value="1">True</option>

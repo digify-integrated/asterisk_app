@@ -294,7 +294,7 @@ export class AuditLogManager {
                         <div class="mb-4">
                             <div class="fs-5 fw-semibold text-gray-900 mb-1 text-wrap text-break">${this._escapeHtml(title)}</div>
                             <div class="d-flex align-items-center flex-wrap fs-6">
-                                <span class="text-muted me-2 fs-7">${match.actionVerb} at ${relativeTime || exactTimestamp} by</span>
+                                <span class="text-muted me-2 fs-7">${match.actionVerb} ${relativeTime || exactTimestamp} by</span>
                                 <div class="symbol symbol-circle symbol-25px me-2" data-bs-toggle="tooltip" title="${userName}">
                                     ${avatarHtml}
                                 </div>

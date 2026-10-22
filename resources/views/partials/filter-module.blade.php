@@ -1,4 +1,4 @@
-<div id="{{ $collapseId }}" class="bg-white" data-kt-drawer="true" data-kt-drawer-activate="true" data-kt-drawer-toggle="#filter_drawer_toggle" data-kt-drawer-close="#filter_drawer_close" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'500px'}">
+<div id="{{ $collapseId }}" class="bg-white" data-kt-drawer="true" data-kt-drawer-activate="true" data-kt-drawer-toggle="#filter_drawer_toggle" data-kt-drawer-close="#filter_drawer_close" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'400px', 'md': '500px'}">
     <div class="card rounded-0 w-100 h-100">
         <div class="card-header pe-5">
             <div class="card-title">
@@ -92,11 +92,11 @@
             </div>
         </div>
         
-        <div class="card-footer bg-light px-6 py-4 d-flex align-items-center justify-content-start gap-2">
+        <div class="card-footer px-6 py-4 d-flex align-items-center justify-content-start gap-2">
             <button type="button" class="btn btn-sm btn-light-dark" id="{{ $applyFilterId }}">
                 Apply Filter
             </button>
-            <button type="button" class="btn btn-sm btn-light-danger" id="{{ $resetFilterId }}">
+            <button type="button" class="btn btn-sm btn-danger" id="{{ $resetFilterId }}">
                 Reset
             </button>
         </div>

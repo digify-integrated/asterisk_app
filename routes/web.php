@@ -545,6 +545,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::post('/set-default', 'setDefault')->name('set.default');
+            Route::post('/unset-default', 'unsetDefault')->name('unset.default');
             Route::delete('/delete', 'delete')->name('delete');
             Route::get('/fetch', 'fetch')->name('fetch');
         });

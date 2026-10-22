@@ -13,7 +13,8 @@ export class SaveFilterManager {
             load: '/filter/fetch',
             save: '/filter/save',
             delete: '/filter/delete',
-            setDefault: '/filter/set-default'
+            setDefault: '/filter/set-default',
+            unsetDefault: '/filter/unset-default'
         };
 
         if (!this.filterManager || !this.filterManager.container) {
@@ -46,7 +47,8 @@ export class SaveFilterManager {
             this.listContainer.addEventListener('click', (e) => {
                 const loadBtn = e.target.closest('[data-load-filter-id]');
                 const deleteBtn = e.target.closest('[data-delete-filter-id]');
-                const defaultBtn = e.target.closest('[data-set-default-id]'); // Add this
+                const defaultBtn = e.target.closest('[data-set-default-id]');
+                const unsetDefaultBtn = e.target.closest('[data-unset-default-id]');
 
                 if (loadBtn) {
                     e.preventDefault();
@@ -61,6 +63,11 @@ export class SaveFilterManager {
                 if (defaultBtn) {
                     e.preventDefault();
                     this.setDefaultPreset(defaultBtn.dataset.setDefaultId);
+                }
+
+                if (unsetDefaultBtn) {
+                    e.preventDefault();
+                    this.unsetDefaultPreset(unsetDefaultBtn.dataset.unsetDefaultId);
                 }
             });
         }
@@ -123,7 +130,7 @@ export class SaveFilterManager {
         let html = '';
         sortedFilters.forEach(preset => {
             const defaultAction = preset.is_default 
-                ? `<span class="badge badge-light-success badge-sm fw-bold px-2 py-1 me-1"><i class="ki-duotone ki-check fs-8 text-success me-1"></i> Default</span>` 
+                ? `<button type="button" class="badge badge-light-success badge-sm fw-bold px-2 py-1 me-1 border-0 cursor-pointer d-inline-flex align-items-center" data-unset-default-id="${preset.id}" title="Click to remove default status"><i class="ki-duotone ki-check fs-8 text-success me-1"></i> Default</button>` 
                 : `<button type="button" class="btn btn-icon btn-sm btn-light-success h-24px w-24px me-1" data-set-default-id="${preset.id}" title="Set as default filter"><i class="ki-duotone ki-check fs-7"></i></button>`;
 
             html += `
@@ -267,10 +274,8 @@ export class SaveFilterManager {
                 if (defaultPreset && defaultPreset.filters) {
                     const filterPayload = typeof defaultPreset.filters === 'string' ? JSON.parse(defaultPreset.filters) : defaultPreset.filters;
                     
-                    // Apply values to form
                     this.applyFiltersToForm(filterPayload);
 
-                    // 👇 CRITICAL: This triggers the status bar render & table reload just like loadPreset()
                     if (typeof this.filterManager.apply === 'function') {
                         this.filterManager.apply();
                     }
@@ -287,7 +292,6 @@ export class SaveFilterManager {
 
         this.filterManager.reset();
 
-        // Recombine split date range keys (_from / _to) back into single range strings
         const processedFilters = { ...filters };
         const rangeKeys = Object.keys(processedFilters).filter(k => k.endsWith('_from'));
         
@@ -309,7 +313,6 @@ export class SaveFilterManager {
 
             const el = $elements[0];
 
-            // 1. Checkboxes & Radios
             if (el.type === 'checkbox' || el.type === 'radio') {
                 const values = Array.isArray(value) ? value.map(String) : [String(value)];
                 $elements.each((_, checkbox) => {
@@ -318,34 +321,28 @@ export class SaveFilterManager {
                     }
                 });
             } 
-            // 2. Multi-Select & Select2 Arrays
             else if (el.tagName === 'SELECT' && el.multiple) {
                 const values = Array.isArray(value) ? value.map(String) : [String(value)];
                 $elements.val(values).trigger('change.select2').trigger('change');
             } 
-            // 3. Sliders (noUiSlider support)
             else if (el.classList.contains('noUi-target') || el.noUiSlider) {
                 if (typeof el.noUiSlider?.set === 'function') {
                     el.noUiSlider.set(Array.isArray(value) ? value : [value]);
                 }
             } 
-            // 4. Standard Inputs (Text, Number, Range, Color Picker) & Single Selects / Datepickers
             else {
                 const $el =$(el);
                 const valToSet = Array.isArray(value) ? value[0] : value;
                 
                 $el.val(valToSet).trigger('input').trigger('change');
 
-                // Single Select / Select2
                 if (el.tagName === 'SELECT') {
                     $el.trigger('change.select2');
                 }
 
-                // Flatpickr / Daterangepicker integration
                 if (el._flatpickr) {
                     el._flatpickr.setDate(valToSet, true);
                 } 
-                // Bootstrap Datepicker fallback
                 else if (window.jQuery && $el.data('datepicker')) {$el.datepicker('setDate', valToSet);
                 }
             }
@@ -425,6 +422,32 @@ export class SaveFilterManager {
         } catch (error) {
             console.error('Set Default Error:', error);
             Toast.show('Failed to set default filter.', 'error');
+        }
+    }
+
+    async unsetDefaultPreset(id) {
+        try {
+            const payload = new URLSearchParams();
+            payload.append('id', id);
+
+            const response = await fetch(this.endpoints.unsetDefault, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': FormEnvironmentManager.getCsrfToken() || ''
+                },
+                body: payload
+            });
+
+            if (!response.ok) throw new Error('Failed to remove default filter.');
+
+            Toast.show('Default filter removed successfully.', 'success');
+            await this.loadSavedFilters();
+        } catch (error) {
+            console.error('Unset Default Error:', error);
+            Toast.show('Failed to remove default filter.', 'error');
         }
     }
 

@@ -12,21 +12,21 @@
                     @include('partials.datatable-search')
                 </div>
 
-                <div class="d-flex flex-wrap">
-                    <ul class="nav nav-pills me-5">
-                        <li class="nav-item m-0">
-                            <a class="btn btn-sm btn-icon btn-light btn-color-muted active me-3" data-bs-toggle="tab" href="#employee-card-tab">
-                            <i class="ki-duotone ki-element-plus fs-1"></i></a>
-                        </li>
-
-                        <li class="nav-item m-0">
-                            <a class="btn btn-sm btn-icon btn-light btn-color-muted" data-bs-toggle="tab" href="#employee-table-tab">
-                            <i class="ki-duotone ki-row-horizontal fs-2"></i></a>
-                        </li>
-                    </ul>
-                </div>
-
                 <div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
+                    <div class="d-flex flex-wrap">
+                        <ul class="nav nav-pills me-5">
+                            <li class="nav-item m-0">
+                                <a class="btn btn-sm btn-icon btn-light btn-color-muted active me-3" data-bs-toggle="tab" href="#employee-card-tab">
+                                <i class="ki-duotone ki-element-plus fs-1"></i></a>
+                            </li>
+
+                            <li class="nav-item m-0">
+                                <a class="btn btn-sm btn-icon btn-light btn-color-muted" data-bs-toggle="tab" href="#employee-table-tab">
+                                <i class="ki-duotone ki-row-horizontal fs-2"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+
                     @component('partials.datatable-actions')
                         @slot('deletePermission', $deletePermission)
                     @endcomponent  

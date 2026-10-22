@@ -50,6 +50,19 @@ class FilterManagementService
         });
     }
 
+    public function unsetDefault(int $filterId, ?int $userId): Filter
+    {
+        return DB::transaction(function () use ($filterId, $userId) {
+            $filter = Filter::query()
+                ->where('user_id', $userId)
+                ->findOrFail($filterId);
+
+            $filter->update(['is_default' => false]);
+
+            return $filter;
+        });
+    }
+
     public function deleteFilter(int $filterId): void
     {
         DB::transaction(function () use ($filterId) {

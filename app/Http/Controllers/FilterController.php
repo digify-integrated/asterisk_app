@@ -63,6 +63,27 @@ class FilterController extends Controller
         }
     }
 
+    public function unsetDefault(SetDefaultFilterRequest $request): JsonResponse
+    {
+        try {
+            $this->filterService->unsetDefault(
+                (int) $request->validated()['id'],
+                Auth::id()
+            );
+
+            return response()->json([
+                'message' => 'The default has been removed successfully.',
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            report($e);
+            
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function fetch(FetchFilterDetailsRequest $request): JsonResponse|FilterDetailsResource|AnonymousResourceCollection
     {
         try {

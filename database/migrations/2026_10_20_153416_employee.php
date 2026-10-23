@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('birthday')->nullable();
             $table->string('place_of_birth')->nullable();
             $table->foreignId('marital_status_id')->nullable()->constrained('marital_statuses')->nullOnDelete();
+            $table->foreignId('gender_id')->nullable()->constrained('genders')->nullOnDelete();
             $table->foreignId('religion_id')->nullable()->constrained('religions')->nullOnDelete();
             $table->foreignId('blood_type_id')->nullable()->constrained('blood_types')->nullOnDelete();
             $table->decimal('height', 5, 2)->nullable();
@@ -35,6 +36,7 @@ return new class extends Migration
             $table->string('badge_id')->nullable()->unique();
             $table->string('kiosk_pin')->nullable();
             $table->string('employee_image')->nullable();
+            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->foreignId('employment_type_id')->nullable()->constrained('employment_types')->nullOnDelete();
             $table->foreignId('department_id')->nullable()->constrained('departments')->nullOnDelete();
             $table->foreignId('job_position_id')->nullable()->constrained('job_positions')->nullOnDelete();
@@ -168,6 +170,8 @@ return new class extends Migration
                 
                 DECLARE old_marital_status VARCHAR(255);
                 DECLARE new_marital_status VARCHAR(255);
+                DECLARE old_gender VARCHAR(255);
+                DECLARE new_gender VARCHAR(255);
                 DECLARE old_religion VARCHAR(255);
                 DECLARE new_religion VARCHAR(255);
                 DECLARE old_blood_type VARCHAR(255);
@@ -176,6 +180,8 @@ return new class extends Migration
                 -- Fetch Foreign Key Labels
                 SELECT name INTO old_marital_status FROM marital_statuses WHERE id = OLD.marital_status_id;
                 SELECT name INTO new_marital_status FROM marital_statuses WHERE id = NEW.marital_status_id;
+                SELECT name INTO old_gender FROM genders WHERE id = OLD.marital_status_id;
+                SELECT name INTO new_gender FROM genders WHERE id = NEW.marital_status_id;
                 SELECT name INTO old_religion FROM religions WHERE id = OLD.religion_id;
                 SELECT name INTO new_religion FROM religions WHERE id = NEW.religion_id;
                 SELECT name INTO old_blood_type FROM blood_types WHERE id = OLD.blood_type_id;
@@ -225,6 +231,10 @@ return new class extends Migration
                     SET audit_log = CONCAT(audit_log, 'Marital Status: "', COALESCE(old_marital_status, 'Not set'), '" → "', COALESCE(new_marital_status, 'Not set'), '"<br/>');
                 END IF;
 
+                IF NOT (NEW.gender_id <=> OLD.gender_id) THEN
+                    SET audit_log = CONCAT(audit_log, 'Gender: "', COALESCE(old_gender, 'Not set'), '" → "', COALESCE(new_gender, 'Not set'), '"<br/>');
+                END IF;
+
                 IF NOT (NEW.religion_id <=> OLD.religion_id) THEN
                     SET audit_log = CONCAT(audit_log, 'Religion: "', COALESCE(old_religion, 'Not set'), '" → "', COALESCE(new_religion, 'Not set'), '"<br/>');
                 END IF;
@@ -255,10 +265,12 @@ return new class extends Migration
             BEGIN
                 DECLARE audit_log TEXT;
                 DECLARE marital_status VARCHAR(255);
+                DECLARE gender VARCHAR(255);
                 DECLARE religion VARCHAR(255);
                 DECLARE blood_type VARCHAR(255);
 
                 SELECT name INTO marital_status FROM marital_statuses WHERE id = NEW.marital_status_id;
+                SELECT name INTO gender FROM genders WHERE id = NEW.gender_id;
                 SELECT name INTO religion FROM religions WHERE id = NEW.religion_id;
                 SELECT name INTO blood_type FROM blood_types WHERE id = NEW.blood_type_id;
 
@@ -275,6 +287,7 @@ return new class extends Migration
                     'Birthday: "', COALESCE(NEW.birthday, 'Not set'), '"<br/>',
                     'Place of Birth: "', COALESCE(NEW.place_of_birth, 'Not set'), '"<br/>',
                     'Marital Status: "', COALESCE(marital_status, 'Not set'), '"<br/>',
+                    'Gender: "', COALESCE(gender, 'Not set'), '"<br/>',
                     'Religion: "', COALESCE(religion, 'Not set'), '"<br/>',
                     'Blood Type: "', COALESCE(blood_type, 'Not set'), '"<br/>',
                     'Height: "', COALESCE(NEW.height, 'Not set'), '"<br/>',
@@ -296,6 +309,8 @@ return new class extends Migration
             BEGIN
                 DECLARE audit_log TEXT DEFAULT 'Employment details updated.<br/><br/>';
                 
+                DECLARE old_company VARCHAR(255);
+                DECLARE new_company VARCHAR(255);
                 DECLARE old_emp_type VARCHAR(255);
                 DECLARE new_emp_type VARCHAR(255);
                 DECLARE old_dept VARCHAR(255);
@@ -309,6 +324,8 @@ return new class extends Migration
                 DECLARE old_dep_reason VARCHAR(255);
                 DECLARE new_dep_reason VARCHAR(255);
 
+                SELECT legal_name INTO old_company FROM companies WHERE id = OLD.company_id;
+                SELECT legal_name INTO new_company FROM companies WHERE id = NEW.company_id;
                 SELECT name INTO old_emp_type FROM employment_types WHERE id = OLD.employment_type_id;
                 SELECT name INTO new_emp_type FROM employment_types WHERE id = NEW.employment_type_id;
                 SELECT name INTO old_dept FROM departments WHERE id = OLD.department_id;
@@ -346,6 +363,10 @@ return new class extends Migration
                     SET audit_log = CONCAT(audit_log, 'Manager: "', COALESCE(old_manager, 'Not set'), '" → "', COALESCE(new_manager, 'Not set'), '"<br/>');
                 END IF;
 
+                IF NOT (NEW.company_id <=> OLD.company_id) THEN
+                    SET audit_log = CONCAT(audit_log, 'Company: "', COALESCE(old_company, 'Not set'), '" → "', COALESCE(new_company, 'Not set'), '"<br/>');
+                END IF;
+
                 IF NOT (NEW.employment_status_id <=> OLD.employment_status_id) THEN
                     SET audit_log = CONCAT(audit_log, 'Employment Status: "', COALESCE(old_emp_status, 'Not set'), '" → "', COALESCE(new_emp_status, 'Not set'), '"<br/>');
                 END IF;
@@ -379,6 +400,7 @@ return new class extends Migration
             FOR EACH ROW
             BEGIN
                 DECLARE audit_log TEXT;
+                DECLARE company VARCHAR(255);
                 DECLARE emp_type VARCHAR(255);
                 DECLARE dept VARCHAR(255);
                 DECLARE job_pos VARCHAR(255);
@@ -386,6 +408,7 @@ return new class extends Migration
                 DECLARE emp_status VARCHAR(255);
                 DECLARE dep_reason VARCHAR(255);
 
+                SELECT legal_name INTO company FROM companies WHERE id = NEW.company_id;
                 SELECT name INTO emp_type FROM employment_types WHERE id = NEW.employment_type_id;
                 SELECT name INTO dept FROM departments WHERE id = NEW.department_id;
                 SELECT name INTO job_pos FROM job_positions WHERE id = NEW.job_position_id;
@@ -400,6 +423,7 @@ return new class extends Migration
                     'Department: "', COALESCE(dept, 'Not set'), '"<br/>',
                     'Job Position: "', COALESCE(job_pos, 'Not set'), '"<br/>',
                     'Manager: "', COALESCE(manager, 'Not set'), '"<br/>',
+                    'Company: "', COALESCE(company, 'Not set'), '"<br/>',
                     'Employment Status: "', COALESCE(emp_status, 'Not set'), '"<br/>',
                     'Onboard Date: "', COALESCE(NEW.onboard_date, 'Not set'), '"<br/>'
                 );

@@ -31,7 +31,7 @@ const CONFIG = {
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         extenstionTagify: '#extension',
-        filterCollapse: 'upload-setting-filter-collapse',
+        filterDrawer: 'upload-setting-filter-drawer',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -54,7 +54,7 @@ export class UploadSetting {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

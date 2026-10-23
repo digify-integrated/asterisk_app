@@ -281,8 +281,10 @@ export class ComponentRegistry {
             alwaysShowCalendars: true,
             showCustomRangeLabel: true,
             ranges: config.ranges,
+            drops: 'auto',
+            opens: 'center',
             locale: { cancelLabel: 'Clear' },
-            ...options // Allows overriding default picker options if passed
+            ...options 
         };
 
         if (config.startDate) pickerOptions.startDate = config.startDate;

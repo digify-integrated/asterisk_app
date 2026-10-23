@@ -18,6 +18,7 @@ class WorkLocation extends Model
         'city_id',
         'state_id',
         'country_id',
+        'last_log_by'
     ];
 
     public function city(): BelongsTo
@@ -33,5 +34,10 @@ class WorkLocation extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

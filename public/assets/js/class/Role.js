@@ -31,7 +31,7 @@ const CONFIG = {
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         userDropdown: '#user_id',
-        filterCollapse: 'role-filter-collapse',
+        filterDrawer: 'role-filter-drawer',
         filterUserDropdown: '#filter_user_id',
         filterCreatedDate: '#filter_created_date'
     },
@@ -56,7 +56,7 @@ export class Role {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'language-filter-collapse')
+                        @slot('drawerId', 'language-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,12 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'language-filter-collapse')
-                @slot('resetFilterId', 'language-reset-filters-btn')
-                @slot('applyFilterId', 'language-apply-filters-btn')
-            @endcomponent
         </div>
     </div>
 
@@ -64,6 +58,12 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'language-filter-drawer')
+        @slot('resetFilterId', 'language-reset-filters-btn')
+        @slot('applyFilterId', 'language-apply-filters-btn')
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'role-filter-collapse')
+                        @slot('drawerId', 'role-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,17 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'role-filter-collapse')
-                @slot('resetFilterId', 'role-reset-filters-btn')
-                @slot('applyFilterId', 'role-apply-filters-btn')
-                
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_user_id">User Account</label>
-                    <select id="filter_user_id" name="filter_user_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select User Account" data-allow-clear="true"></select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -83,6 +72,17 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'role-filter-drawer')
+        @slot('resetFilterId', 'role-reset-filters-btn')
+        @slot('applyFilterId', 'role-apply-filters-btn')
+                
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_user_id">User Account</label>
+            <select id="filter_user_id" name="filter_user_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select User Account" data-allow-clear="true"></select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

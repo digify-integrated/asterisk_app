@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BloodType extends Model
 {
@@ -12,4 +14,14 @@ class BloodType extends Model
         'name',
         'last_log_by'
     ];
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'blood_type_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

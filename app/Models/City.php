@@ -36,4 +36,24 @@ class City extends Model
     {
         return $this->hasMany(WorkLocation::class, 'city_id');
     }
+
+    public function employeeAddresses(): HasMany
+    {
+        return $this->hasMany(EmployeeAddress::class, 'city_id');
+    }
+
+    public function employeeEducationalBackgrounds(): HasMany
+    {
+        return $this->hasMany(EmployeeEducationalBackground::class, 'city_id');
+    }
+
+    public function employeeEmploymentHistories(): HasMany
+    {
+        return $this->hasMany(EmployeeEmploymentHistory::class, 'city_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

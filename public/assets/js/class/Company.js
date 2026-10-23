@@ -35,7 +35,7 @@ const CONFIG = {
         currencyDropdown: '#currency_id',
         dateRegistered: '#date_registered',
         filterDateRegistered: '#filter_date_registered',
-        filterCollapse: 'company-filter-collapse',
+        filterDrawer: 'company-filter-drawer',
         filterCityDropdown: '#filter_city_id',
         filterStateDropdown: '#filter_state_id',
         filterCountryDropdown: '#filter_country_id',
@@ -69,7 +69,7 @@ export class Company {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

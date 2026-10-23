@@ -19,7 +19,7 @@
                     @endcomponent                   
 
                     @component('partials.filter-button')
-                        @slot('collapseId', 'work-location-filter-collapse')
+                        @slot('drawerId', 'work-location-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -108,7 +108,7 @@
     </div>
 
     @component('partials.filter-module')
-        @slot('collapseId', 'work-location-filter-collapse')
+        @slot('drawerId', 'work-location-filter-drawer')
         @slot('resetFilterId', 'work-location-reset-filters-btn')
         @slot('applyFilterId', 'work-location-apply-filters-btn')
 

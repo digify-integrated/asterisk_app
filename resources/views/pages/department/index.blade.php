@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'department-filter-collapse')
+                        @slot('drawerId', 'department-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,17 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'department-filter-collapse')
-                @slot('resetFilterId', 'department-reset-filters-btn')
-                @slot('applyFilterId', 'department-apply-filters-btn')
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
-                    <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -75,6 +64,17 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'department-filter-drawer')
+        @slot('resetFilterId', 'department-reset-filters-btn')
+        @slot('applyFilterId', 'department-apply-filters-btn')
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
+            <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

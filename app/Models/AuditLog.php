@@ -10,18 +10,8 @@ class AuditLog extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'audit_log';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'reference_id',
         'table_name',
@@ -29,9 +19,6 @@ class AuditLog extends Model
         'changed_by',
     ];
 
-    /**
-     * Get the user who executed this modification.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by');

@@ -60,4 +60,14 @@ class Company extends Model
     {
         return $this->belongsTo(Currency::class, 'currency_id');
     }
+
+    public function employees(): BelongsTo
+    {
+        return $this->belongsTo(EmploymentDetail::class, 'company_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

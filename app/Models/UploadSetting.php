@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UploadSetting extends Model
@@ -18,5 +19,10 @@ class UploadSetting extends Model
     public function extensions(): HasMany
     {
         return $this->hasMany(UploadSettingExtension::class, 'upload_setting_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

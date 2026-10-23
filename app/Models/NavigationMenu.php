@@ -57,4 +57,9 @@ class NavigationMenu extends Model
     {
         return $this->hasMany(NavigationMenuDatabaseTable::class, 'navigation_menu_id');
     }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

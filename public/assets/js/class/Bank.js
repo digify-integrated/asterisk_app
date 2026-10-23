@@ -30,7 +30,7 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        filterCollapse: 'bank-filter-collapse',
+        filterDrawer: 'bank-filter-drawer',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -53,7 +53,7 @@ export class Bank {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

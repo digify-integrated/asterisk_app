@@ -35,4 +35,24 @@ class State extends Model
     {
         return $this->hasMany(WorkLocation::class, 'state_id');
     }
+
+    public function employeeAddresses(): HasMany
+    {
+        return $this->hasMany(EmployeeAddress::class, 'state_id');
+    }
+
+    public function employeeEducationalBackgrounds(): HasMany
+    {
+        return $this->hasMany(EmployeeEducationalBackground::class, 'state_id');
+    }
+
+    public function employeeEmploymentHistories(): HasMany
+    {
+        return $this->hasMany(EmployeeEmploymentHistory::class, 'state_id');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

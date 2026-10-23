@@ -18,7 +18,7 @@
                     @endcomponent                   
 
                     @component('partials.filter-button')
-                        @slot('collapseId', 'company-filter-collapse')
+                        @slot('drawerId', 'company-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,78 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'company-filter-collapse')
-                @slot('resetFilterId', 'company-reset-filters-btn')
-                @slot('applyFilterId', 'company-apply-filters-btn')
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_entity_type">Entity Type</label>
-                    <select id="filter_entity_type" name="filter_entity_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Entity Type" data-allow-clear="true">
-                        <option value="Corporation">Corporation</option>
-                        <option value="Partnership">Partnership</option>
-                        <option value="Sole Proprietorship">Sole Proprietorship</option>
-                        <option value="Cooperative">Cooperative</option>
-                        <option value="One Person Corporation (OPC)">One Person Corporation (OPC)</option>
-                    </select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_vat_status">VAT Status</label>
-                    <select id="filter_vat_status" name="filter_vat_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select VAT Status" data-allow-clear="true">
-                        <option value="VAT-Registered">VAT-Registered</option>
-                        <option value="Non-VAT">Non-VAT</option>
-                        <option value="VAT-Exempt">VAT-Exempt</option>
-                    </select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_date_registered">Date Registered</label>
-                    <div class="position-relative d-flex align-items-center">
-                        <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
-                        <input type="text" id="filter_date_registered" name="filter_date_registered" class="form-control form-control-sm ps-10" placeholder="Pick date range" autocomplete="off"/>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
-                    <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
-                    <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
-                    <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_currency_id">Currency</label>
-                    <select id="filter_currency_id" name="filter_currency_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Currency" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_fiscal_year_start_month">Fiscal Year Start Month</label>
-                    <select id="filter_fiscal_year_start_month" name="filter_fiscal_year_start_month[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Fiscal Year Start Month" data-allow-clear="true">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -288,6 +216,78 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'company-filter-drawer')
+        @slot('resetFilterId', 'company-reset-filters-btn')
+        @slot('applyFilterId', 'company-apply-filters-btn')
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_entity_type">Entity Type</label>
+            <select id="filter_entity_type" name="filter_entity_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Entity Type" data-allow-clear="true">
+                <option value="Corporation">Corporation</option>
+                <option value="Partnership">Partnership</option>
+                <option value="Sole Proprietorship">Sole Proprietorship</option>
+                <option value="Cooperative">Cooperative</option>
+                <option value="One Person Corporation (OPC)">One Person Corporation (OPC)</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_vat_status">VAT Status</label>
+            <select id="filter_vat_status" name="filter_vat_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select VAT Status" data-allow-clear="true">
+                <option value="VAT-Registered">VAT-Registered</option>
+                <option value="Non-VAT">Non-VAT</option>
+                <option value="VAT-Exempt">VAT-Exempt</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_date_registered">Date Registered</label>
+            <div class="position-relative d-flex align-items-center">
+                <i class="ki-duotone ki-calendar fs-6 position-absolute ms-3 text-gray-500"></i>
+                <input type="text" id="filter_date_registered" name="filter_date_registered" class="form-control form-control-sm ps-10" placeholder="Pick date range" autocomplete="off"/>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_city_id">City</label>
+            <select id="filter_city_id" name="filter_city_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select City" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_state_id">State</label>
+            <select id="filter_state_id" name="filter_state_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select State" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_country_id">Country</label>
+            <select id="filter_country_id" name="filter_country_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Country" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_currency_id">Currency</label>
+            <select id="filter_currency_id" name="filter_currency_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Currency" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_fiscal_year_start_month">Fiscal Year Start Month</label>
+            <select id="filter_fiscal_year_start_month" name="filter_fiscal_year_start_month[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Fiscal Year Start Month" data-allow-clear="true">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

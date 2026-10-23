@@ -31,7 +31,7 @@ const CONFIG = {
         updateTrigger: '.update-details',
         createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
-        filterCollapse: 'user-filter-collapse',
+        filterDrawer: 'user-filter-drawer',
         filterCreatedDate: '#filter_created_date',
         filterStatus: '#filter_status'
     },
@@ -55,7 +55,7 @@ export class User {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NavigationMenuApp extends Pivot
 {
@@ -13,4 +14,9 @@ class NavigationMenuApp extends Pivot
         'app_id',
         'last_log_by'
     ];
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

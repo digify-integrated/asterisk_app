@@ -20,6 +20,7 @@ class RolePermission extends Model
         'import_access',
         'export_access',
         'logs_access',
+        'last_log_by',
     ];
 
     protected $casts = [
@@ -51,5 +52,10 @@ class RolePermission extends Model
         $qualifiedColumn = str_contains($column, '.') ? $column : $this->getTable() . '.' . $column;
 
         return $query->whereIn($qualifiedColumn, (array) $value);
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

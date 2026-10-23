@@ -34,7 +34,7 @@ const CONFIG = {
         stateDropdown: '#state_id',
         filterCountryDropdown: '#filter_country_id',
         filterStateDropdown: '#filter_state_id',
-        filterCollapse: 'city-filter-collapse',
+        filterDrawer: 'city-filter-drawer',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -59,7 +59,7 @@ export class City {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

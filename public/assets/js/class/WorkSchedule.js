@@ -31,7 +31,7 @@ const CONFIG = {
         createTrigger: '.new-button',
         timeInput: '.time-input',
         checkboxes: '.datatable-checkbox-children:checked',
-        filterCollapse: 'work-schedule-filter-collapse',
+        filterDrawer: 'work-schedule-filter-drawer',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -54,7 +54,7 @@ export class WorkSchedule {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

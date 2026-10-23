@@ -21,4 +21,9 @@ class NavigationMenuRoute extends Model
     {
         return $this->belongsTo(NavigationMenu::class);
     }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

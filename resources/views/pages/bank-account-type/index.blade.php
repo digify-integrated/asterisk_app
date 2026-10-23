@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'bank-account-type-filter-collapse')
+                        @slot('drawerId', 'bank-account-type-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,12 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'bank-account-type-filter-collapse')
-                @slot('resetFilterId', 'bank-account-type-reset-filters-btn')
-                @slot('applyFilterId', 'bank-account-type-apply-filters-btn')
-            @endcomponent
         </div>
     </div>
 
@@ -64,6 +58,12 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'bank-account-type-filter-drawer')
+        @slot('resetFilterId', 'bank-account-type-reset-filters-btn')
+        @slot('applyFilterId', 'bank-account-type-apply-filters-btn')
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

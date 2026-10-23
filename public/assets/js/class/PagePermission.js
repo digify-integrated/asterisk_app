@@ -32,7 +32,7 @@ const CONFIG = {
         checkboxes: '.datatable-checkbox-children:checked',
         roleDropdown: '#role_id',
         navigationMenuDropdown: '#navigation_menu_id',
-        filterCollapse: 'page-permission-filter-collapse',
+        filterDrawer: 'page-permission-filter-drawer',
         filterNavigationMenuDropdown: '#filter_navigation_menu_id',
         filterRoleDropdown: '#filter_role_id',
         filterReadAccess: '#filter_read_access',
@@ -67,7 +67,7 @@ export class PagePermission {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

@@ -28,9 +28,13 @@ class WorkScheduleDays extends Model
         'last_log_by',
     ];
 
-
     public function workSchedule(): BelongsTo
     {
         return $this->belongsTo(WorkSchedule::class);
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

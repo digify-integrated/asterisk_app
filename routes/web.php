@@ -45,7 +45,6 @@ use App\Http\Controllers\WorkLocationController;
 use App\Http\Controllers\WorkScheduleController;
 use App\Http\Middleware\MenuReadMiddleware;
 use App\Http\Middleware\ShareNavigationData;
-use App\Models\Company;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

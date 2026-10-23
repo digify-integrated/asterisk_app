@@ -32,7 +32,7 @@ const CONFIG = {
         checkboxes: '.datatable-checkbox-children:checked',
         roleDropdown: '#role_id',
         systemActionDropdown: '#system_action_id',
-        filterCollapse: 'system-action-permission-filter-collapse',
+        filterDrawer: 'system-action-permission-filter-drawer',
         filterSystemActionDropdown: '#filter_system_action_id',
         filterRoleDropdown: '#filter_role_id',
         filterAccess: '#filter_access',
@@ -61,7 +61,7 @@ export class SystemActionPermission {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

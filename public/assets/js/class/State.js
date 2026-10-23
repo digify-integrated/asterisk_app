@@ -32,7 +32,7 @@ const CONFIG = {
         checkboxes: '.datatable-checkbox-children:checked',
         countryDropdown: '#country_id',
         filterCountryDropdown: '#filter_country_id',
-        filterCollapse: 'state-filter-collapse',
+        filterDrawer: 'state-filter-drawer',
         filterCreatedDate: '#filter_created_date'
     },
     classes: {
@@ -56,7 +56,7 @@ export class State {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

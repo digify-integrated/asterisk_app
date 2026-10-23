@@ -19,4 +19,9 @@ class UploadSettingExtension extends Model
     {
         return $this->belongsTo(UploadSetting::class, 'upload_setting_id');
     }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
+    }
 }

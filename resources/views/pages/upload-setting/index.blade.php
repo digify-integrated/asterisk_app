@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'upload-setting-filter-collapse')
+                        @slot('drawerId', 'upload-setting-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,12 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'upload-setting-filter-collapse')
-                @slot('resetFilterId', 'upload-setting-reset-filters-btn')
-                @slot('applyFilterId', 'upload-setting-apply-filters-btn')
-            @endcomponent
         </div>
     </div>
 
@@ -79,6 +73,12 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'upload-setting-filter-drawer')
+        @slot('resetFilterId', 'upload-setting-reset-filters-btn')
+        @slot('applyFilterId', 'upload-setting-apply-filters-btn')
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

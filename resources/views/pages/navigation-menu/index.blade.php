@@ -18,7 +18,7 @@
                     @endcomponent  
                     
                     @component('partials.filter-button')
-                        @slot('collapseId', 'navigation-menu-filter-collapse')
+                        @slot('drawerId', 'navigation-menu-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -31,36 +31,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'navigation-menu-filter-collapse')
-                @slot('resetFilterId', 'navigation-menu-reset-filters-btn')
-                @slot('applyFilterId', 'navigation-menu-apply-filters-btn')
-                
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_app_id">App</label>
-                    <select id="filter_app_id" name="filter_app_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select App" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
-                    <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_page_type">Page Type</label>
-                    <select id="filter_page_type" name="filter_page_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Page Type" data-allow-clear="true">
-                        <option value="menu">Menu</option>
-                        <option value="single_page">Single Page</option>
-                        <option value="multi_page">Multi Page</option>
-                    </select>
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_database_table">Import/Export Table</label>
-                    <select id="filter_database_table" name="filter_database_table[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Database Table" data-allow-clear="true"></select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -166,6 +136,36 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'navigation-menu-filter-drawer')
+        @slot('resetFilterId', 'navigation-menu-reset-filters-btn')
+        @slot('applyFilterId', 'navigation-menu-apply-filters-btn')
+                
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_app_id">App</label>
+            <select id="filter_app_id" name="filter_app_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select App" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_parent_id">Parent</label>
+            <select id="filter_parent_id" name="filter_parent_id[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Parent" data-allow-clear="true"></select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_page_type">Page Type</label>
+            <select id="filter_page_type" name="filter_page_type[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Page Type" data-allow-clear="true">
+                <option value="menu">Menu</option>
+                <option value="single_page">Single Page</option>
+                <option value="multi_page">Multi Page</option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_database_table">Import/Export Table</label>
+            <select id="filter_database_table" name="filter_database_table[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Database Table" data-allow-clear="true"></select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

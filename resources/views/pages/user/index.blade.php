@@ -19,7 +19,7 @@
                     @endcomponent                   
 
                     @component('partials.filter-button')
-                        @slot('collapseId', 'user-filter-collapse')
+                        @slot('drawerId', 'user-filter-drawer')
                     @endcomponent
 
                     @if($exportPermission)
@@ -32,20 +32,6 @@
                     @endcomponent
                 </div>
             </div>
-
-            @component('partials.filter-module')
-                @slot('collapseId', 'user-filter-collapse')
-                @slot('resetFilterId', 'user-reset-filters-btn')
-                @slot('applyFilterId', 'user-apply-filters-btn')
-
-                <div class="col-12">
-                    <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_status">Status</label>
-                    <select id="filter_status" name="filter_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Status" data-allow-clear="true">
-                        <option value="Inactive">Inactive</option>
-                        <option value="Active">Active</option>
-                    </select>
-                </div>
-            @endcomponent
         </div>
     </div>
 
@@ -106,6 +92,20 @@
             </div>
         @endcomponent
     </div>
+
+    @component('partials.filter-module')
+        @slot('drawerId', 'user-filter-drawer')
+        @slot('resetFilterId', 'user-reset-filters-btn')
+        @slot('applyFilterId', 'user-apply-filters-btn')
+
+        <div class="col-12">
+            <label class="form-label fs-7 fw-semibold text-gray-700 mb-1" for="filter_status">Status</label>
+            <select id="filter_status" name="filter_status[]" multiple class="form-select form-select-sm" data-control="select2" data-placeholder="Select Status" data-allow-clear="true">
+                <option value="Inactive">Inactive</option>
+                <option value="Active">Active</option>
+            </select>
+        </div>
+    @endcomponent
 
     @include('partials.log-notes-modal')
 @endsection

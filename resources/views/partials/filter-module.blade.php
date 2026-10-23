@@ -1,4 +1,4 @@
-<div id="{{ $collapseId }}" class="bg-white" data-kt-drawer="true" data-kt-drawer-activate="true" data-kt-drawer-toggle="#filter_drawer_toggle" data-kt-drawer-close="#filter_drawer_close" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'400px', 'md': '500px'}">
+<div id="{{ $drawerId }}" class="bg-white" data-kt-drawer="true" data-kt-drawer-activate="true" data-kt-drawer-toggle="#filter_drawer_toggle" data-kt-drawer-close="#filter_drawer_close" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'400px', 'md': '500px'}">
     <div class="card rounded-0 w-100 h-100">
         <div class="card-header pe-5">
             <div class="card-title">

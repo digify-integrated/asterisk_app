@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class App extends Model
@@ -24,5 +25,10 @@ class App extends Model
             ->withPivot('last_log_by')
             ->withTimestamps()
             ->orderBy('order_sequence');
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

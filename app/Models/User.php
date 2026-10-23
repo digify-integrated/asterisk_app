@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,14 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -30,21 +24,12 @@ class User extends Authenticatable
         'last_log_by'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -61,7 +46,6 @@ class User extends Authenticatable
 
     public function getMenuPermissions(int $navigationMenuId): array
     {
-        // 1. Fetch user roles directly via the role_users table mapping
         $roleIds = DB::table('role_users')
             ->where('user_id', $this->id)
             ->pluck('role_id');
@@ -78,7 +62,6 @@ class User extends Authenticatable
             ];
         }
 
-        // 2. Aggregate across all assigned roles
         $permissions = DB::table('role_permissions')
             ->whereIn('role_id', $roleIds)
             ->where('navigation_menu_id', $navigationMenuId)
@@ -93,7 +76,6 @@ class User extends Authenticatable
             ')
             ->first();
 
-        // 3. Return cleanly mapped boolean primitives
         return [
             'read'   => (bool) ($permissions->read_access ?? false),
             'write'  => (bool) ($permissions->write_access ?? false),
@@ -117,5 +99,10 @@ class User extends Authenticatable
                     : $defaultProfilePicture;
             }
         );
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

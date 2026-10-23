@@ -33,7 +33,7 @@ const CONFIG = {
         appDropdown: '#app_id',
         parentDropdown: '#parent_id',
         databaseTableDropdown: '#database_table',
-        filterCollapse: 'navigation-menu-filter-collapse',
+        filterDrawer: 'navigation-menu-filter-drawer',
         filterAppDropdown: '#filter_app_id',
         filterParentDropdown: '#filter_parent_id',
         filterDatabaseTableDropdown: '#filter_database_table',
@@ -63,7 +63,7 @@ export class NavigationMenu {
         this.abortController = new AbortController();
 
         this.filterManager = new TableFilterManager({
-            containerId: CONFIG.selectors.filterCollapse,
+            containerId: CONFIG.selectors.filterDrawer,
             orchestrator: this.orchestrator,
             tableSelector: CONFIG.selectors.table
         });

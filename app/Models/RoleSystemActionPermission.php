@@ -15,6 +15,7 @@ class RoleSystemActionPermission extends Model
         'system_action_id',
         'access',
         'logs_access',
+        'last_log_by'
     ];
 
     protected $casts = [
@@ -40,5 +41,10 @@ class RoleSystemActionPermission extends Model
         $qualifiedColumn = str_contains($column, '.') ? $column : $this->getTable() . '.' . $column;
 
         return $query->whereIn($qualifiedColumn, (array) $value);
+    }
+
+    public function lastLogBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'last_log_by');
     }
 }

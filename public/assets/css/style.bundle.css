@@ -29107,7 +29107,7 @@ fieldset:disabled .btn {
     --bs-info-light: #F8F5FF;
     --bs-warning-light: #FFF8DD;
     --bs-danger-light: #FFEEF3;
-    --bs-dark-light: #F9F9F9;
+    --bs-dark-light: #E2E2E2;
     --bs-light-light: #ffffff;
     --bs-primary-inverse: #ffffff;
     --bs-secondary-inverse: #252F4A;
@@ -53851,6 +53851,10 @@ div.dt-container div.dt-paging ul.pagination{
             rgba(0,0,0,.75) 100%
         ),
         url('/assets/media/backgrounds/hero.jpg') center center / cover no-repeat;
+}
+
+.select2-container .select2-selection--multiple .select2-selection__clear {
+    margin-left: 4px;
 }
 
 .z-1 {

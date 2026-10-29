@@ -93,7 +93,7 @@ export class Employee {
         return PageInitializer.run(async () => {
             this.initDropdownOption();
             await this.saveFilterManager.checkAndApplyDefaultFilter();
-            //this.initTable();
+            this.initTable();
             
             await Promise.all([
                 this.initDelete(),
@@ -147,100 +147,45 @@ export class Employee {
                         </div>`
                 },
                 { 
-                    data: 'logo',
-                    column: 'Logo',
-                    render: (data, type, row) => `<img src="${escapeHtml(row.logo)}" alt="Employee Logo" width="45" onerror="this.src='/assets/media/default/default-employee-logo.png';" />`
+                    data: 'employee_image',
+                    column: 'Employee Image',
+                    render: (data, type, row) => `<img src="${escapeHtml(row.employee_image)}" alt="Employee Image" width="45" onerror="this.src='/assets/media/default/default-avatar.jpg';" />`
                 },
                 { 
-                    data: 'legal_name',
-                    column: 'Legal Name',
-                    title: 'Legal Name'
+                    data: 'file_as',
+                    column: 'Employee',
+                    title: 'Employee',
                 },
                 { 
-                    data: 'trade_name',
-                    column: 'Trade Name',
-                    title: 'Trade Name'
+                    data: 'company',
+                    column: 'Company',
+                    title: 'Company',
                 },
                 { 
-                    data: 'address',
-                    column: 'Address',
-                    title: 'Address'
+                    data: 'job_position',
+                    column: 'Job Position',
+                    title: 'Job Position',
                 },
                 { 
-                    data: 'tin',
-                    column: 'TIN',
-                    title: 'TIN',
-                    visible: false 
+                    data: 'department',
+                    column: 'Department',
+                    title: 'Department',
                 },
                 { 
-                    data: 'branch_code',
-                    column: 'Branch Code',
-                    title: 'Branch Code',
+                    data: 'employment_status',
+                    column: 'Employment Status',
+                    title: 'Employment Status',
+                },
+                { 
+                    data: 'onboard_date',
+                    column: 'On-Board Date',
+                    title: 'On-Board Date',
                     visible: false
                 },
                 { 
-                    data: 'entity_type',
-                    column: 'Entity Type',
-                    title: 'Entity Type',
-                    visible: false
-                },
-                {
-                    data: 'sec_dti_registration_no',
-                    column: 'SEC/DTI Registration No.',
-                    title: 'SEC/DTI Registration No.',
-                    visible: false
-                },
-                {
-                    data: 'date_registered',
-                    column: 'Date Registered',
-                    title: 'Date Registered',
-                    visible: false
-                },
-                { 
-                    data: 'psic_code',
-                    column: 'PSIC Code',
-                    title: 'PSIC Code',
-                    visible: false
-                },
-                { 
-                    data: 'line_of_business',
-                    column: 'Line of Business',
-                    title: 'Line of Business',
-                    visible: false
-                },
-                { 
-                    data: 'vat_status',
-                    column: 'VAT Status',
-                    title: 'VAT Status',
-                    visible: false
-                },
-                { 
-                    data: 'currency',
-                    column: 'Currency',
-                    title: 'Currency',
-                    visible: false 
-                },
-                { 
-                    data: 'phone',
-                    column: 'Phone',
-                    title: 'Phone',
-                    visible: false },
-                { 
-                    data: 'email',
-                    column: 'Email',
-                    title: 'Email',
-                    visible: false
-                },
-                { 
-                    data: 'website',
-                    column: 'Website',
-                    title: 'Website',
-                    visible: false
-                },
-                {
-                    data: 'contact_person',
-                    column: 'Contact Person',
-                    title: 'Contact Person',
+                    data: 'offboard_date',
+                    column: 'Off-Board Date',
+                    title: 'Off-Board Date',
                     visible: false
                 },
                 { 

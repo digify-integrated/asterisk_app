@@ -17,6 +17,7 @@ use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\EducationalLevelController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartureReasonController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmploymentStatusController;
 use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\FilterController;
@@ -510,6 +511,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('work-schedule')
         ->name('work-schedule')
         ->controller(WorkScheduleController::class)
+        ->group(function () {
+            Route::post('/save', 'save')->name('save');
+            Route::delete('/delete', 'delete')->name('delete');
+            Route::delete('/delete-multiple', 'deleteMultiple')->name('delete.multiple');
+            Route::get('/fetch', 'fetch')->name('fetch');
+            Route::get('/generate-table', 'generateTable')->name('generate.table');
+            Route::get('/generate-option', 'generateOption')->name('generate.option');
+        });
+    
+    Route::prefix('employee')
+        ->name('employee')
+        ->controller(EmployeeController::class)
         ->group(function () {
             Route::post('/save', 'save')->name('save');
             Route::delete('/delete', 'delete')->name('delete');

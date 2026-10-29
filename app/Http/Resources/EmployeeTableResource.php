@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeTableResource extends JsonResource
 {
@@ -11,29 +12,21 @@ class EmployeeTableResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $detail = $this->employmentDetail;
+
+        $fallbackEmployeeImage = $this->defaultEmployeeImage ?? asset('assets/media/default/default-avatar.jpg');
+        $employeImageUrl = $this->logo ? Storage::disk('public')->url($this->employee_image) : $fallbackEmployeeImage;
+
         return [
             'id'                => $this->id,
+            'employee_image'    => $employeImageUrl ?? '',
             'file_as'           => $this->file_as,
-            'nickname'          => $this->nickname,
-            'phone'             => $this->phone,
-            'email'             => $this->email,
-            'birthday'          => $this->birthday?->format('M d, Y') ?? '',
-            'place_of_birth'    => $this->place_of_birth,
-            'marital_status'    => $this->maritalStatus?->name ?? '',
-            'gender'            => $this->gender?->name ?? '',
-            'religion'          => $this->religion?->name ?? '',
-            'blood_type'        => $this->bloodType?->name ?? '',
-            'height'            => $this->height,
-            'weight'            => $this->weight,
-            'badge_id'          => $this->badge_id,
-            'company'           => $this->company->legal_name ?? '',
-            'employment_type'   => $this->employmentType->name ?? '',
-            'department'        => $this->department->name ?? '',
-            'job_position'      => $this->jobPosition->name ?? '',
-            'manager'           => '',
-            'employment_status' => $this->employmentStatus->name ?? '',
-            'onboard_date'      => $this->onboard_date?->format('M d, Y') ?? '',
-            'offboard_date'     => $this->offboard_date?->format('M d, Y') ?? '',
+            'company'           => $detail?->company?->legal_name ?? '',
+            'job_position'      => $detail?->jobPosition?->name ?? '',
+            'department'        => $detail?->department?->name ?? '',
+            'employment_status' => $detail?->employmentStatus?->name ?? '',
+            'onboard_date'      => $detail?->onboard_date?->format('M d, Y') ?? '',
+            'offboard_date'     => $detail?->offboard_date?->format('M d, Y') ?? '',
             'created_at'        => $this->created_at?->format('M d, Y h:i:s a') ?? '',
             'permissions'   => [
                 'can_write'  => (bool) ($this->permissions['write'] ?? false),

@@ -39,14 +39,5 @@
                 Export as PDF
             </a>
         </div>
-
-        <div class="separator my-2 border-gray-200"></div>
-
-        <div class="menu-item px-3 pb-2">
-            <a href="javascript:void(0);" class="menu-link px-3 export-print text-hover-dark">
-                <i class="ki-duotone ki-printer fs-5 me-3 text-gray-500"></i>
-                Print Document
-            </a>
-        </div>
     </div>
 </div>

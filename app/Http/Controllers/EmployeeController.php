@@ -111,16 +111,33 @@ class EmployeeController extends Controller
         }
 
         $permissions = $user->getMenuPermissions($menuId);
-        $query = Employee::query();
 
-        $query->when($request->filled('filter_state_id'), function ($q) use ($request) {
-            $states = (array) $request->input('filter_state_id');
-            $q->whereIn('state_id', $states);
+        $query = Employee::query()->with([
+            'employmentDetail.jobPosition',
+            'employmentDetail.department',
+            'employmentDetail.employmentStatus',
+        ]);
+
+        // --- Employee Table Filters ---
+
+        $query->when($request->filled('filter_gender_id'), function ($q) use ($request) {
+            $genders = (array) $request->input('filter_gender_id');
+            $q->whereIn('gender_id', $genders);
         });
 
-        $query->when($request->filled('filter_country_id'), function ($q) use ($request) {
-            $countries = (array) $request->input('filter_country_id');
-            $q->whereIn('country_id', $countries);
+        $query->when($request->filled('filter_marital_status_id'), function ($q) use ($request) {
+            $maritalStatuses = (array) $request->input('filter_marital_status_id');
+            $q->whereIn('marital_status_id', $maritalStatuses);
+        });
+
+        $query->when($request->filled('filter_religion_id'), function ($q) use ($request) {
+            $religions = (array) $request->input('filter_religion_id');
+            $q->whereIn('religion_id', $religions);
+        });
+
+        $query->when($request->filled('filter_blood_type_id'), function ($q) use ($request) {
+            $bloodTypes = (array) $request->input('filter_blood_type_id');
+            $q->whereIn('blood_type_id', $bloodTypes);
         });
 
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
@@ -134,6 +151,76 @@ class EmployeeController extends Controller
             }
         });
 
+
+        // --- Employment Details Table Filters (using whereHas) ---
+
+        $query->when($request->filled('filter_company_id'), function ($q) use ($request) {
+            $companies = (array) $request->input('filter_company_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($companies) {
+                $subQuery->whereIn('company_id', $companies);
+            });
+        });
+
+        $query->when($request->filled('filter_employment_type_id'), function ($q) use ($request) {
+            $employmentTypes = (array) $request->input('filter_employment_type_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($employmentTypes) {
+                $subQuery->whereIn('employment_type_id', $employmentTypes);
+            });
+        });
+
+        $query->when($request->filled('filter_department_id'), function ($q) use ($request) {
+            $departments = (array) $request->input('filter_department_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($departments) {
+                $subQuery->whereIn('department_id', $departments);
+            });
+        });
+
+        $query->when($request->filled('filter_employment_status_id'), function ($q) use ($request) {
+            $employmentStatuses = (array) $request->input('filter_employment_status_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($employmentStatuses) {
+                $subQuery->whereIn('employment_status_id', $employmentStatuses);
+            });
+        });
+
+        $query->when($request->filled('filter_job_position_id'), function ($q) use ($request) {
+            $jobPositions = (array) $request->input('filter_job_position_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($jobPositions) {
+                $subQuery->whereIn('job_position_id', $jobPositions);
+            });
+        });
+
+        $query->when($request->filled('filter_manager_id'), function ($q) use ($request) {
+            $managers = (array) $request->input('filter_manager_id');
+            $q->whereHas('employmentDetail', function ($subQuery) use ($managers) {
+                $subQuery->whereIn('manager_id', $managers);
+            });
+        });
+
+        $query->when($request->filled('filter_onboard_date'), function ($q) use ($request) {
+            $dates = explode(' - ', $request->input('filter_onboard_date'));
+
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
+
+                $q->whereHas('employmentDetail', function ($subQuery) use ($startDate, $endDate) {
+                    $subQuery->whereBetween('onboard_date', [$startDate, $endDate]);
+                });
+            }
+        });
+
+        $query->when($request->filled('filter_offboard_date'), function ($q) use ($request) {
+            $dates = explode(' - ', $request->input('filter_offboard_date'));
+
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('m/d/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('m/d/Y', trim($dates[1]))->endOfDay();
+
+                $q->whereHas('employmentDetail', function ($subQuery) use ($startDate, $endDate) {
+                    $subQuery->whereBetween('offboard_date', [$startDate, $endDate]);
+                });
+            }
+        });
         $employees = $query->orderBy('name')->get();
 
         return EmployeeTableResource::collection($employees)

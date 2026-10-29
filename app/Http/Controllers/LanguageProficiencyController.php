@@ -114,7 +114,6 @@ class LanguageProficiencyController extends Controller
 
         $query = LanguageProficiency::query();
 
-        // Filter by Created Date Range
         $query->when($request->filled('filter_created_date'), function ($q) use ($request) {
             $dates = explode(' - ', $request->input('filter_created_date'));
 

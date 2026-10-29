@@ -146,7 +146,7 @@ export class PagePermission {
                 filter_created_date: this.dom.filterDate?.value || ''
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
-            exportColumns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            exportColumns: [1, 2, 3, 4, 5, 6, 7, 8, 9],
             order: [[1, 'asc']],
             addons: { 
                 controls: true, 
@@ -155,7 +155,7 @@ export class PagePermission {
             },
             columnDefs: [
                 { width: '5%', orderable: false, targets: 0 },
-                { orderable: false, targets: [3, 4, 5, 6, 7, 8] },
+                { orderable: false, targets: [3, 4, 5, 6, 7, 8, 9] },
                 { width: '10%', orderable: false, targets: 10 }
             ],
             columns: [
@@ -207,8 +207,34 @@ export class PagePermission {
                     title: '',
                     render: (_, __, row, meta) => {
                         const perms = meta.settings.json?.permissions || row.permissions || {};
-                        const safeId = escapeHtml(row.id);
-                                
+                        const items = [];
+
+                        if (perms.logs || perms.delete) {
+                            const safeId = escapeHtml(row.id);
+
+                            if (perms.logs) {
+                                items.push(`
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-shield-search fs-5"></i></span>
+                                        <span class="menu-title">Audit Logs</span>
+                                    </a>
+                                </div>`);
+                            }
+
+                            if (perms.delete) {
+                                items.push(`
+                                <div class="menu-item px-3">
+                                    <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
+                                        <span class="menu-icon me-2"><i class="ki-duotone ki-trash fs-5 text-danger"></i></span>
+                                        <span class="menu-title text-danger">Delete</span>
+                                    </a>
+                                </div>`);
+                            }
+                        }
+
+                        if (items.length === 0) return '';
+
                         return `
                         <div class="text-center me-10">
                             <a href="#" class="btn btn-light-dark btn-flex btn-center btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -216,22 +242,7 @@ export class PagePermission {
                                 <i class="ki-duotone ki-down fs-5 ms-1"></i>
                             </a>
                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4" data-kt-menu="true">
-                                                                                                
-                                ${perms.logs ? `
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3 ${CONFIG.classes.logNotesTrigger}" data-bs-toggle="modal" data-bs-target="${CONFIG.selectors.logNotesModal}" data-reference-id="${safeId}">
-                                        <span class="menu-icon me-2"><i class="ki-duotone ki-shield-search fs-5"></i></span>
-                                        <span class="menu-title">Audit Logs</span>
-                                    </a>
-                                </div>` : ''}
-                                
-                                ${perms.delete ? `
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3 text-danger ${CONFIG.classes.deleteTrigger}" data-reference-id="${safeId}" data-kt-users-table-filter="delete_row">
-                                        <span class="menu-icon me-2"><i class="ki-duotone ki-trash fs-5 text-danger"></i></span>
-                                        <span class="menu-title text-danger">Delete</span>
-                                    </a>
-                                </div>` : ''}
+                                ${items.join('')}
                             </div>
                         </div>`;
                     }

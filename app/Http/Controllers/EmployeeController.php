@@ -221,7 +221,7 @@ class EmployeeController extends Controller
                 });
             }
         });
-        $employees = $query->orderBy('name')->get();
+        $employees = $query->orderBy('file_as')->get();
 
         return EmployeeTableResource::collection($employees)
             ->additional([
@@ -232,7 +232,7 @@ class EmployeeController extends Controller
 
     public function generateOption(Request $request): JsonResponse
     {
-        $employees = Employee::query()->orderBy('name')->get();
+        $employees = Employee::query()->orderBy('file_as')->get();
 
         return EmployeeOptionResource::collection($employees)
             ->response();

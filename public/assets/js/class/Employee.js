@@ -12,12 +12,7 @@ const CONFIG = {
     selectors: {
         table: '#employee-table',
         tableColumn: '#employee-table-column-dropdown',
-        formId: 'employee_form',
-        detailId: 'employee_id',
-        submitButton: '#submit-data',
         deleteMultipleTrigger: '#delete-data',
-        deleteTrigger: '.delete-details',
-        createTrigger: '.new-button',
         checkboxes: '.datatable-checkbox-children:checked',
         filterOnboardDate: '#filter_onboard_date',
         filterOffboardDate: '#filter_offboard_date',
@@ -33,9 +28,6 @@ const CONFIG = {
         filterGenderDropdown: '#filter_gender_id',
         filterReligionDropdown: '#filter_religion_id',
         filterBloodTypeDropdown: '#filter_blood_type_id',
-    },
-    classes: {
-        deleteTrigger: 'delete-details',
     },
     endpoints: {
         tableData: '/employee/generate-table',
@@ -73,16 +65,16 @@ export class Employee {
         
         this.dom = {
             table: document.querySelector(CONFIG.selectors.table),
-            filterCompany: document.querySelector(CONFIG.selectors.filterCompanyDropdown),
-            filterEmploymentType: document.querySelector(CONFIG.selectors.filterEmploymentTypeDropdown),
-            filterDepartment: document.querySelector(CONFIG.selectors.filterDepartmentDropdown),
-            filterEmploymentStatus: document.querySelector(CONFIG.selectors.filterEmploymentStatusDropdown),
-            filterJobPosition: document.querySelector(CONFIG.selectors.filterJobPositionDropdown),
-            filterManager: document.querySelector(CONFIG.selectors.filterManagerDropdown),
-            filterMaritalStatus: document.querySelector(CONFIG.selectors.filterMaritalStatusDropdown),
-            filterGender: document.querySelector(CONFIG.selectors.filterGenderDropdown),
-            filterReligion: document.querySelector(CONFIG.selectors.filterReligionDropdown),
-            filterBloodType: document.querySelector(CONFIG.selectors.filterBloodTypeDropdown),
+            filterCompany: document.querySelector(CONFIG.selectors.filterCompany),
+            filterEmploymentType: document.querySelector(CONFIG.selectors.filterEmploymentType),
+            filterDepartment: document.querySelector(CONFIG.selectors.filterDepartment),
+            filterEmploymentStatus: document.querySelector(CONFIG.selectors.filterEmploymentStatus),
+            filterJobPosition: document.querySelector(CONFIG.selectors.filterJobPosition),
+            filterManager: document.querySelector(CONFIG.selectors.filterManager),
+            filterMaritalStatus: document.querySelector(CONFIG.selectors.filterMaritalStatus),
+            filterGender: document.querySelector(CONFIG.selectors.filterGender),
+            filterReligion: document.querySelector(CONFIG.selectors.filterReligion),
+            filterBloodType: document.querySelector(CONFIG.selectors.filterBloodType),
             filterOnboardDate: document.querySelector(CONFIG.selectors.filterOnboardDate),
             filterOffboardDate: document.querySelector(CONFIG.selectors.filterOffboardDate),
             filterCreatedDate: document.querySelector(CONFIG.selectors.filterCreatedDate)
@@ -96,8 +88,8 @@ export class Employee {
             this.initTable();
             
             await Promise.all([
-                this.initDelete(),
-                this.initDateRangePicker()
+                this.initDateRangePicker(),
+                this.registerGlobalListeners()
             ]);
         });
     }
@@ -126,7 +118,7 @@ export class Employee {
                 filter_created_date: this.dom.filterCreatedDate?.value || '',
             }),
             colVisContainer: CONFIG.selectors.tableColumn,
-            exportColumns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+            exportColumns: [2],
             order: [[2, 'asc']],
             addons: { 
                 controls: true, 
@@ -136,7 +128,7 @@ export class Employee {
             columnDefs: [
                 { width: '5%', bSortable: false, targets: 0 },
                 { width: '5%', bSortable: false, targets: 1 },
-                { width: '10%', bSortable: false, targets: 19 },
+                { width: '10%', bSortable: false, targets: 10 }, // Changed from 19 to 10 (Action column)
             ],
             columns: [
                 { 
@@ -282,7 +274,7 @@ export class Employee {
     initDropdownOption() {
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.companyOption,
-            dropdownSelector: [CONFIG.selectors.filterCompanyDropdown]
+            dropdownSelector: [CONFIG.selectors.companyDropdown]
         });
 
         ComponentRegistry.generateDropdownOptions({
@@ -305,10 +297,10 @@ export class Employee {
             dropdownSelector: [CONFIG.selectors.filterJobPositionDropdown]
         });
 
-        /*ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.managerOption,
-            dropdownSelector: [CONFIG.selectors.filterManagerDropdown]
-        });*/
+        ComponentRegistry.generateDropdownOptions({
+            url: CONFIG.endpoints.genderOption,
+            dropdownSelector: [CONFIG.selectors.filterGenderDropdown]
+        });
 
         ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.maritalStatusOption,
@@ -321,13 +313,12 @@ export class Employee {
         });
 
         ComponentRegistry.generateDropdownOptions({
-            url: CONFIG.endpoints.genderOption,
-            dropdownSelector: [CONFIG.selectors.filterGenderDropdown]
-        });
-
-        ComponentRegistry.generateDropdownOptions({
             url: CONFIG.endpoints.bloodTypeOption,
             dropdownSelector: [CONFIG.selectors.filterBloodTypeDropdown]
         });
+    }
+
+    registerGlobalListeners() {
+        
     }
 }

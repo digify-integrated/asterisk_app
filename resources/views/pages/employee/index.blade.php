@@ -137,3 +137,6 @@
     @endcomponent
 @endsection
 
+@push('scripts')
+    <script src="{{ asset('assets/plugins/datatables/datatables.bundle.js') }}"></script>
+@endpush

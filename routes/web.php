@@ -73,7 +73,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/app/{appId}/module/{navigationMenuId}/manage/{detailsId?}', [AppRenderController::class, 'renderModule'])
             ->defaults('route_type', 'manage')
-            ->defaults('detailsId', null)
             ->name('apps.manage');
             
         Route::get('/app/{appId}/module/{navigationMenuId}/import', [AppRenderController::class, 'renderModule'])

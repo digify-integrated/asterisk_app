@@ -208,6 +208,38 @@ class NavigationMenuDatabaseTableSeeder extends Seeder
                 'navigation_menu_id' => 48,
                 'database_table' => 'upload_setting_extensions',
             ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employees',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_addresses',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_documents',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_educational_backgrounds',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_emergency_contacts',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_employment_histories',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_family_members',
+            ],
+            [
+                'navigation_menu_id' => 49,
+                'database_table' => 'employee_identifications',
+            ],
 
             // Employee Management Module
             [

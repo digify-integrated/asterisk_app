@@ -27,10 +27,12 @@
             <div class="d-flex align-items-center py-3 py-md-1">
                 @if(($createPermission ?? 0) > 0 && (request()->routeIs('apps.base') || request()->routeIs('apps.manage')))
                     @if($pageType == 'multi_page')
-                        <a href="{{ route('apps.manage', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId, 'detailsId' => 'new']) }}" class="btn btn-light-dark btn-sm d-inline-flex align-items-center">
-                            <i class="ki-duotone ki-plus fs-5"></i>
-                            <span>New</span>
-                        </a>
+                        @if(!request()->routeIs('apps.manage.new'))
+                            <a href="{{ route('apps.manage.new', ['appId' => $appId, 'navigationMenuId' => $navigationMenuId]) }}" class="btn btn-light-dark btn-sm d-inline-flex align-items-center">
+                                <i class="ki-duotone ki-plus fs-5"></i>
+                                <span>New</span>
+                            </a>
+                        @endif
                     @else
                         <button type="button" class="btn btn-light-dark btn-sm d-inline-flex align-items-center new-button"
                             data-bs-toggle="modal" data-bs-target="#form-modal">

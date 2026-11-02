@@ -78,8 +78,6 @@ class AppRenderController extends Controller
             'appId'            => $appId,
             'navigationMenuId' => $navigationMenuId,
             'detailsId'        => $detailsId,
-
-            // Breadcrumb data
             'bc_items'         => $bcItems,
             'bc_app_id'        => $appId,
         ]));

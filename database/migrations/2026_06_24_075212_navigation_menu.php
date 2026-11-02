@@ -34,7 +34,7 @@ return new class extends Migration
         Schema::create('navigation_menu_routes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('navigation_menu_id')->constrained('navigation_menus')->cascadeOnDelete();
-            $table->enum('route_type', ['index', 'manage'])->default('index');
+            $table->enum('route_type', ['index', 'manage_new', 'manage_details'])->default('index');
             $table->string('view_file')->nullable();
             $table->string('js_file')->nullable();
             $table->foreignId('last_log_by')->nullable()->default(1)->constrained('users')->nullOnDelete();

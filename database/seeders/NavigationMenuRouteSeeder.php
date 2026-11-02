@@ -323,9 +323,16 @@ class NavigationMenuRouteSeeder extends Seeder
             
             [
                 'navigation_menu_id'    => 49,
-                'route_type'            => 'manage',
-                'view_file'             => 'pages.employee.manage',
-                'js_file'               => 'employee/manage',
+                'route_type'            => 'manage_new',
+                'view_file'             => 'pages.employee.manage-new',
+                'js_file'               => 'employee/manage-new',
+            ],
+            
+            [
+                'navigation_menu_id'    => 49,
+                'route_type'            => 'manage_details',
+                'view_file'             => 'pages.employee.manage-details',
+                'js_file'               => 'employee/manage-details',
             ],
 
             // Directory (ID: 50)

@@ -5,6 +5,5 @@
 @endpush
 
 @section('content')
-    {{ $detailsId }}
+   
 @endsection
-

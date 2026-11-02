@@ -71,9 +71,13 @@ Route::middleware('auth')->group(function () {
             ->defaults('route_type', 'index')
             ->name('apps.base');
 
+        Route::get('/app/{appId}/module/{navigationMenuId}/new', [AppRenderController::class, 'renderModule'])
+            ->defaults('route_type', 'manage_new')
+            ->name('apps.manage.new');
+
         Route::get('/app/{appId}/module/{navigationMenuId}/manage/{detailsId?}', [AppRenderController::class, 'renderModule'])
-            ->defaults('route_type', 'manage')
-            ->name('apps.manage');
+            ->defaults('route_type', 'manage_details')
+            ->name('apps.manage.details');
             
         Route::get('/app/{appId}/module/{navigationMenuId}/import', [AppRenderController::class, 'renderModule'])
             ->defaults('route_type', 'import')

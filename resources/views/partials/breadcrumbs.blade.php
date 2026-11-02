@@ -1,12 +1,13 @@
 @php
-    $isManageRoute = request()->routeIs('apps.manage');
+    $isManageNewRoute = request()->routeIs('apps.manage.new');
+    $isManageDetailsRoute = request()->routeIs('apps.manage.details');
     $isImportRoute = request()->routeIs('apps.import');
 
-    $routeSuffix = $isManageRoute
-        ? 'Manage'
-        : ($isImportRoute ? 'Import' : '');
+    $routeSuffix = $isManageNewRoute
+        ? 'New'
+        : ($isManageDetailsRoute ? $detailsId : ($isImportRoute ? 'Import' : ''));
 
-    $isManageOrImport = $isManageRoute || $isImportRoute;
+    $isManageOrImport = $isManageNewRoute || $isManageDetailsRoute || $isImportRoute;
 @endphp
 
 <ol class="breadcrumb breadcrumb-arrow text-muted fs-8 fw-semibold">
